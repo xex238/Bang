@@ -1,7 +1,7 @@
 CREATE TABLE [User]
 (
 	ID integer NOT NULL UNIQUE,
-	e-mail varchar NOT NULL UNIQUE,
+	[e-mail] varchar NOT NULL UNIQUE,
 	password varchar NOT NULL,
 	nick varchar NOT NULL,
 	room_ID integer NOT NULL,
