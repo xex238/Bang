@@ -12,4 +12,4 @@
 
 <b>Хостинг</b>: https://my.gearhost.com
 
-![Бэнг](https://github.com/xex238/Bang/blob/master/Задание%205.%20Серверная%20часть%20системы%20(backend)/Изображения/Bang.jpg?raw=true)
+![Бэнг](https://github.com/xex238/Bang/blob/master/backend/Изображения/Bang.jpg?raw=true)
