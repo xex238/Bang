@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>BANG! The JS Game</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link type="text/css" rel="stylesheet" href="css/materialize.min.css"  media="screen,projection"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+  <script type="text/javascript" src="js/materialize.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="css/style.css">
+</head>
+<body>
+  <!-- NAVBAR -->
+  <nav class="red darken-4">
+    <a href="/" class="brand-logo" id="default-logo">BANG! Веб версия приложения</a>
+    <a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">Меню</i></a>
+    <ul class="right hide-on-med-and-down">
+      <li><a href="/">Игра</a></li>
+      <li><a href="/info">Информация</a></li>
+      <li><a href="/rules">Правила</a></li>
+      <!-- <li><a href="/">Leaderboards</a></li> -->
+    </ul>
+    <ul class="side-nav" id="mobile-demo">
+      <li><a href="/">Новая игра</a></li>
+      <li><a href="/info">Информация</a></li>
+      <li><a href="/rules">Правила</a></li>
+      <li><a href="/">Лучшие игроки</a></li>
+    </ul>
+  </nav>
+  <!-- MAIN CONTENT -->
+  <!-- SPACER -->
+  <div class="row"></div>
+  <div class="row"></div>
+  <!-- CURRENT PLAYER -->
+  <div class="row container">
+    <h2 class="center-align">Информация по игре</h2>
+    <h4 class="center-align">Все что вам нужно знать о пресонажах, картах, ролях итп!</h4>
+
+    <ul class="collapsible" data-collapsible="accordion">
+      <li>
+        <div class="collapsible-header active center-align red darken-1"><b>Карты персонажей</b></div>
+        <div class="collapsible-body">
+          <div class="row">
+            <div class="card col s4">
+              <div class="card-image waves-effect waves-block waves-light">
+              </div>
+              <div class="card-content info-card">
+                <span class="card-title activator"><img src="../Main_bang/Lucky_Duke.jpg" class="circle" width="100">Удачливый Дюк<i class="material-icons right">keyboard_arrow_up</i></span>
+                <p> - ~Начинает с 8 очками здоровья~</p>
+              </div>
+              <div class="card-reveal">
+                <span class="card-title grey-text text-darken-4">Lucky Duke<i class="material-icons right">close</i></span>
+                <p>Вы имеет одну дополнительную пересдачу карт.</p>
+              </div>
+              <div class="card-action info-card">
+                <i class="material-icons hp-icon">favorite</i>
+                <i class="material-icons hp-icon">favorite</i>
+                <i class="material-icons hp-icon">favorite</i>
+                <i class="material-icons hp-icon">favorite</i>
+                <i class="material-icons hp-icon">favorite</i>
+                <i class="material-icons hp-icon">favorite</i>
+                <i class="material-icons hp-icon">favorite</i>
+                <i class="material-icons hp-icon">favorite</i>
+              </div>
+            </div>
+
+            <div class="card col s4 center-align">
+              <div class="card-image waves-effect waves-block waves-light">
+              </div>
+              <div class="card-content info-card">
+                <span class="card-title activator"><img src="../Main_bang/Bart_Cassidy.jpg" class="circle" width="100">Барт Кэссэди<i class="material-icons right">keyboard_arrow_up</i></span>
+                <p> - ~Начинает с 8 очками здоровья~</p>
+              </div>
+              <div class="card-reveal">
+                <span class="card-title grey-text text-darken-4">Барт Кэссэди<i class="material-icons right">close</i></span>
+                <p>Вы можете принять карты стрелы вместо потери здоровья (кроме случая набега индейцев или взрыва динамита).</p>
+              </div>
+              <div class="card-action info-card">
+                <i class="material-icons hp-icon">favorite</i>
+                <i class="material-icons hp-icon">favorite</i>
+                <i class="material-icons hp-icon">favorite</i>
+                <i class="material-icons hp-icon">favorite</i>
+                <i class="material-icons hp-icon">favorite</i>
+                <i class="material-icons hp-icon">favorite</i>
+                <i class="material-icons hp-icon">favorite</i>
+                <i class="material-icons hp-icon">favorite</i>
+
+              </div>
+            </div>
+
+            <div class="card col s4 center-align">
+              <div class="card-image waves-effect waves-block waves-light">
+              </div>
+              <div class="card-content info-card">
+                <span class="card-title activator"><img src="../Main_bang/Willy_the_Kid.jpg" class="circle" width="100">Малыш Вилли<i class="material-icons right">keyboard_arrow_up</i></span>
+                <p> - ~Начинает с 8 очками здоровья~</p>
+              </div>
+              <div class="card-reveal">
+                <span class="card-title grey-text text-darken-4">Малыш Вилли<i class="material-icons right">close</i></span>
+                <p>Вам нужно только <img src="https://i.imgur.com/0q1hvpf.png" height="50" width="50"><img src="https://i.imgur.com/0q1hvpf.png" height="50" width="50"> чтобы использовать пулемет Гатлинга.</p>
+              </div>
+              <div class="card-action info-card">
+                <i class="material-icons hp-icon">favorite</i>
+                <i class="material-icons hp-icon">favorite</i>
+                <i class="material-icons hp-icon">favorite</i>
+                <i class="material-icons hp-icon">favorite</i>
+                <i class="material-icons hp-icon">favorite</i>
+                <i class="material-icons hp-icon">favorite</i>
+                <i class="material-icons hp-icon">favorite</i>
+                <i class="material-icons hp-icon">favorite</i>
+
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="card col s4 center-align">
+              <div class="card-image waves-effect waves-block waves-light">
+              </div>
+              <div class="card-content info-card">
+                <span class="card-title activator"><img src="../Main_bang/Pedro_Ramirez.jpg" class="circle" width="100">Педро Рамирез<i class="material-icons right">keyboard_arrow_up</i></span>
+                <p> - ~Начинает с 8 очками здоровья~</p>
+              </div>
+              <div class="card-reveal">
+                <span class="card-title grey-text text-darken-4">Педро Рамирез<i class="material-icons right">close</i></span>
+                <p>За каждое потерянное очко здоровья, можно избавиться от одной карты стрелы.</p>
+              </div>
+              <div class="card-action info-card">
+                <i class="material-icons hp-icon">favorite</i>
+                <i class="material-icons hp-icon">favorite</i>
+                <i class="material-icons hp-icon">favorite</i>
+                <i class="material-icons hp-icon">favorite</i>
+                <i class="material-icons hp-icon">favorite</i>
+                <i class="material-icons hp-icon">favorite</i>
+                <i class="material-icons hp-icon">favorite</i>
+                <i class="material-icons hp-icon">favorite</i>
+
+              </div>
+            </div>
+
+            <div class="card col s4 center-align">
+              <div class="card-image waves-effect waves-block waves-light">
+              </div>
+              <div class="card-content info-card">
+                <span class="card-title activator"><img src="../Main_bang/Calamity_Janet.jpg" class="circle" width="100">Мерзкая Джанет<i class="material-icons right">keyboard_arrow_up</i></span>
+                <p> ~Начинает с 8 очками здоровья~</p>
+              </div>
+              <div class="card-reveal">
+                <span class="card-title grey-text text-darken-4">Мерзкая Джанет<i class="material-icons right">close</i></span>
+                <p>Можете использовать <img src="https://i.imgur.com/j32ofq3.png" height="50" width="50"> в качестве <img src="https://i.imgur.com/AR0V71o.png" height="50" width="50"> и наоборот.</p>
+              </div>
+              <div class="card-action info-card">
+                <i class="material-icons hp-icon">favorite</i>
+                <i class="material-icons hp-icon">favorite</i>
+                <i class="material-icons hp-icon">favorite</i>
+                <i class="material-icons hp-icon">favorite</i>
+                <i class="material-icons hp-icon">favorite</i>
+                <i class="material-icons hp-icon">favorite</i>
+                <i class="material-icons hp-icon">favorite</i>
+                <i class="material-icons hp-icon">favorite</i>
+
+              </div>
+            </div>
+
+            <div class="card col s4 center-align">
+              <div class="card-image waves-effect waves-block waves-light">
+              </div>
+              <div class="card-content info-card">
+                <span class="card-title activator"><img src="../Main_bang/Black_Jack.jpg" class="circle" width="100">Блэк Джек<i class="material-icons right">keyboard_arrow_up</i></span>
+                <p> - ~Начинает с 8 очками здоровья~</p>
+              </div>
+              <div class="card-reveal">
+                <span class="card-title grey-text text-darken-4">Блэк Джек<i class="material-icons right">close</i></span>
+                <p>Можете реролить <img src="https://i.imgur.com/ygbg1Fg.png" height="50" width="50"> (Только если меньше трех!)</p>
+              </div>
+              <div class="card-action info-card">
+                <i class="material-icons hp-icon">favorite</i>
+                <i class="material-icons hp-icon">favorite</i>
+                <i class="material-icons hp-icon">favorite</i>
+                <i class="material-icons hp-icon">favorite</i>
+                <i class="material-icons hp-icon">favorite</i>
+                <i class="material-icons hp-icon">favorite</i>
+                <i class="material-icons hp-icon">favorite</i>
+                <i class="material-icons hp-icon">favorite</i>
+
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="card col s4 center-align">
+                <div class="card-image waves-effect waves-block waves-light">
+                </div>
+                <div class="card-content info-card">
+                  <span class="card-title activator"><img src="../Main_bang/Jourdonnais.jpg" class="circle" width="100">Человек без имени<i class="material-icons right">keyboard_arrow_up</i></span>
+                  <p> ~Начинает с 7 очками здоровья~</p>
+                </div>
+                <div class="card-reveal">
+                  <span class="card-title grey-text text-darken-4">Человек без имени<i class="material-icons right">close</i></span>
+                  <p>Вы можете потерять не больше 1 очка здоровья при набеге индейцев <img src="https://i.imgur.com/pUn7Uru.png" height="50" width="50"></p>
+                </div>
+                <div class="card-action info-card">
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+
+                </div>
+              </div>
+
+              <div class="card col s4 center-align">
+                <div class="card-image waves-effect waves-block waves-light">
+                </div>
+                <div class="card-content info-card">
+                  <span class="card-title activator"><img src="../Main_bang/Kit_Carison.jpg" class="circle" width="100">Кит Карисон<i class="material-icons right">keyboard_arrow_up</i></span>
+                  <p> ~Начинает с 7 очками здоровья~</p>
+                </div>
+                <div class="card-reveal">
+                  <span class="card-title grey-text text-darken-4">Кит Карисон<i class="material-icons right">close</i></span>
+                  <p>За каждый <img src="https://i.imgur.com/0q1hvpf.png" height="50" width="50"> можете избавиться от <img src="https://i.imgur.com/pUn7Uru.png" height="50" width="50"> с <b>любого</b> игрока.</p>
+                </div>
+                <div class="card-action info-card">
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+
+                </div>
+              </div>
+
+              <div class="card col s4 center-align">
+                <div class="card-image waves-effect waves-block waves-light">
+                </div>
+                <div class="card-content info-card">
+                  <span class="card-title activator"><img src="../Main_bang/Paul_Regret.jpg" class="circle" width="100">Пол Регрет<i class="material-icons right">keyboard_arrow_up</i></span>
+                  <p> ~Начинает с 9 очками здоровья~</p>
+                </div>
+                <div class="card-reveal">
+                  <span class="card-title grey-text text-darken-4">Пол Регрет<i class="material-icons right">close</i></span>
+                  <p>Не теряете очки здоровья при огне Пулемета Гатлинга.</p>
+                </div>
+                <div class="card-action info-card">
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+
+                </div>
+              </div>
+
+              <div class="card col s4 center-align">
+                <div class="card-image waves-effect waves-block waves-light">
+                </div>
+                <div class="card-content info-card">
+                  <span class="card-title activator"><img src="../Main_bang/Rose_Doolan.jpg" class="circle" width="100">Рози Дулан<i class="material-icons right">keyboard_arrow_up</i></span>
+                  <p>~Начинает с 9 очками здоровья~</p>
+                </div>
+                <div class="card-reveal">
+                  <span class="card-title grey-text text-darken-4">Рози Дулан<i class="material-icons right">close</i></span>
+                  <p>Можете использовать <img src="https://i.imgur.com/j32ofq3.png" height="50" width="50"> или <img src="https://i.imgur.com/AR0V71o.png" height="50" width=""> на игрока что находится на позицию дальше.</p>
+                </div>
+                <div class="card-action info-card">
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+
+                </div>
+              </div>
+
+              <div class="card col s4 center-align">
+                <div class="card-image waves-effect waves-block waves-light">
+                </div>
+                <div class="card-content info-card">
+                  <span class="card-title activator"><img src="../Main_bang/Jesse_Jones.jpg" class="circle" width="100">Джесси Джонес<i class="material-icons right">keyboard_arrow_up</i></span>
+                  <p> ~Начинает с 9 очками здоровья~</p>
+                </div>
+                <div class="card-reveal">
+                  <span class="card-title grey-text text-darken-4">Джесси Джонес<i class="material-icons right">close</i></span>
+                  <p>Если меньше 4 хп, получаете +2 хп за <img src="https://i.imgur.com/TWQYd4q.png" height="50" width="50"> для себя.</p>
+                </div>
+                <div class="card-action info-card">
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+
+                </div>
+              </div>
+
+              <div class="card col s4 center-align">
+                <div class="card-image waves-effect waves-block waves-light">
+                </div>
+                <div class="card-content info-card">
+                  <span class="card-title activator"><img src="../Main_bang/El_Gringo.jpg" class="circle" width="100">Эль Гринго<i class="material-icons right">keyboard_arrow_up</i></span>
+                  <p> ~Начинает с 7 очками здоровья~</p>
+                </div>
+                <div class="card-reveal">
+                  <span class="card-title grey-text text-darken-4">Эль Гринго<i class="material-icons right">close</i></span>
+                  <p>За каждое потеряное вами здоровье, другой игрок берет стрелу</p>
+                </div>
+                <div class="card-action info-card">
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+
+                </div>
+              </div>
+
+              <div class="card col s4 center-align">
+                <div class="card-image waves-effect waves-block waves-light">
+                </div>
+                <div class="card-content info-card">
+                  <span class="card-title activator"><img src="../Main_bang/Vulture_Sam.jpg" class="circle" width="100">Стервятник Сэм<i class="material-icons right">keyboard_arrow_up</i></span>
+                  <p> ~Начинает с 9 очками здоровья~</p>
+                </div>
+                <div class="card-reveal">
+                  <span class="card-title grey-text text-darken-4">Стервятник Сэм<i class="material-icons right">close</i></span>
+                  <p>Получаете очко здоровья за каждое убийство</p>
+                </div>
+                <div class="card-action info-card">
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+
+                </div>
+              </div>
+
+              <div class="card col s4 center-align">
+                <div class="card-image waves-effect waves-block waves-light">
+                </div>
+                <div class="card-content info-card">
+                  <span class="card-title activator"><img src="../Main_bang/Sid_Ketchum.jpg" class="circle" width="100">Сид Кэтчум<i class="material-icons right">keyboard_arrow_up</i></span>
+                  <p> ~Начинает с 8 очками здоровья~</p>
+                </div>
+                <div class="card-reveal">
+                  <span class="card-title grey-text text-darken-4">Сид Кэтчум<i class="material-icons right">close</i></span>
+                  <p>В начале каждого хода даете хп любому игроку.</p>
+                </div>
+                <div class="card-action info-card">
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+
+                </div>
+              </div>
+
+              <div class="card col s4 center-align">
+                <div class="card-image waves-effect waves-block waves-light">
+                </div>
+                <div class="card-content info-card">
+                  <span class="card-title activator"><img src="../Main_bang/Suzy_Lafayette.jpg" class="circle" width="100">Сьюзи Лафаетт<i class="material-icons right">keyboard_arrow_up</i></span>
+                  <p> ~Начинает с 8 очками здоровья~</p>
+                </div>
+                <div class="card-reveal">
+                  <span class="card-title grey-text text-darken-4">Сьюзи Лафаетт<i class="material-icons right">close</i></span>
+                  <p>Если не рероллите <img src="https://i.imgur.com/j32ofq3.png" height="50" width="50"> или <img src="https://i.imgur.com/AR0V71o.png" height="50" width="50"> то получаете 2 хп.</p>
+                </div>
+                <div class="card-action info-card">
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+
+                </div>
+              </div>
+
+              <div class="card col s4 center-align">
+                <div class="card-image waves-effect waves-block waves-light">
+                </div>
+                <div class="card-content info-card">
+                  <span class="card-title activator"><img src="../Main_bang/Slab_the_Killer.jpg" class="circle" width="100">Убийца Слэб<i class="material-icons right">keyboard_arrow_up</i></span>
+                  <p> ~Начинает с 8 очками здоровья~</p>
+                </div>
+                <div class="card-reveal">
+                  <span class="card-title grey-text text-darken-4">Убийца Слэб<i class="material-icons right">close</i></span>
+                  <p>Раз за ход можете использовать <img src="https://i.imgur.com/TWQYd4q.png" height="50" width="50"> чтобы удвоить <img src="https://i.imgur.com/j32ofq3.png" height="50" width="50"> или <img src="https://i.imgur.com/AR0V71o.png" height="50" width="50"></p>
+                </div>
+                <div class="card-action info-card">
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+
+                </div>
+              </div>
+
+              <div class="card col s4 center-align">
+                <div class="card-image waves-effect waves-block waves-light">
+                </div>
+                <div class="card-content info-card">
+                  <span class="card-title activator"><img src="https://image.freepik.com/free-vector/mysterious-man-spotlight-businessman-with-no-identity-noir-concept-illustration_201904-603.jpg" class="circle" width="100" height="80">???<i class="material-icons right">keyboard_arrow_up</i></span>
+                  <p> Новый персонаж! ..</p>
+                </div>
+                <div class="card-reveal">
+                  <span class="card-title grey-text text-darken-4">Новый персонаж..<i class="material-icons right">close</i></span>
+                  <p>Новые способности! ...</p>
+                </div>
+                <div class="card-action info-card">
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+
+                </div>
+              </div>
+
+              <div class="card col s4 center-align">
+                <div class="card-image waves-effect waves-block waves-light">
+                </div>
+                <div class="card-content info-card">
+                  <span class="card-title activator"><img src="https://image.freepik.com/free-vector/mysterious-man-spotlight-businessman-with-no-identity-noir-concept-illustration_201904-603.jpg" class="circle" width="100" height="80">???<i class="material-icons right">keyboard_arrow_up</i></span>
+                  <p> Новый персонаж! ..</p>
+                </div>
+                <div class="card-reveal">
+                  <span class="card-title grey-text text-darken-4">Новый персонаж..<i class="material-icons right">close</i></span>
+                  <p>новые способности! ...</p>
+                </div>
+                <div class="card-action info-card">
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+                  <i class="material-icons hp-icon">favorite</i>
+
+                </div>
+              </div>
+            </li>
+
+            <li>
+              <div class="collapsible-header center-align red darken-1"><b>Пересдача Карт</b></div>
+              <div class="collapsible-body center-align ">
+
+                <div class="row">
+                  <div class="card col s10 offset-s1 center-align ">
+                    <div class="card-image waves-effect waves-block waves-light">
+                    </div>
+                    <div class="card-content center-align">
+                      <h4>Пересдача</h4>
+                      <p>Нажмите на кнопку чтобы получить новые карты</p>
+                    </div>
+
+                    <div class="card-action">
+                      <div class="dice_hovereffect">
+                        <img class="img-responsive" src="https://i.imgur.com/j32ofq3.png">
+                        <div class="dice_overlay">
+                         <h2>Пистолет</h2>
+                         <p class="info"> Выберите игрока слева <b>или</b> справа - выбранный игрок потеряет одно очко здоровья.</p>
+                       </div>
+                     </div>
+                     <br>
+                     <div class="dice_hovereffect">
+                      <img class="img-responsive" src="https://i.imgur.com/AR0V71o.png">
+                      <div class="dice_overlay">
+                        <h2>Винтовка</h2>
+                        <p class="info"> Выберите игрока на две позиции справа или слева - выбранный игрок потеряет одно очко здоровья.<br> Если остается 2 или 3 игрока, то винтовку можно использовать как пистолет.</p>
+                      </div>
+                    </div>
+                    <br>
+                    <div class="dice_hovereffect">
+                      <img class="img-responsive" src="https://i.imgur.com/TWQYd4q.png">
+                      <div class="dice_overlay">
+                        <h2>Пивас</h2>
+                        <p class="info"> Выберите любого игрока, выбранный игрок восстановит одно очко здоровья.<br> Можно лечить самого себя. Можно тратить на того у кого итак максимальное количество здоровья</p>
+                      </div>
+                    </div>
+                    <br>
+                    <div class="dice_hovereffect">
+                      <img class="img-responsive" src="https://i.imgur.com/pUn7Uru.png">
+                      <div class="dice_overlay">
+                        <h2>Стрела</h2>
+                        <p class="info">Вы накапливате стрелы за каждую полученую (то есть если получили 3 вы <b>должны</b> взять 3 стрелы<br> Необходимо всегда разрешать полученные стрелы.<br>Если берете последнюю стрелу, Индейцы начинают набег и <b>каждый</b> игрок теряет очко здоровья за <b>каждую</b> стрелу что у него есть.</p>
+                      </div>
+                    </div>
+                    <br>
+                    <div class="dice_hovereffect">
+                      <img class="img-responsive" src="https://i.imgur.com/ygbg1Fg.png">
+                      <div class="dice_overlay">
+                        <h2>Динамит</h2>
+                        <p class="info">Невозможно избавиться от этой карты! При получении 3 и больше динамитов, вы больше не можете пересдавать карты <br> Если получили 3 шашки динамита то теряете очко здоровья. Если умираете при взрыве динамита, то игра прекращается как и ваш ход. </p>
+                      </div>
+                    </div>
+                    <br>
+                    <div class="dice_hovereffect">
+                      <img class="img-responsive" src="https://i.imgur.com/0q1hvpf.png">
+                      <div class="dice_overlay">
+                        <h2>Пулемет Гатлинга</h2>
+                        <p class="info">Если взять три карты Гатлинга вы начинаете сеять смерть <b>всем игрокам</b>. Каждый игрок теряет одно очко здоровья (в том числе Шерифф)<br> Вы избавляетесь от всех стрел при использовании Пулемета Гатлинга </p>
+                      </div>
+                    </div>
+                  </li>
+                </ul>
+
+                <ul class="collapsible" data-collapsible="accordion">
+                  <li>
+                    <div class="collapsible-header center-align red darken-1"><b>Роли</b></div>
+                    <div class="collapsible-body center-align">
+                      <div class="width">
+                        <div class="hovereffect">
+                          <img class="img-responsive" src="https://i.imgur.com/F2WrKK6.jpg" height="400" width="300">
+                          <div class="overlay">
+                           <h2>Шерифф</h2>
+                           <p class="info">Шерифф может побудить только в двух ситуациях: 1) Он единственный выживший 2) Выжил только Шериф и его помщник(и).<br> Выбирайте союзников мудро, только 2 игрока дружественны Шериффу <br> ~Шерифф получает 2 дополнительных очка здоровья в начале каждой новой игры~ </p>
+                         </div>
+                       </div>
+                     </div>
+                     <div class="width">
+                      <div class="hovereffect">
+                        <img class="img-responsive" src="https://i.imgur.com/pR0xjV2.jpg" height="400" width="300">
+                        <div class="overlay">
+                         <h2>Помощники Шериффа x2</h2>
+                         <p class="info">Помощники должны защитить Шериффа любой ценой. Именно помощники должны помочь Шериффу уничтожить всех бандитов и ренегатов.<br> Помощники побеждают если Шерифф выживет до конца игры, даже мертвый  помощник выиграает если Шерифф выживет <br> Помощники спасите своего Шериффа! </p>
+                       </div>
+                     </div>
+                   </div>
+                   <br>
+                   <div class="width">
+                    <div class="hovereffect">
+                      <img class="img-responsive" src="https://i.imgur.com/8eEqkyU.jpg" height="400" width="300">
+                      <div class="overlay">
+                       <h2>Бандиты x3</h2>
+                       <p class="info">Бандиты просто хотят убить Шериффа, любой ценой. Однако если ренегат убьют Шериффа в конце, то бандиты проиграют. <br> В кратце, застрелить Шериффа! </p>
+                     </div>
+                   </div>
+                 </div>
+                 <div class="width">
+                  <div class="hovereffect">
+                    <img class="img-responsive" src="https://i.imgur.com/mEh7J9p.jpg" height="400" width="300">
+                    <div class="overlay">
+                     <h2>Ренегаты x2</h2>
+                     <p class="info"> Самая сложная роль. Ренегат сам хочет стать Шериффом, и для этого ему нужно остаться последним живым игроком 1 на 1 с Шерифом. Ренегаты не команда, если останется 2 ренегата и Шерифф, то ренегаты должны сначала убить друг друга, иначе бандиты победят.<br> Ренегат должен выжить до конца игры, когда он останется 1 на 1 с Шериффом, и тогда...застрелит его!</p>
+                   </div>
+                 </div>
+               </div>
+
+        </div>
+      </li>
+    </ul>
+  </div>
+
+</body>
+</html>
+
+<!-- Bart Cassidy 8 - https://i.imgur.com/e8oZGYx.png
+Lucky Duke 8 - https://i.imgur.com/F6GioiG.png
+Slab The Killer 8 - https://i.imgur.com/hlVk73M.png
+Suzy Lafayette 8 - https://i.imgur.com/KfiWFxk.png
+Sid Ketchum 8 - https://i.imgur.com/cXVoKTA.png
+El Gringo 7 - https://i.imgur.com/OF8OH13.png
+Vulture Sam 9 - https://i.imgur.com/1HkWchT.png
+Jesse Jones 9 - https://i.imgur.com/bRkKXmX.png
+Rose Doolan 9 - https://i.imgur.com/Hdcp0p1.png
+Paul Regret 9 - https://i.imgur.com/UFADg9e.png
+Kit Carlson 7 - https://i.imgur.com/BZIfBge.png
+Jourdonnais 7 - https://i.imgur.com/tXiiB6L.png
+Black Jack 8 - https://i.imgur.com/KUrKkis.png
+Calamity Janet 8 - https://i.imgur.com/OY1CiiX.png
+Pedro Ramirez 8 - https://i.imgur.com/WcU2f2w.png
+Willy the Kid 8 - https://i.imgur.com/580j9rS.png -->
