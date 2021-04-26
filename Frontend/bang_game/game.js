@@ -28,120 +28,122 @@ var Game = function (
     this.rehydrate(previousObject);
   }
   this.roles = [
-    { name: "Sheriff", imgUrl: "https://i.imgur.com/yYT038yb.jpg" },
-    { name: "Deputy", imgUrl: "https://i.imgur.com/6HHgfPab.jpg" },
-    { name: "Deputy", imgUrl: "https://i.imgur.com/6HHgfPab.jpg" },
-    { name: "Outlaw", imgUrl: "https://i.imgur.com/NoWerAnb.jpg" },
-    { name: "Outlaw", imgUrl: "https://i.imgur.com/NoWerAnb.jpg" },
-    { name: "Outlaw", imgUrl: "https://i.imgur.com/NoWerAnb.jpg" },
-    { name: "Renegade", imgUrl: "https://i.imgur.com/TNeqBpnb.jpg" },
-    { name: "Renegade", imgUrl: "https://i.imgur.com/TNeqBpnb.jpg" },
+    { name: "Шерифф", imgUrl: "https://i.imgur.com/yYT038yb.jpg" },
+    {
+      name: "Помощник Шериффа",
+      imgUrl: "https://i.imgur.com/6HHgfPab.jpg",
+    },
+    {
+      name: "Помощник Шериффа",
+      imgUrl: "https://i.imgur.com/6HHgfPab.jpg",
+    },
+    { name: "Бандит", imgUrl: "https://i.imgur.com/NoWerAnb.jpg" },
+    { name: "Бандит", imgUrl: "https://i.imgur.com/NoWerAnb.jpg" },
+    { name: "Бандит", imgUrl: "https://i.imgur.com/NoWerAnb.jpg" },
+    { name: "Ренегат", imgUrl: "https://i.imgur.com/TNeqBpnb.jpg" },
+    { name: "Ренегат", imgUrl: "https://i.imgur.com/TNeqBpnb.jpg" },
   ];
   var character1 = {
     name: "Джесси Джонес",
     health: 9,
-    imgUrl: "https://raw.githubusercontent.com/xex238/Bang/master/images/characters/Main_bang/Bart_Cassidy.jpg",
+    imgUrl: "../Main_bang/Jesse_Jones.jpg",
     abilityDescription:
-      "Если осталось 4 хп или меньше, пиво лечит дополнительное очко здоровья.",
+      "Если меньше 4хп, то пиво дает +2 хп (только для себя).",
   };
   var character2 = {
-    name: "Кит Карлсон",
+    name: "Кит Карслон",
     health: 7,
-    imgUrl: "https://i.imgur.com/BZIfBge.png",
-    abilityDescription:
-      "Каждая карта Гатлинга дает возможность избавиться от карты стрелы.",
+    imgUrl: "../Main_bang/Kit_Carison.jpg",
+    abilityDescription: "Обмен карт гатлинга на карты стрел (с любого игрока)",
   };
   var character3 = {
-    name: "Черный Джэк",
+    name: "Блэк Джэк",
     health: 8,
-    imgUrl: "https://i.imgur.com/KUrKkis.png",
-    abilityDescription:
-      "Можно рероллить карты с динамитом. (Если их меньше 3!)",
+    imgUrl: "../Main_bang/Black_Jack.jpg",
+    abilityDescription: "Можно пересдавать карты динамита",
   };
   var character4 = {
-    name: "Русе Дулен",
+    name: "Рус Дуулэн",
     health: 9,
-    imgUrl: "https://i.imgur.com/Hdcp0p1.png",
-    abilityDescription: "Стрелковые карты дают +1 дальности",
+    imgUrl: "../Main_bang/Rose_Doolan.jpg",
+    abilityDescription: "Стрелковые карты имеют +1 дальность.",
   };
   var character5 = {
     name: "Педро Рамирез",
     health: 8,
-    imgUrl: "https://i.imgur.com/WcU2f2w.png",
+    imgUrl: "../Main_bang/Pedro_Ramirez.jpg",
     abilityDescription:
-      "Каждое потеряное очко здоровья, дает возможность избавиться от одной карты",
+      "За каждое потерянное очко здоровья, можно избавиться от одной карты стрелы.",
   };
   var character6 = {
     name: "Эль Гринго",
     health: 7,
-    imgUrl: "https://i.imgur.com/OF8OH13.png",
+    imgUrl: "../Main_bang/El_Gringo.jpg",
     abilityDescription:
-      "Когда игрок снимает 1 хп, он вынужден взять карту стрелы",
+      "За каждое потеряное вами здоровье, другой игрок берет стрелу",
   };
   var character7 = {
     name: "Барт Кэссэди",
     health: 8,
-    imgUrl: "https://i.imgur.com/e8oZGYx.png",
+    imgUrl: "../Main_bang/Bart_Cassidy.jpg",
     abilityDescription:
-      "Вместо потери хп можно взять карту стрелы (если атакующая карта не динамит или стрела).",
+      "Вы можете принять карты стрелы вместо потери здоровья (кроме случая набега индейцев или взрыва динамита).",
   };
   var character8 = {
     name: "Стервятник Сэм",
     health: 9,
-    imgUrl: "https://i.imgur.com/1HkWchT.png",
-    abilityDescription: "Получает ХП за каждого убитого игрока",
+    imgUrl: "../Main_bang/Vulture_Sam.jpg",
+    abilityDescription: "Получаете очко здоровья за каждое убийство",
   };
   var character9 = {
-    name: "Безмятежная Джанет",
+    name: "Мерзкая Джанет",
     health: 8,
-    imgUrl: "https://i.imgur.com/OY1CiiX.png",
-    abilityDescription: "Стрелковые карты различной дальности взаимозаменяемы",
+    imgUrl: "../Main_bang/Calamity_Janet.jpg",
+    abilityDescription: "Стрелковые карты взаимозаменяемы",
   };
   var character10 = {
-    name: "Джуорданис",
+    name: "Человек без имени",
     health: 7,
-    imgUrl: "https://i.imgur.com/tXiiB6L.png",
-    abilityDescription: "Карты стрел не могут снять больше 1 хп",
+    imgUrl: "../Main_bang/Jourdonnais.jpg",
+    abilityDescription:
+      "Вы можете потерять не больше 1 очка здоровья при набеге индейцев",
   };
   var character11 = {
     name: "Убийца Слэб",
     health: 8,
-    imgUrl: "https://i.imgur.com/hlVk73M.png",
+    imgUrl: "../Main_bang/Slab_the_Killer.jpg",
     abilityDescription:
-      "Раз за ход, вы можете использовать карту пива или стрелкового оружия (любого) дважды.",
+      "Раз в ход можно удваивать стрелковые карты за счет карты пива",
   };
   var character12 = {
     name: "Сид Кэтчум",
     health: 8,
-    imgUrl: "https://i.imgur.com/cXVoKTA.png",
-    abilityDescription:
-      "В начале каждого вашего хода вы дает другому игроку экстра хп",
+    imgUrl: "../Main_bang/Sid_Ketchum.jpg",
+    abilityDescription: "В начале каждого хода даете хп любому игроку.",
   };
   var character13 = {
     name: "Сьюзи Лафаетт",
     health: 8,
-    imgUrl: "https://i.imgur.com/KfiWFxk.png",
-    abilityDescription:
-      "Если вам не выпала стрелковая карта, то вы получаете хп.",
+    imgUrl: "../Main_bang/Suzy_Lafayette.jpg",
+    abilityDescription: "Если нет стрелковых карт, то получаете хп",
   };
   var character14 = {
     name: "Пол Регрет",
     health: 9,
-    imgUrl: "https://i.imgur.com/UFADg9e.png",
-    abilityDescription: "Иммунитет к пулемету Гатлинга",
+    imgUrl: "../Main_bang/Paul_Regret.jpg",
+    abilityDescription: "Не теряете очки здоровья при огне Пулемета Гатлинга.",
   };
   var character15 = {
     name: "Удачливый Дюк",
     health: 8,
-    imgUrl: "https://i.imgur.com/F6GioiG.png",
-    abilityDescription: "Имеете дополнительный реролл",
+    imgUrl: "../Main_bang/Lucky_Duke.jpg",
+    abilityDescription: "Вы имеет одну дополнительную пересдачу карт.",
   };
   var character16 = {
-    name: "Пацан Вилли",
+    name: "Малыш Вилли",
     health: 8,
-    imgUrl: "https://i.imgur.com/580j9rS.png",
-    abilityDescription:
-      "Нужно только 2 карты чтобы открыть огонь из Пулемета Гатлинга",
+    imgUrl: "../Main_bang/Willy_the_Kid.jpg",
+    abilityDescription: "Нужно только 2 карты гатлинга чтобы открыть огонь",
   };
   this.characters = [
     character1,
@@ -171,10 +173,17 @@ var getUniqueRandomElement = function (array) {
 };
 
 Game.prototype.rehydrate = function (previousObject) {
- 
+  // this.characterBasedMaxHealth = previousObject.characterBasedMaxHealth;
+  // if (!this.characterBasedMaxHealth){
+  //   for (var i = 0; i < this.players.length; i++){
+  //     this.players[i].maxHealth = 8;
+  //   }
+  // }
   this.totalArrows = previousObject.totalArrows;
   this.wonBy = previousObject.wonBy;
-  
+  // console.log(this.players);
+
+  // this.allPlayers = originalOrderPlayers;
 };
 
 Game.prototype.setup = function () {
@@ -188,7 +197,7 @@ Game.prototype.setup = function () {
 Game.prototype.rotateSheriffToFirst = function () {
   var sheriffIndex;
   for (var i = 0; i < this.players.length; i++) {
-    if (this.players[i].role.name === "Sheriff") {
+    if (this.players[i].role.name === "Шерифф") {
       sheriffIndex = i;
     }
   }
@@ -220,13 +229,22 @@ Game.prototype.savePlayers = function () {
 };
 
 Game.prototype.rotatePlayers = function (numSteps) {
- 
+  // rotates the array the number of times that is passed as an argument
+  // if no argument is passed, the OR operator will set loops to 1 as numSteps will be undefined, which is falsey
   var loops = numSteps;
 
   if (numSteps === undefined) {
     loops = 1;
   }
- 
+  // ^ this could have been written:
+  // - which might be better - passing 0 in deliberately would cause the loops to be set to 1, not 0, when using the OR operator method above - but there's no need to ever rotate the players array 0 times
+  // if (numSteps === undefined){
+  //   var loops = 1;
+  // }
+  // else{
+  //   var loops = numSteps;
+  // };
+
   for (var i = 0; i < loops; i++) {
     //2nd array item becomes first - first becomes last:
     this.players.push(this.players.shift());
@@ -263,11 +281,12 @@ Game.prototype.end = function (winCheckResult) {
   Materialize.toast(winCheckResult, 3000);
   window.alert(winCheckResult);
 };
-
+// checks if any players have 0 health - and call the game.removePlayer(player) function on them if so
 Game.prototype.checkForDeaths = function () {
   for (var i = 0; i < this.players.length; i++) {
     if (this.players[i].health <= 0) {
-    
+      // removes target from active player if their target is dead - prevents healing your target back to 1 hp straight after you kill them, for example.
+      if (this.players[i] === this.players[0].target) {
         this.players[0].target = null;
       }
       this.removePlayer(this.players[i]);
@@ -288,19 +307,19 @@ Game.prototype.winCheckOutlaws = function () {
   // console.log("outlaw wincheck  checking if array empty - players array length:", this.players.length);
   if (this.players.length === 0) {
     // console.log("game.players.length is 0 - therefore winCheckOutlaws is returning an Outlaw victory");
-    return "Outlaws win!";
+    return "Бандиты победили!";
   }
   // console.log("loops through players array:", this.players, "length:", this.players.length);
   for (var i = 0; i < this.players.length; i++) {
     // console.log("index:", i, "role:", this.players[i].role.name);
-    if (this.players[i].role.name === "Sheriff") {
+    if (this.players[i].role.name === "Шерифф") {
       // console.log("index:", i, "role found:", this.players[i].role.name);
       // console.log("sheriff found, returning null from outlaw wincheck");
       return null;
     }
   }
   // console.log("returning outlaws win because no sheriff found ??");
-  return "Outlaws win!";
+  return "Бандиты победили!";
 }; // winConditionOutlaw [end]
 
 Game.prototype.winCheckSheriff = function () {
@@ -308,33 +327,36 @@ Game.prototype.winCheckSheriff = function () {
   var outlawsDead = true;
   var renegadesDead = true;
   for (var i = 0; i < this.players.length; i++) {
-    if (this.players[i].role.name === "Sheriff") {
+    if (this.players[i].role.name === "Шерифф") {
       var sheriffLives = true;
-    } else if (this.players[i].role.name === "Outlaw") {
+    } else if (this.players[i].role.name === "Бандит") {
       outlawsDead = false;
-    } else if (this.players[i].role.name === "Renegade") {
+    } else if (this.players[i].role.name === "Ренегат") {
       renegadesDead = false;
     }
   } // loop end
   if (sheriffLives && outlawsDead && renegadesDead) {
-    return "Sheriff wins!";
+    return "Шерифф победил!";
   } else {
     return null;
   }
 };
 
 Game.prototype.winCheckRenegade = function () {
-  if (this.players.length === 1 && this.players[0].role.name === "Renegade") {
-    return "Renegade wins!";
+  if (this.players.length === 1 && this.players[0].role.name === "Ренегат") {
+    return "Ренегат победил!";
   } else {
     return null;
   }
 };
 
 Game.prototype.winCheck = function () {
- 
+  //all win conditions checked in appropriate order
+
+  // the if else if statement for renegade and outlaw is important, as if the sheriff is dead, the winCheckOutlaws function returns and outlaws win - this is often correct - but if a single renegade is alive, and just killed the sheriff - then the renegade wins - so we have to check if the renegade should win first, before reverting to checking if outlaws should win in the far more common case that the renegade is not the only player left alive.
+
   if (this.winCheckSheriff()) {
-    this.wonBy = "Sheriff";
+    this.wonBy = "Шерифф";
     return this.winCheckSheriff();
   }
 
@@ -342,10 +364,10 @@ Game.prototype.winCheck = function () {
   var renegadeCheckResult = this.winCheckRenegade();
 
   if (renegadeCheckResult) {
-    this.wonBy = "Renegade";
+    this.wonBy = "Ренегат";
     return renegadeCheckResult;
   } else if (outlawCheckResult) {
-    this.wonBy = "Outlaws";
+    this.wonBy = "Бандит";
     return outlawCheckResult;
   }
   return null;
@@ -355,7 +377,7 @@ Game.prototype.resolveArrows = function () {
   // this.assignArrows();
   for (var i = 0; i < this.dice.arrowsRolled; i++) {
     // console.log("arrows rolled", this.dice.arrowsRolled);
-   
+    //uncomment these to test currentPlayerDead behaviour MUCH more easily (refresh til no arrows on first role with sheriff, (or else outlaws win) then roll til you get one with other players to kill them straight away)
     // this.players[0].health = 1
     // this.totalArrows = 1
     this.players[0].arrows += 1;
@@ -373,10 +395,10 @@ Game.prototype.arrowsDamage = function () {
   if (this.totalArrows > 0) return null;
   this.removeHealthAndArrows();
   this.totalArrows = 9;
-  Materialize.toast("The Indians have attacked!!", 2000);
+  Materialize.toast("Индейцы атакуют!!", 2000);
   playSound("bow-and-arrows.mp3");
   // console.log("arrows in!");
- 
+  //adding this.checkForDeaths() call  to update who can be targetted by shots still to be resolved after arrows kill some player(s), preventing them from being targetted
   this.checkForDeaths();
 }; // arrowsDamage = function [end]
 
@@ -387,17 +409,12 @@ Game.prototype.removeHealthAndArrows = function () {
   }
 };
 
-
-
-
-
 Game.prototype.addToActionCounters = function () {
   this.players[0].actionCounters = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 };
   for (var i in this.dice.all) {
     this.players[0].actionCounters[this.dice.all[i].toString()] += 1;
   }
 };
-
 
 Game.prototype.canHeal = function () {
   if (this.players[0].actionCounters["3"] > 0 && this.players[0].target) {
@@ -449,7 +466,7 @@ Game.prototype.canShoot2 = function () {
   }
 };
 
-
+// ridiculous one line function body (unused) - just for fun:
 Game.prototype.canShootTargetCheck = function () {
   return (
     (this.players[0].actionCounters["1"] > 0 &&
@@ -460,7 +477,7 @@ Game.prototype.canShootTargetCheck = function () {
         this.players[0].target === this.players[this.players.length - 2]))
   );
 };
-
+// returns true if active player can shoot their current targeted player, and false if they cannot
 
 Game.prototype.fireGatling = function () {
   $;
@@ -513,10 +530,7 @@ Game.prototype.shootTarget = function () {
 Game.prototype.beerTarget = function () {
   if (this.players[0].target) {
     this.players[0].target.health += 1;
-    //moving this to next turn, to allow overhealing of someone you don't want to damage before gatlinging them once your dice resolve.
-    // if(this.players[0].target.health > this.players[0].target.maxHealth){
-    //   this.players[0].target.health = this.players[0].target.maxHealth
-    // }
+
     this.players[0].actionCounters["3"] -= 1;
     // console.log(this.players[0].name + " beer'd " + this.players[0].target.name)
   } else {
