@@ -7,219 +7,30 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
   <script type="text/javascript" src="js/materialize.min.js"></script>
-  <link rel="stylesheet" type="text/css" href="css/style.css">
-  <script src="js/bundle.js"></script>
+  <link rel="stylesheet" type="text/css" href="css/frontpage.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@1,100&display=swap" rel="stylesheet">
 </head>
 <body>
-  <!-- NAVBAR -->
-  <nav class="red darken-4">
-    <a href="/" class="brand-logo" id="game-logo">BANG! Веб версия приложения</a>
-    <a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">Меню</i></a>
-    <ul class="right hide-on-med-and-down">
-      <li><a id="new-game-button">Новая игра</a></li>
-      <li><a href="/info">Информация</a></li>
-      <li><a href="/rules">Правила</a></li>
-      <!-- <li><a href="/">Leaderboards</a></li> -->
-    </ul>
-    <ul class="side-nav" id="mobile-demo">
-      <li><a href="/">Новая игра</a></li>
-      <li><a href="/info">Информация</a></li>
-      <li><a href="/rules">Правила</a></li>
-      <li><a href="/">Лучшие игроки</a></li>
-    </ul>
-    <!-- SIDEBAR -->
-    <ul id="slide-out" class="side-nav fixed">
-      <ul class="collection" id="sidebar">
-        <!-- PLAYER 1 -->
-        <li id="player-1" class="collection-item avatar player">
-          <img id="player-1-avatar" class="circle">
-          <span id="player-1-name" class="title grey-text text-darken-4"></span><i class="material-icons secondary-content sheriff-icon"></i>
-          <p id="player-1-character" class="grey-text text-darken-4"></p>
-          <div class="card-action">
-            <div id="player-1-health-div" class="progress red lighten-4">
-              <div id="player-1-health-bar" class="determinate red darken-4"></div>
-            </div>
-            <div id="player-1-cp-div" class="white-text"><b id="current-player-1"></b></div>
-          </div>
-        </li>
-        <!-- PLAYER 2 -->
-        <li id="player-2" class="collection-item avatar player">
-          <img id="player-2-avatar" class="circle">
-          <span id="player-2-name" class="title grey-text text-darken-4"></span><i class="material-icons secondary-content sheriff-icon"></i>
-          <p id="player-2-character" class="grey-text text-darken-4"></p>
-          <div class="card-action">
-          </div>
-          <div id="player-2-health-div" class="progress red lighten-4">
-            <div id="player-2-health-bar" class="determinate red darken-4"></div>
-          </div>
-          <div id="player-2-cp-div" class="white-text"><b id="current-player-2"></b></div>
-        </li>
-        <!-- PLAYER 3 -->
-        <li id="player-3" class="collection-item avatar player">
-          <img id="player-3-avatar" class="circle">
-          <span id="player-3-name" class="title grey-text text-darken-4"></span><i class="material-icons secondary-content sheriff-icon"></i>
-          <p id="player-3-character" class="grey-text text-darken-4"></p>
-          <div class="card-action">
-          </div>
-          <div id="player-3-health-div" class="progress red lighten-4">
-            <div id="player-3-health-bar" class="determinate red darken-4" ></div>
-          </div>
-          <div id="player-3-cp-div" class="white-text"><b id="current-player-3"></b></div>
-        </li>
-        <!-- PLAYER 4 -->
-        <li id="player-4" class="collection-item avatar player">
-          <img id="player-4-avatar"class="circle">
-          <span id="player-4-name" class="title grey-text text-darken-4"></span><i class="material-icons secondary-content sheriff-icon"></i>
-          <p id="player-4-character" class="grey-text text-darken-4"></p>
-          <div class="card-action">
-          </div>
-          <div id="player-4-health-div" class="progress red lighten-4">
-            <div id="player-4-health-bar" class="determinate red darken-4"></div>
-          </div>
-          <div id="player-4-cp-div" class="white-text"><b id="current-player-4"></b></div>
-        </li>
-        <!-- PLAYER 5 -->
-        <li id="player-5" class="collection-item avatar player">
-          <img id="player-5-avatar"class="circle">
-          <span id="player-5-name" class="title grey-text text-darken-4"></span><i class="material-icons secondary-content sheriff-icon"></i>
-          <p id="player-5-character" class="grey-text text-darken-4"></p>
-          <div class="card-action">
-          </div>
-          <div id="player-5-health-div" class="progress red lighten-4">
-            <div id="player-5-health-bar" class="determinate red darken-4"></div>
-          </div>
-          <div id="player-5-cp-div" class="white-text"><b id="current-player-5"></b></div>
-        </li>
-        <!-- PLAYER 6 -->
-        <li id="player-6" class="collection-item avatar player">
-          <img id="player-6-avatar" class="circle">
-          <span id="player-6-name" class="title grey-text text-darken-4"></span><i class="material-icons secondary-content sheriff-icon"></i>
-          <p id="player-6-character" class="grey-text text-darken-4"></p>
-          <div class="card-action">
-          </div>
-          <div id="player-6-health-div" class="progress red lighten-4">
-            <div id="player-6-health-bar" class="determinate red darken-4"></div>
-          </div>
-          <div id="player-6-cp-div" class="white-text"><b id="current-player-6"></b></div>
-        </li>
-        <!-- PLAYER 7 -->
-        <li id="player-7" class="collection-item avatar player">
-          <img id="player-7-avatar" class="circle">
-          <span id="player-7-name" class="title grey-text text-darken-4"></span><i class="material-icons secondary-content sheriff-icon"></i>
-          <p id="player-7-character" class="grey-text text-darken-4"></p>
-          <div class="card-action">
-          </div>
-          <div id="player-7-health-div" class="progress red lighten-4">
-            <div id="player-7-health-bar" class="determinate red darken-4"></div>
-          </div>
-          <div id="player-7-cp-div" class="white-text"><b id="current-player-7"></b></div>
-        </li>
-        <!-- PLAYER 8 -->
-        <li id="player-8" class="collection-item avatar player">
-          <img id="player-8-avatar" class="circle">
-          <span id="player-8-name" class="title grey-text text-darken-4"></span><i class="material-icons secondary-content sheriff-icon"></i>
-          <p id="player-8-character" class="grey-text text-darken-4"></p>
-          <div class="card-action">
-          </div>
-          <div id="player-8-health-div" class="progress red lighten-4">
-            <div id="player-8-health-bar" class="determinate red darken-4"></div>
-          </div>
-          <div id="player-8-cp-div" class="white-text"><b id="current-player-8"></b></div>
-        </li>
-      </ul>
-    </ul>
-    <a href="#" data-activates="slide-out" class="button-collapse"><i class="mdi-navigation-menu"></i></a>
-  </nav>
-  <!-- MAIN CONTENT -->
-  <div class="content">
-    <!-- SPACER -->
-    <div class="row"></div>
-    <div class="row"></div>
-    <!-- CURRENT PLAYER -->
-    <div class="row">
-      <div class="card col s8 offset-s2">
-        <div class="card-image waves-effect waves-block waves-light">
-        </div>
-        <div class="card-content">
-          <span class="card-title activator"><img id="current-player-avatar" class="circle" width="75">Текущий игрок<i class="material-icons right">keyboard_arrow_up</i></span>
-          <p id="current-player-name-character"></p>
-        </div>
-        <div class="card-reveal">
-          <span class="card-title grey-text text-darken-4"><img id="current-player-avatar-reveal" class="circle" width="75"><text id="current-player-character"></text></span>
-          <p id="current-player-ability"></p>
-          <a id="role-button" class="btn waves-effect waves-light red darken-4">Посмотреть роль</a>
-        </div>
-        <div class="card-action">
-          <div id="current-player-health"></div>
-            <div id="current-player-arrows">
-              <img width="25px" id="current-player-arrow-1">
-              <img width="25px" id="current-player-arrow-2">
-              <img width="25px" id="current-player-arrow-3">
-              <img width="25px" id="current-player-arrow-4">
-              <img width="25px" id="current-player-arrow-5">
-              <img width="25px" id="current-player-arrow-6">
-              <img width="25px" id="current-player-arrow-7">
-              <img width="25px" id="current-player-arrow-8">
-              <img width="25px" id="current-player-arrow-9">
-            </div>
-        </div>
-      </div>
-    </div>
-    <!-- GAME INFO -->
-    <div class="row">
-      <div class="card col s8 offset-s2">
-        <div class="card-image waves-effect waves-block waves-light">
-        </div>
-        <div class="card-content center-align">
-          <span class="card-title activator">
-            <img width="50px" id="dice-1">
-            <img width="50px" id="dice-2">
-            <img width="50px" id="dice-3">
-            <img width="50px" id="dice-4">
-            <img width="50px" id="dice-5">
-            <i class="material-icons right">keyboard_arrow_up</i>
-          </span>
-        </div>
-        <div class="card-reveal">
-          <span class="card-title grey-text text-darken-4">Куча стрел<i class="material-icons right">закрыть</i></span>
-          <img width="50px" id="arrow-1">
-          <img width="50px" id="arrow-2">
-          <img width="50px" id="arrow-3">
-          <img width="50px" id="arrow-4">
-          <img width="50px" id="arrow-5">
-          <img width="50px" id="arrow-6">
-          <img width="50px" id="arrow-7">
-          <img width="50px" id="arrow-8">
-          <img width="50px" id="arrow-9">
-        </div>
-        <div class="card-action center-align">
-          <a id="roll-dice-button" class="waves-effect waves-light btn red darken-4">пересдача</a>&nbsp;
-          <a id="heal-button" class="waves-effect waves-light btn disabled">лечить</a>&nbsp;
-          <a id="shoot-button" class="waves-effect waves-light btn disabled">Огонь!</a>&nbsp;
-          <a id="end-turn-button" class="waves-effect waves-light btn disabled">конец хода</a>
-        </div>
-      </div>
-    </div>
-    <!-- HINT -->
-    <div class="row">
-      <div class="col s12 m8 offset-m2">
-        <div class="card-panel red darken-4 center-align">
-          <span class="white-text">
-            <p id="hint"></p>
-          </span>
-        </div>
-      </div>
-    </div>
-    <!-- JSQUERY SCRIPTS -->
-    <!-- INITIALISE MOBILE NAV -->
-    <script>
-      $(".button-collapse").sideNav();
-    </script>
-    <!-- INITIALISE HEAL/SHOOT TOOLTIPS -->
-    <script>
-     $(document).ready(function(){
-      $('.tooltipped').tooltip({delay: 50});
-    });
-  </script>
+  <canvas id=c width=1920 height=1080></canvas>
+  
+  
+  <div class="wrapper">
+    <h1>BANG!</h1>
+    <span id="status">guest</span>
+  <a href="../game.html">Одиночная игра</a>
+  <a href="../game.html">Онлайн игра</a>
+  <a href="../rules.html">Бэнгопедия</a>
+  <a href="../config.html">Настройки</a>
+  <a href="../leader.html">Игровая статистика</a>
+  <a href="../contact.html">Обратная связь</a>
+  <a href="https://www.google.ru/">Выход</a>
+  </div>
+
+
+
+
+
+<script src="js/blood.js"></script>
 </body>
 </html>
