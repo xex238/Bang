@@ -1,0 +1,48 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@1,100&display=swap');
+body
+{
+    overflow: hidden;
+}
+canvas
+{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+}
+.wrapper{
+  width: 250px;
+  position: absolute;
+  top:10%;
+  left: 40%;
+  border: 4px dotted white;
+  padding: 15px;
+}
+.wrapper>a{
+  display: block;
+  color: whitesmoke;
+  margin-bottom: 5px;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  padding-right:-15px ;
+  text-align: center;
+  border: 1px dotted white;
+}
+.wrapper>a:hover{
+  padding: 3px;
+  box-shadow: 5px 5px 5px 5px rgba(231, 218, 201, 0.74);
+}
+.wrapper>h1{
+  color: wheat;
+}
+.wrapper>span{
+  position: absolute;
+right: 5px;
+top: 0;
+color: white;
+font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+.wrapper>span:hover{
+  padding: 3px;
+  box-shadow: 5px 5px 5px 5px rgba(231, 218, 201, 0.74);
+}
+  
