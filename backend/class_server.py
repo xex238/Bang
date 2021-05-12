@@ -306,7 +306,7 @@ class Server:
 
             if(i_port != -1):
                 self.rooms_status[i_port] = False
-                self.rooms.append(class_room.Room(ID, "localhost", free_port))
+                self.rooms.append(class_room.Room(max_count_of_players, ID, "localhost", free_port))
                 self.rooms[len(self.rooms) - 1].Start_room()
 
             if(ID == -1):
