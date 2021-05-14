@@ -1,0 +1,57 @@
+.titles{
+	width: 140px;
+	float: left;
+  color: crimson;
+  font-weight: 900;
+}
+body{
+
+background-image: url(../Main_bang/bullet_background.png);
+}
+#form_message{
+	box-shadow: 0 0 10px rgba(0,0,0,0.2);
+	border-radius: 5px;
+	margin:0 auto;
+	padding: 25px;
+	width: 320px;
+	height:330px;
+  background-color: rgba(255, 255,255, 0.9);
+}
+
+#form_message input,textarea{
+	
+	width: 170px;
+}
+
+#submit{
+	height: 50px;
+	float: right;
+}
+form>a{
+  
+  border: 1px solid black;
+  background: #F0F0F0;
+	float: left;
+  text-decoration: none;
+  
+  border-radius: 3px;
+  padding-top:15px;
+  padding-bottom: 15px;
+  padding-left: 30px;
+  padding-right: 30px;
+  color: black;
+  
+}
+form>a:hover{
+  background-color:crimson;
+  color: white;
+}
+
+#form_message h2{
+	text-align: center;
+}
+
+#submit:hover{
+  background-color:crimson;
+  color: white;
+}
