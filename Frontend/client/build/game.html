@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>BANG! The JS Game</title>
+  <title>БЭНГ!</title>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link type="text/css" rel="stylesheet" href="css/materialize.min.css"  media="screen,projection"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -79,27 +79,24 @@
       <div class="menu1">
         <ul>
           <button class="cross1"></button>
-          <a href="https://www.google.com/"><li>Выйти</li></a>
-          <a href="index.html"><li>Вернутся в главное меню</li></a>
-          
-          
+          <a href="#"><li>LINK ONE</li></a>
+          <a href="#"><li>LINK TWO</li></a>
           
         </ul>
       </div>
       <div class="menu2">
         <ul>
           <button class="cross2"></button>
-          <a href="#"><li>Настройки (в разработке)</li></a>
-          
+          <a href="#"><li>LINK ONE</li></a>
+          <a href="#"><li>LINK TWO</li></a>
           
         </ul>
       </div>
       <div class="menu3">
         <ul>
           <button class="cross3"></button>
-          
-          <a href="info.html"><li>Информация о игре</li></a>
-          <a href="rules.html"><li>Правила игры</li></a>
+          <a href="#"><li>LINK ONE</li></a>
+          <a href="#"><li>LINK TWO</li></a>
           
         </ul>
       </div>
@@ -214,7 +211,7 @@
   
   <!-- MAIN CONTENT -->
  <div class="table">
-   <img src="../Main_bang/bang-cards.png">
+   <img src="../Main_bang/bang-cards.jpg">
  </div>
     <!-- GAME INFO -->
    <div class="player-wrap">
@@ -233,7 +230,7 @@
           </span>
         </div>
         <div class="card-reveal">
-          <span class="card-title grey-text text-darken-4">Стрелы<i class="material-icons right">close</i></span>
+          <span class="card-title grey-text text-darken-4">Куча стрел<i class="material-icons right">закрыть</i></span>
           <img width="50px" id="arrow-1">
           <img width="50px" id="arrow-2">
           <img width="50px" id="arrow-3">
@@ -245,10 +242,10 @@
           <img width="50px" id="arrow-9">
         </div>
         <div class="card-action center-align">
-          <a id="roll-dice-button" class="waves-effect waves-light btn red darken-4">Пересдача</a>&nbsp;
-          <a id="heal-button" class="waves-effect waves-light btn disabled">Лечить</a>&nbsp;
-          <a id="shoot-button" class="waves-effect waves-light btn disabled">БЭНГ!</a>&nbsp;
-          <a id="end-turn-button" class="waves-effect waves-light btn disabled">Конец хода</a>
+          <a id="roll-dice-button" class="waves-effect waves-light btn red darken-4">пересдача</a>&nbsp;
+          <a id="heal-button" class="waves-effect waves-light btn disabled">лечить</a>&nbsp;
+          <a id="shoot-button" class="waves-effect waves-light btn disabled">выстрел</a>&nbsp;
+          <a id="end-turn-button" class="waves-effect waves-light btn disabled">конец хода</a>
         </div>
       </div>
     </div>
@@ -261,13 +258,13 @@
           <div class="card-image waves-effect waves-block waves-light">
           </div>
           <div class="card-content">
-            <span class="card-title activator"><img id="current-player-avatar" class="circle" width="75">Сейчас<i class="material-icons right">keyboard_arrow_up</i></span>
+            <span class="card-title activator"><img id="current-player-avatar" class="circle" width="75">сейчас<i class="material-icons right">keyboard_arrow_up</i></span>
             <p id="current-player-name-character"></p>
           </div>
           <div class="card-reveal">
             <span class="card-title grey-text text-darken-4"><img id="current-player-avatar-reveal" class="circle" width="75"><text id="current-player-character"></text></span>
             <p id="current-player-ability"></p>
-            <a id="role-button" class="btn waves-effect waves-light red darken-4">Роль</a>
+            <a id="role-button" class="btn waves-effect waves-light red darken-4">узнать роль</a>
           </div>
           <div class="card-action">
             <div id="current-player-health"></div>

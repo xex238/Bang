@@ -15,23 +15,21 @@
   margin-bottom: 110px;
 }
 .table > img {
-  padding: 20px;
+  padding: 10px;
   border-radius: 50%;
-  border: 5px dotted white;
-  background-color:green;
+  border: 5px dotted black;
+
   margin-top: 0px;
 }
 ul.collection {
   width: 1200px;
   height: 400px;
- 
- 
+  padding-top: 100px;
   border: 10px double red;
 }
 
 ul.collection > .collection-item {
   background-color: transparent;
-  
   border: 3px double black;
 
   /* display: flex;
@@ -80,7 +78,7 @@ ul.collection > .collection-item:nth-child(8) {
 }
 
 ul.collection > .collection-item:hover {
-  background-color: grey;
+  background-color: rgba(123, 21, 234, 0.2);
 }
 .row {
   margin: 0 auto;
@@ -150,11 +148,10 @@ ul.collection > .collection-item:hover {
   position: absolute;
   right: 2%;
   top: 5%;
-  background: green;
+  background: purple;
   position: absolute;
   text-align: center;
   font-size: 12px;
-  border: 3px dotted white;
 }
 .menu1>ul {
   margin: 0;
@@ -229,7 +226,6 @@ ul.collection > .collection-item:hover {
   position: absolute;
   text-align: center;
   font-size: 12px;
-  border: 3px dotted white;
 }
 .menu2>ul {
   margin: 0;
@@ -300,11 +296,10 @@ ul.collection > .collection-item:hover {
   position: absolute;
   right: 2%;
   top: 5%;
-  background: green;
+  background: yellow;
   position: absolute;
   text-align: center;
   font-size: 12px;
-  border: 3px dotted white;
 }
 .menu3>ul {
   margin: 0;
@@ -339,7 +334,4 @@ ul.collection > .collection-item:hover {
 .menu3>a:hover {
   text-decoration: none;
   color: #666;
-}
-body{
-  background-color:burlywood;
 }
