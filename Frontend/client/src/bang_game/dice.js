@@ -19,12 +19,12 @@ var Dice = function (previousObject) {
   };
 
   this.imageUrl = {
-    1: "https://i.imgur.com/j32ofq3.png",
-    2: "https://i.imgur.com/AR0V71o.png",
-    3: "https://i.imgur.com/TWQYd4q.png",
-    4: "https://i.imgur.com/0q1hvpf.png",
-    5: "https://i.imgur.com/ygbg1Fg.png",
-    6: "https://i.imgur.com/pUn7Uru.png",
+    1: "../Main_bang/Bang_1.jpg",
+    2: "../Main_bang/Winchester.jpg",
+    3: "../Main_bang/Beer.jpg",
+    4: "../Main_bang/Gatling.jpg",
+    5: "../Main_bang/Dynamite.jpg",
+    6: "../Main_bang/Indians.jpg",
   };
 
   if (previousObject !== undefined) {

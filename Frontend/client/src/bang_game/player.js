@@ -34,7 +34,7 @@ Player.prototype.rehydrate = function(previousObject){
 // setHealth: run after characters and roles assigned in game model- sets health and max health from value on character card + 2 extra if sheriff.
 Player.prototype.setHealth = function(){
   this.maxHealth = this.character.health;
-  if( this.role.name === "Sheriff"){
+  if( this.role.name === "Шерифф"){
     this.maxHealth += 2
   };
   this.health = this.maxHealth;
