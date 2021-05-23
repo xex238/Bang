@@ -341,5 +341,68 @@ ul.collection > .collection-item:hover {
   color: #666;
 }
 body{
-  background-color:burlywood;
+  background-color:  	
+  #F7F3F3;
+  
+}
+ul.collection{
+  transform:translate(0) !important;
+}
+
+@media (max-width: 1200px){
+  ul.collection > .collection-item{
+    width: 40px;
+    font-size: 5px;
+    height: 10px;
+    margin: 0;
+    padding-right: 20px;
+    display: flex;
+    justify-content: space-evenly;
+    
+  }
+  ul.collection > .collection-item>i{
+    font-size: 5px;
+    margin: 0;
+    padding: 0;
+  }
+  ul.collection > .collection-item>p{
+    font-size: 5px;
+    margin: 0;
+    padding: 0;
+  }
+  ul.collection > .collection-item>span>b{
+    font-size: 5px;
+    margin: 0;
+    padding: 0;
+  }
+  .circle{
+    overflow: visible;
+    width: 5px;
+    margin: 0;
+    padding: 0;
+  }
+}
+@media (max-width: 1000px){
+  #config {
+    width: 15px;
+    
+  }
+  #book {
+    width: 15px;
+    
+  }
+  #burger{
+    width: 15px;
+  }
+  
+  ul.collection > .collection-item {
+    all: unset;
+  }
+  ul.collection{
+    transform: none;
+    overflow: visible;
+  }
+  
+  
+  
 }
