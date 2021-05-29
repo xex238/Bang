@@ -1,2 +1,7 @@
+Основная БД:
+Username: bang2
+Password: Tv08Yk-D8nZ?
+
+Вспомогательная БД:
 Username: bang
 Password: Ey3V6~-J20D1
