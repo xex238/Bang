@@ -619,8 +619,36 @@ END
 END
 GO
 
+/*------------------------END CREATING ROOM----------------------------*/
 
-/*----------------------END CREATING ROOM--------------------------*/
+-- 2.1.1)
+/*----------------------ADD_PLAYER_TO_ROOM--------------------------*/
+
+
+CREATE PROCEDURE  dbo.Add_player_to_room(@mail nvarchar(50), @password nvarchar(50), @room_ID int)
+AS
+BEGIN
+
+UPDATE [Player_]
+SET room_ID = @room_ID
+FROM [Player] as [Player_]
+join [User] as [User_]
+on [Player].[user_ID] = [User].[ID]
+where ([User_].[mail] = @mail) and ([User_].[password] = @password)
+
+SELECT [Room].count_of_players, [Room].max_count_of_players, [User].ID
+FROM [Room]
+join [Player]
+on [Player].room_ID = [Room].ID
+join [User]
+on [Player].[user_ID] = [User].ID
+WHERE ([User].mail = @mail) and ([User].[password] = @password)
+
+END
+GO
+
+
+/*----------------------END ADD_PLAYER_TO_ROOM--------------------------*/
 
 -- 2.1.2)
 /*----------------------GETTING CHARACTERS-------------------------*/
