@@ -344,7 +344,7 @@ GO
 
 /*---------------------------TRIGGER_1------------------------------*/
 
-
+-- Создание записи в таблице [Achievements] при создании записи в таблице [User]
 /* Write a trigger for creating achievements when creating a user and linking it to the User table */
 CREATE TRIGGER [dbo].[Create user achievements]
 ON [dbo].[User]
@@ -366,7 +366,7 @@ GO
 
 /*---------------------------TRIGGER_2------------------------------*/
 
-
+-- Создание записи в таблицах [Deck] и [Dropping] при создании записи в таблице [Room]
 /* Write a trigger to create records in the "Dropping" and "Deck" tables when creating a Room */
 CREATE TRIGGER [dbo].[Create Dropping and Deck default record]
 ON [dbo].[Room]
@@ -395,7 +395,7 @@ GO
 /*---------------------------TRIGGER_3------------------------------*/
 
 
--- Cоздание записи в таблице [Weapon] при создании игрока [Player]
+-- Cоздание записи в таблице [Weapon] при создании записи в таблице [Player]
 CREATE TRIGGER [dbo].[Create weapon]
 ON [dbo].[Player]
 AFTER INSERT
@@ -455,10 +455,10 @@ GO
 /*---------------------------FUNCTIONS------------------------------*/
 /*-----------------------------------------------------------------*/
 
-
+-- 1.1)
 /*---------------------REGISTRATION REQUEST------------------------*/
 
-
+/*---------------------------FUNCTION 1 (1)------------------------------*/
 CREATE FUNCTION  dbo.Registration_request (@mail nvarchar(50), @password nvarchar(50), @login nvarchar(50))
 RETURNS INT 
 AS
@@ -492,10 +492,10 @@ GO
 
 /*-------------------END REGISTRATION REQUEST----------------------*/
 
-
+-- 1.2)
 /*-------------------------REGISTRATION----------------------------*/
 
-
+/*---------------------------PROCEDURE 1 (2)------------------------------*/
 CREATE PROCEDURE  dbo.Registration (@mail nvarchar(50), @password nvarchar(50), @login nvarchar(50))
 AS
 BEGIN
@@ -510,10 +510,10 @@ END
 
 /*-----------------------END REGISTRATION--------------------------*/
 
-
+-- 1.3)
 /*--------------------AUTHORIZATION REQUEST------------------------*/
 
-
+/*---------------------------FUNCTION 2 (3)------------------------------*/
 CREATE FUNCTION  dbo.Authorization_request (@mail nvarchar(50), @password nvarchar(50))
 RETURNS INT 
 AS
@@ -543,10 +543,10 @@ GO
 
 /*--------------------END AUTHORIZATION REQUEST--------------------*/
 
-
+-- 1.4)
 /*--------------------AVAILABLE ROOMS REQUEST----------------------*/
 
-
+/*---------------------------PROCEDURE 2 (4)------------------------------*/
 CREATE PROCEDURE  dbo.Available_rooms 
 AS
 BEGIN
@@ -560,7 +560,7 @@ END
 
 /*------------------END AVAILABLE ROOMS REQUEST--------------------*/
 
-
+-- 1.5)
 /*----------------------USER'S ACHIVEMENTS-------------------------*/
 
 
@@ -597,7 +597,7 @@ GO
 
 /*--------------------END USER'S ACHIVEMENTS-----------------------*/
 
-
+-- 1.6)
 /*------------------------CREATING ROOM----------------------------*/
 
 
@@ -622,7 +622,7 @@ GO
 
 /*----------------------END CREATING ROOM--------------------------*/
 
-
+-- 2.1.2)
 /*----------------------GETTING CHARACTERS-------------------------*/
 
 
@@ -667,7 +667,7 @@ GO
 
 /*--------------------END GETTING CHARACTERS-----------------------*/
 
-
+-- 2.1.4)
 /*-----------------ADDING CHARACTER TO PLAYER----------------------*/
 
 
@@ -689,7 +689,7 @@ GO
 
 /*-----------------END ADDING CHARACTERS TO PLAYER-----------------*/
 
-
+-- 2.1.5)
 /*--------------------ADDING ROLE TO PLAYER------------------------*/
 
 
@@ -711,7 +711,7 @@ GO
 
 /*------------------END ADDING ROLE TO PLAYER----------------------*/
 
-
+-- 2.1.6)
 /*----------------GETTING START CARDS TO PLAYER--------------------*/
 
 
@@ -729,3 +729,607 @@ GO
 
 
 /*--------------END GETTING START CARDS TO PLAYER------------------*/
+
+-- 3.1)
+/*-----------MESSAGE ABOUT BEGINING/ENDING PAYER STEP--------------*/
+
+
+CREATE PROCEDURE  dbo.Player_turn_state (@player_ID int, @state bit)
+AS
+BEGIN
+
+UPDATE [Player]
+SET [player_move] = @state WHERE ID = @player_ID
+END
+GO
+
+
+/*---------END MESSAGE ABOUT BEGINING/ENDING PAYER STEP------------*/
+
+-- 3.2)
+/*-------------CHECK AVAILABILITY PLAYER HAVE CARD-----------------*/
+
+
+CREATE FUNCTION  dbo.Check_card_availability (@player_ID int, @card_ID int)
+RETURNS INT
+AS
+BEGIN
+
+DECLARE @Flag int
+DECLARE @Card_player int
+SELECT @Card_player = player_ID from [Card] where ID = @card_ID
+
+
+IF @Card_player = @player_ID
+	BEGIN
+	SELECT @Flag = 1
+	END
+ELSE
+	BEGIN
+	SELECT @Flag = 0
+	END
+
+RETURN @Flag
+END
+GO
+
+
+/*-----------END CHECK AVAILABILITY PLAYER HAVE CARD---------------*/
+
+-- 3.3)
+/*-----=-----CHECK AVAILABILITY PLAYER HAVE СHARACTER--------------*/
+
+
+CREATE FUNCTION  dbo.Check_character_availability (@player_ID int, @character_ID int)
+RETURNS INT
+AS
+BEGIN
+
+DECLARE @Flag int
+DECLARE @Character_player int
+SELECT @Character_player = character_ID from [Player] where ID = @player_ID
+
+
+IF @Character_player = @character_ID
+	BEGIN
+	SELECT @Flag = 1
+	END
+ELSE
+	BEGIN
+	SELECT @Flag = 0
+	END
+
+RETURN @Flag
+END
+GO
+
+
+/*---------END CHECK AVAILABILITY PLAYER HAVE CHARACTER------------*/
+
+-- 3.4)
+/*-------------------CHECK SHOOT OPPORTUNITY-----------------------*/
+
+
+CREATE FUNCTION  dbo.Check_shoot_opportunity (@player_ID int, @target_ID int)
+RETURNS INT
+AS
+BEGIN
+
+DECLARE @Flag int
+
+DECLARE @firing_range int
+
+SELECT @firing_range = [firing_range] FROM [Weapon] WHERE [ID] = (SELECT [weapon_ID] FROM [Player] WHERE [ID] = @player_ID)
+SELECT @firing_range = @firing_range + [additional_attack_range] FROM [Player] WHERE ID = @player_ID
+
+
+DECLARE @range int
+SELECT @range = [range] FROM [Players_range] WHERE [player_in_ID] = @player_ID AND [player_out_ID] = @target_ID
+
+DECLARE @defence_range int
+
+SELECT @defence_range = [additional_defence_range] FROM [Player] WHERE [ID] = @target_ID
+SELECT @defence_range = @defence_range + @range
+
+
+IF @firing_range = @defence_range
+	BEGIN
+	SELECT @Flag = 1
+	END
+ELSE
+	BEGIN
+	SELECT @Flag = 0
+	END
+
+RETURN @Flag
+END
+GO
+
+
+/*-----------------END CHECK SHOOT OPPORTUNITY---------------------*/
+
+-- 3.5) Выдача карты игроку из колоды
+/*-------------------SET_CARD_TO_PLAYER_FROM_DECK-----------------------*/
+
+
+CREATE PROCEDURE dbo.Set_card_to_player_from_Deck(@player_ID int, @room_ID int)
+AS
+BEGIN
+
+declare @card_ID int =
+(
+	select [Card].ID
+	from [Card]
+	where (card_location = 2) and (room_ID = @room_ID) and (index_number = 
+	(
+		select max(index_number)
+		from [Card]
+		where (card_location = 2) and (room_ID = @room_ID)
+	))
+)
+
+SELECT @card_ID
+
+UPDATE [Card]
+SET player_ID = @player_ID,
+card_location = 3
+WHERE [Card].ID = @card_ID
+
+END
+GO
+
+/*-------------------END SET_CARD_TO_PLAYER_FROM_DECK-----------------------*/
+
+/*-------------------SET_CARD_TO_PLAYER_FROM_DROPPING-----------------------*/
+-- 3.6) Выдача карты игроку из сброса
+CREATE PROCEDURE dbo.Set_card_to_player_from_Dropping(@player_ID int, @room_ID int)
+AS
+BEGIN
+
+declare @card_ID int =
+(
+	select [Card].ID
+	from [Card]
+	where (card_location = 1) and (room_ID = @room_ID) and (index_number = 
+	(
+		select max(index_number)
+		from [Card]
+		where (card_location = 1) and (room_ID = @room_ID)
+	))
+)
+
+SELECT @card_ID
+
+UPDATE [Card]
+SET player_ID = @player_ID,
+card_location = 3
+WHERE [Card].ID = @card_ID
+
+END
+GO
+
+/*-------------------END SET_CARD_TO_PLAYER_FROM_DROPPING-----------------------*/
+
+/*-------------------SEND_CARD_TO_DROPPING-----------------------*/
+
+-- 3.7) Переход карты игрока в сброс
+CREATE PROCEDURE dbo.Send_card_to_Dropping(@card_ID int, @room_ID int)
+AS
+BEGIN
+
+UPDATE [Card]
+SET player_ID = NULL,
+card_location = 1,
+index_number =
+(
+	select max([Card].index_number) + 1
+	from [Card]
+	where (card_location = 1) and (room_ID = @room_ID)
+)
+WHERE [Card].ID = @card_ID
+
+END
+GO
+
+/*-------------------END SEND_CARD_TO_DROPPING-----------------------*/
+
+/*-------------------LOSE_HEALTH-----------------------*/
+
+-- 3.8) Выбранный игрок теряет 1 жизнь
+CREATE PROCEDURE dbo.Lose_health(@player_ID int)
+AS
+BEGIN
+
+declare @code int = 0
+declare @lives int =
+(
+	select [Character].lives
+	from [Player]
+	join [Character]
+	on [Player].character_ID = [Character].ID
+	where [Player].ID = @player_ID
+)
+
+UPDATE [Character]
+SET lives = lives - 1
+WHERE ID =
+(
+	select [Character].ID
+	from [Player]
+	join [Character]
+	on [Player].character_ID = [Character].ID
+	where [Player].ID = @player_ID
+)
+
+if(@lives - 1 = 0)
+	BEGIN
+		UPDATE [Character]
+		SET alive = 0
+		WHERE ID =
+		(
+			select [Character].ID
+			from [Player]
+			join [Character]
+			on [Player].character_ID = [Character].ID
+			where [Player].ID = @player_ID
+		)
+
+		SET @code = 10
+	END
+
+select @code
+
+END
+GO
+
+/*-------------------END LOSE_HEALTH-----------------------*/
+
+/*-------------------RECOVERY_HEALTH-----------------------*/
+
+-- 3.9) Выбранный игрок восстанавливает единицу здоровья
+CREATE PROCEDURE dbo.Recovery_health(@player_ID int)
+AS
+BEGIN
+
+declare @code int = 1
+declare @max_lives int = 
+(
+	select [Characters].max_lives
+	from [Player]
+	join [Character]
+	on [Player].character_ID = [Character].ID
+	join [Characters]
+	on [Character].characters_ID = [Characters].ID
+	where [Player].ID = @player_ID
+)
+declare @lives int =
+(
+	select [Character].lives
+	from [Player]
+	join [Character]
+	on [Player].character_ID = [Character].ID
+	where ([Player].ID = @player_ID) and ([Character].alive = 1)
+)
+
+if(@lives < @max_lives)
+	BEGIN
+		UPDATE [Character]
+		SET lives = lives + 1
+		where ID = 
+		(
+			select [Character].ID
+			from [Player]
+			join [Character]
+			on [Player].character_ID = [Character].ID
+			where [Player].ID = @player_ID
+		)
+
+		SET @code = 0
+	END
+
+SELECT @code
+
+END
+GO
+
+/*-------------------END RECOVERY_HEALTH-----------------------*/
+
+/*-------------------STEALING_CARD_FROM_PLAYER-----------------------*/
+
+-- 3.10) Кража карты у игрока
+CREATE PROCEDURE dbo.Stealing_card_from_player(@player_ID_from int, @player_ID_to int, @card_ID int)
+AS
+BEGIN
+
+UPDATE [Card]
+SET player_ID = @player_ID_to,
+card_location = 3
+WHERE ID = @card_ID
+
+END
+GO
+
+/*-------------------END STEALING_CARD_FROM_PLAYER-----------------------*/
+
+/*-------------------GET_PLAYER_CARDS-----------------------*/
+
+-- 3.11) Получение списка карт, находящихся в руке у игрока
+CREATE PROCEDURE dbo.Get_player_cards(@player_ID int)
+AS
+BEGIN
+
+SELECT [Card].ID
+FROM [Card]
+join [Player]
+on [Card].player_ID = [Player].ID
+where ([Player].ID = @player_ID) and ([Card].card_location = 3)
+
+END
+GO
+
+/*-------------------END GET_PLAYER_CARDS-----------------------*/
+
+/*-------------------GET_WEAPON-----------------------*/
+
+-- 3.12) Установка нового оружия для игрока
+CREATE PROCEDURE dbo.Get_weapon(@player_ID int, @name nvarchar(50), @base_weapon bit, @firing_range int, @endless_bang bit)
+AS
+BEGIN
+
+UPDATE Weapon
+SET [name] = @name,
+[base_weapon] = @base_weapon,
+[firing_range] = @firing_range,
+[endless_bang] = @endless_bang
+WHERE ID = 
+(
+	select [Weapon].ID
+	from [Weapon]
+	join [Player]
+	on [Player].weapon_ID = [Weapon].ID
+	where [Player].ID = @player_ID
+)
+
+END
+GO
+
+/*-------------------END GET_WEAPON-----------------------*/
+
+/*-------------------GET_CARD_FOR_CHECKING-----------------------*/
+
+-- 3.13) Получение карты из колоды для проверки (проверенная карта уходит в сброс)
+CREATE PROCEDURE dbo.Get_card_for_checking(@room_ID int)
+AS
+BEGIN
+
+SELECT [Card].[ID], [Cards].[ID], [suit], [rating]
+FROM [Cards]
+join [Card]
+on [Card].cards_ID = [Cards].ID
+WHERE (card_location = 2) and (room_ID = @room_ID) and (index_number = 
+(
+	select max(index_number)
+	from [Card]
+	where (card_location = 2) and (room_ID = @room_ID)
+))
+
+WITH Main_select(Card_ID, Cards_ID, suit, rating) as
+(
+	SELECT [Card].[ID], [Cards].[ID], [suit], [rating]
+	FROM [Cards]
+	join [Card]
+	on [Card].cards_ID = [Cards].ID
+	WHERE (card_location = 2) and (room_ID = @room_ID) and (index_number = 
+	(
+		select max(index_number)
+		from [Card]
+		where (card_location = 2) and (room_ID = @room_ID)
+	))
+)
+UPDATE [Card]
+SET card_location = 1,
+index_number =
+(
+	select max(index_number) + 1
+	from [Card]
+	where (card_location = 1) and (room_ID = @room_ID)
+)
+where ID =
+(
+	select Card_ID
+	from Main_select
+)
+
+END
+GO
+
+/*-------------------END GET_CARD_FOR_CHECKING-----------------------*/
+
+/*-------------------CHANGE_ADDITIONAL_DEFENCE_RANGE-----------------------*/
+
+-- 3.14) Изменить дополнительную защиту игрока на n
+CREATE PROCEDURE dbo.Change_additional_defence_range(@player_ID int, @n int)
+AS
+BEGIN
+
+UPDATE [Player]
+SET additional_defence_range = @n
+WHERE ID = @player_ID
+
+END
+GO
+
+/*-------------------END CHANGE_ADDITIONAL_DEFENCE_RANGE-----------------------*/
+
+/*-------------------CHANGE_ADDITIONAL_ATTACK_RANGE-----------------------*/
+
+-- 3.15) Изменить дополнительную дальность атаки игрока на n
+CREATE PROCEDURE dbo.Change_additional_attack_range(@player_ID int, @n int)
+AS
+BEGIN
+
+UPDATE [Player]
+SET additional_attack_range = @n
+WHERE ID = @player_ID
+
+END
+GO
+
+/*-------------------END CHANGE_ADDITIONAL_ATTACK_RANGE-----------------------*/
+
+/*-------------------CHECK_PLAYER_NAME_CARD-----------------------*/
+
+-- 3.16) Проверка, есть ли у игрока на столе карта с аналогичным названием
+CREATE PROCEDURE dbo.Check_player_name_card(@player_ID int, @name nvarchar(50))
+AS
+BEGIN
+
+SELECT COUNT(*)
+FROM [Card]
+join [Cards]
+on [Card].cards_ID = [Cards].ID
+WHERE (player_ID = @player_ID) and (card_location = 4) and ([Cards].[name] = @name)
+
+END
+GO
+
+/*-------------------END CHECK_PLAYER_NAME_CARD-----------------------*/
+
+/*-------------------SET_CARDS_TO_TABLE-----------------------*/
+
+-- 3.17) Получить карту из колоды и добавить её на стол
+CREATE PROCEDURE dbo.Set_cards_to_table(@room_ID int)
+AS
+BEGIN
+
+declare @card_ID int = 
+(
+	select [ID]
+	from [Card]
+	WHERE ([index_number] =
+		(
+			select max(index_number)
+			from [Card]
+			where ([room_ID] = @room_ID) and ([card_location] = 2))
+		) and
+	([room_ID] = @room_ID) and ([card_location] = 2)
+)
+
+UPDATE [Card]
+SET [card_location] = 5
+WHERE [ID] = @card_ID
+
+SELECT @card_ID
+
+END
+GO
+
+/*-------------------END SET_CARDS_TO_TABLE-----------------------*/
+
+/*-------------------PASSING_CARD_TO_PLAYER-----------------------*/
+
+-- 3.18) Передача карты игроку
+CREATE PROCEDURE dbo.Passing_card_to_player(@player_ID int, @card_ID int)
+AS
+BEGIN
+
+declare @result int = 0
+
+UPDATE [Card]
+SET card_location = 3,
+player_ID = @player_ID
+WHERE ID = @card_ID
+
+SELECT @result
+
+END
+GO
+
+/*-------------------END PASSING_CARD_TO_PLAYER-----------------------*/
+
+/*-------------------RECOVERY_HEALTH_ALL_PLAYERS-----------------------*/
+
+-- 3.19) Восстановление единицы жизни всем игрокам, если это возможно
+CREATE PROCEDURE dbo.Recovery_health_all_players(@room_ID int)
+AS
+BEGIN
+
+with Helper(ID) as
+(
+	select [Player].ID
+	from [Player]
+	join [Character]
+	on [Player].character_ID = [Character].ID
+	join [Characters]
+	on [Character].characters_ID = [Characters].ID
+	where ([room_ID] = @room_ID) and ([Character].alive = 1) and ([Character].lives < [Characters].max_lives)
+)
+
+UPDATE [Character]
+SET [lives] = [lives] + 1
+WHERE [ID] in (select * from Helper)
+
+END
+GO
+
+/*-------------------END RECOVERY_HEALTH_ALL_PLAYERS-----------------------*/
+
+/*-------------------SET_CARDS_TO_SELECTION_STAGE-----------------------*/
+
+-- 3.20) Получить верхнюю карту из колоды и добавить её в стадию выбора
+CREATE PROCEDURE dbo.Set_cards_to_selection_stage(@room_ID int)
+AS
+BEGIN
+
+declare @card_ID int = 
+(
+	select [ID]
+	from [Card]
+	WHERE ([index_number] =
+		(
+			select max(index_number)
+			from [Card]
+			where ([room_ID] = @room_ID) and ([card_location] = 2))
+		) and
+	([room_ID] = @room_ID) and ([card_location] = 2)
+)
+
+UPDATE [Card]
+SET [card_location] = 6
+WHERE [ID] = @card_ID
+
+SELECT @card_ID
+
+END
+GO
+
+/*-------------------END SET_CARDS_TO_SELECTION_STAGE-----------------------*/
+
+/*-------------------RETURN_CARD_TO_DECK-----------------------*/
+
+-- 3.21) Возвращение карты в колоду
+CREATE PROCEDURE dbo.Return_card_to_Deck(@card_ID int, @room_ID int)
+AS
+BEGIN
+
+declare @index_number int = NULL
+set @index_number =
+(
+	select max(index_number) + 1
+	from [Card]
+	where ([room_ID] = @room_ID) and ([card_location] = 2)
+)
+
+if(@index_number is NULL)
+	set @index_number = 1
+
+UPDATE [Card]
+SET [player_ID] = NULL,
+[card_location] = 2,
+[index_number] = @index_number
+WHERE [Card].ID = @card_ID
+
+END
+GO
+
+/*-------------------END RETURN_CARD_TO_DECK-----------------------*/
