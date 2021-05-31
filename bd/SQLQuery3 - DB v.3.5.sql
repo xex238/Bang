@@ -1333,3 +1333,53 @@ END
 GO
 
 /*-------------------END RETURN_CARD_TO_DECK-----------------------*/
+
+/*-------------------SHUFFLE_CARDS-----------------------*/
+
+-- 3.22) Перемешивание карт из сброса и добавление их в колоду
+CREATE PROCEDURE dbo.Shuffle_cards_in_Dropping(@room_ID int)
+AS
+BEGIN
+
+-- Получение количества карт в сбросе
+declare @max_index_number int =
+(
+	select max(index_number)
+	from [Card]
+	where (card_location = 1) and (room_ID = @room_ID)
+)
+
+WITH Series(a, b) AS
+(
+	SELECT 1,  cast ( rand( cast ( newid() as varbinary(16) ) ) * 1000000 + 1 as int )
+	UNION ALL
+	SELECT a+1,  cast ( rand( cast ( newid() as varbinary(16) ) ) * 1000000 + 1 as int )
+	FROM Series
+	WHERE a < @max_index_number
+),
+Helper(a1, a2) as
+(
+	select [Series_1].a as a1, [Series_2].a as a2
+	from
+	(
+		select a, row_number()over(order by [b]) npp
+		from Series
+	) Series_1
+	left join
+	(
+		select a, row_number()over(order by [b]) npp
+		from Series
+	) Series_2 on Series_1.npp = Series_2.npp
+)
+
+UPDATE [Card_]
+SET [Card_].index_number = [Helper_].a2,
+[Card_].card_location = 2
+from [Card] as [Card_]
+join [Helper] as [Helper_]
+on [Card_].cards_ID = [Helper_].a2
+
+END
+GO
+
+/*-------------------END SHUFFLE_CARDS-----------------------*/
