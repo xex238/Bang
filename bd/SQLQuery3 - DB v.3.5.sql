@@ -51,7 +51,7 @@ GO
 
 
 CREATE TABLE [dbo].[Characters](
-	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[ID] [int] NOT NULL,
 	[name] [nvarchar](50) NOT NULL,
 	[card_image] [bit] NULL,
 	[card_back] [bit] NULL,
@@ -76,7 +76,7 @@ GO
 
 
 CREATE TABLE [dbo].[Roles](
-	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[ID] [int] NOT NULL,
 	[name] [nvarchar](50) NOT NULL,
 	[card_image] [bit] NULL,
 	[card_back] [bit] NULL,
@@ -171,7 +171,7 @@ GO
 
 
 CREATE TABLE [dbo].[Cards](
-	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[ID] [int] NOT NULL,
 	[name] [nvarchar](50) NOT NULL,
 	[card_image] [bit] NULL,
 	[card_back] [bit] NULL,
@@ -420,7 +420,7 @@ GO
 /*---------------------------TRIGGER_4------------------------------*/
 
 
--- Копирование данных из таблицы [Cards] в таблицу [Card]
+-- Копирование данных из таблицы [Cards] в таблицу [Card] при создании комнаты
 CREATE TRIGGER [dbo].[Duplicate cards]
 ON [dbo].[Room]
 AFTER INSERT
@@ -446,6 +446,71 @@ left join(
   )Series_ on Series_.npp=Cards_.npp
 END
 GO
+
+/*---------------------------TRIGGER_5------------------------------*/
+
+-- 3.22) Перемешивание карт из сброса и добавление их в колоду
+CREATE TRIGGER [dbo].[Shuffle_cards_in_Dropping_trigger]
+ON [dbo].[Card]
+AFTER UPDATE
+AS
+BEGIN
+
+-- Получение количества карт в колоде
+declare @count_of_cards_in_Deck int = NULL
+set @count_of_cards_in_Deck =
+(
+	select max(index_number)
+	from [Card]
+	where (card_location = 2) and (room_ID = (select room_ID from [inserted]))
+)
+
+if(@count_of_cards_in_Deck is NULL)
+	BEGIN
+
+		-- Получение количества карт в сбросе
+		declare @max_index_number int =
+		(
+			select max(index_number)
+			from [Card]
+			where (card_location = 1) and (room_ID = (select room_ID from [inserted]))
+		)
+
+		WITH Series(a, b) AS
+		(
+			SELECT 1,  cast ( rand( cast ( newid() as varbinary(16) ) ) * 1000000 + 1 as int )
+			UNION ALL
+			SELECT a+1,  cast ( rand( cast ( newid() as varbinary(16) ) ) * 1000000 + 1 as int )
+			FROM Series
+			WHERE a < @max_index_number
+		),
+		Helper(a1, a2) as
+		(
+			select [Series_1].a as a1, [Series_2].a as a2
+			from
+			(
+				select a, row_number()over(order by [b]) npp
+				from Series
+			) Series_1
+			left join
+			(
+				select a, row_number()over(order by [b]) npp
+				from Series
+			) Series_2 on Series_1.npp = Series_2.npp
+		)
+
+		UPDATE [Card_]
+		SET [Card_].index_number = [Helper_].a2,
+		[Card_].card_location = 2
+		from [Card] as [Card_]
+		join [Helper] as [Helper_]
+		on [Card_].cards_ID = [Helper_].a2
+
+	END
+
+END
+GO
+
 /*-----------------------------------------------------------------*/
 /*-------------------------TRIGGERS END----------------------------*/
 /*-----------------------------------------------------------------*/
