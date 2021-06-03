@@ -344,7 +344,7 @@ GO
 
 /*---------------------------TRIGGER_1------------------------------*/
 
--- Создание записи в таблице [Achievements] при создании записи в таблице [User]
+-- Г‘Г®Г§Г¤Г Г­ГЁГҐ Г§Г ГЇГЁГ±ГЁ Гў ГІГ ГЎГ«ГЁГ¶ГҐ [Achievements] ГЇГ°ГЁ Г±Г®Г§Г¤Г Г­ГЁГЁ Г§Г ГЇГЁГ±ГЁ Гў ГІГ ГЎГ«ГЁГ¶ГҐ [User]
 /* Write a trigger for creating achievements when creating a user and linking it to the User table */
 CREATE TRIGGER [dbo].[Create user achievements]
 ON [dbo].[User]
@@ -366,7 +366,7 @@ GO
 
 /*---------------------------TRIGGER_2------------------------------*/
 
--- Создание записи в таблицах [Deck] и [Dropping] при создании записи в таблице [Room]
+-- Г‘Г®Г§Г¤Г Г­ГЁГҐ Г§Г ГЇГЁГ±ГЁ Гў ГІГ ГЎГ«ГЁГ¶Г Гµ [Deck] ГЁ [Dropping] ГЇГ°ГЁ Г±Г®Г§Г¤Г Г­ГЁГЁ Г§Г ГЇГЁГ±ГЁ Гў ГІГ ГЎГ«ГЁГ¶ГҐ [Room]
 /* Write a trigger to create records in the "Dropping" and "Deck" tables when creating a Room */
 CREATE TRIGGER [dbo].[Create Dropping and Deck default record]
 ON [dbo].[Room]
@@ -395,21 +395,21 @@ GO
 /*---------------------------TRIGGER_3------------------------------*/
 
 
--- Cоздание записи в таблице [Weapon] при создании записи в таблице [Player]
+-- CГ®Г§Г¤Г Г­ГЁГҐ Г§Г ГЇГЁГ±ГЁ Гў ГІГ ГЎГ«ГЁГ¶ГҐ [Weapon] ГЇГ°ГЁ Г±Г®Г§Г¤Г Г­ГЁГЁ Г§Г ГЇГЁГ±ГЁ Гў ГІГ ГЎГ«ГЁГ¶ГҐ [Player]
 CREATE TRIGGER [dbo].[Create weapon]
 ON [dbo].[Player]
 AFTER INSERT
 AS
 BEGIN
--- Запоминаем ID комнаты
+-- Г‡Г ГЇГ®Г¬ГЁГ­Г ГҐГ¬ ID ГЄГ®Г¬Г­Г ГІГ»
 --declare @Player_ID [int] = SCOPE_IDENTITY()
 declare @Player_ID [int] = (select ID from inserted)
--- Создаём заапись в таблице [Weapon]
+-- Г‘Г®Г§Г¤Г ВёГ¬ Г§Г Г ГЇГЁГ±Гј Гў ГІГ ГЎГ«ГЁГ¶ГҐ [Weapon]
 INSERT INTO [Weapon] ([name], [base_weapon], [bang_player], [firing_range], [endless_bang])
 VALUES ('colt', 1, 0, 1, 0)
--- Запоминаем ID добавленной записи в таблицу [Weapon]
+-- Г‡Г ГЇГ®Г¬ГЁГ­Г ГҐГ¬ ID Г¤Г®ГЎГ ГўГ«ГҐГ­Г­Г®Г© Г§Г ГЇГЁГ±ГЁ Гў ГІГ ГЎГ«ГЁГ¶Гі [Weapon]
 declare @Weapon_ID [int] = SCOPE_IDENTITY()
--- Добавляем вторичный ключ в запись таблицы [Player] на запись в таблице [Weapon]
+-- Г„Г®ГЎГ ГўГ«ГїГҐГ¬ ГўГІГ®Г°ГЁГ·Г­Г»Г© ГЄГ«ГѕГ· Гў Г§Г ГЇГЁГ±Гј ГІГ ГЎГ«ГЁГ¶Г» [Player] Г­Г  Г§Г ГЇГЁГ±Гј Гў ГІГ ГЎГ«ГЁГ¶ГҐ [Weapon]
 update [Player]
 set [weapon_ID] = @Weapon_ID
 where [ID] = @Player_ID
@@ -420,7 +420,7 @@ GO
 /*---------------------------TRIGGER_4------------------------------*/
 
 
--- Копирование данных из таблицы [Cards] в таблицу [Card] при создании комнаты
+-- ГЉГ®ГЇГЁГ°Г®ГўГ Г­ГЁГҐ Г¤Г Г­Г­Г»Гµ ГЁГ§ ГІГ ГЎГ«ГЁГ¶Г» [Cards] Гў ГІГ ГЎГ«ГЁГ¶Гі [Card] ГЇГ°ГЁ Г±Г®Г§Г¤Г Г­ГЁГЁ ГЄГ®Г¬Г­Г ГІГ»
 CREATE TRIGGER [dbo].[Duplicate cards]
 ON [dbo].[Room]
 AFTER INSERT
@@ -449,14 +449,14 @@ GO
 
 /*---------------------------TRIGGER_5------------------------------*/
 
--- 3.22) Перемешивание карт из сброса и добавление их в колоду
+-- 3.22) ГЏГҐГ°ГҐГ¬ГҐГёГЁГўГ Г­ГЁГҐ ГЄГ Г°ГІ ГЁГ§ Г±ГЎГ°Г®Г±Г  ГЁ Г¤Г®ГЎГ ГўГ«ГҐГ­ГЁГҐ ГЁГµ Гў ГЄГ®Г«Г®Г¤Гі
 CREATE TRIGGER [dbo].[Shuffle_cards_in_Dropping_trigger]
 ON [dbo].[Card]
 AFTER UPDATE
 AS
 BEGIN
 
--- Получение количества карт в колоде
+-- ГЏГ®Г«ГіГ·ГҐГ­ГЁГҐ ГЄГ®Г«ГЁГ·ГҐГ±ГІГўГ  ГЄГ Г°ГІ Гў ГЄГ®Г«Г®Г¤ГҐ
 declare @count_of_cards_in_Deck int = NULL
 set @count_of_cards_in_Deck =
 (
@@ -468,7 +468,7 @@ set @count_of_cards_in_Deck =
 if(@count_of_cards_in_Deck is NULL)
 	BEGIN
 
-		-- Получение количества карт в сбросе
+		-- ГЏГ®Г«ГіГ·ГҐГ­ГЁГҐ ГЄГ®Г«ГЁГ·ГҐГ±ГІГўГ  ГЄГ Г°ГІ Гў Г±ГЎГ°Г®Г±ГҐ
 		declare @max_index_number int =
 		(
 			select max(index_number)
@@ -841,7 +841,6 @@ GO
 
 -- 2.1.7)
 /*----------------GETTING START CARDS TO PLAYER--------------------*/
-drop procedure dbo.Get_user_ID
 
 CREATE PROCEDURE  dbo.Get_user_ID(@mail nvarchar(50), @password nvarchar(50))
 AS
@@ -906,7 +905,7 @@ GO
 /*-----------END CHECK AVAILABILITY PLAYER HAVE CARD---------------*/
 
 -- 3.3)
-/*-----=-----CHECK AVAILABILITY PLAYER HAVE СHARACTER--------------*/
+/*-----=-----CHECK AVAILABILITY PLAYER HAVE Г‘HARACTER--------------*/
 
 
 CREATE FUNCTION  dbo.Check_character_availability (@player_ID int, @character_ID int)
@@ -977,7 +976,7 @@ GO
 
 /*-----------------END CHECK SHOOT OPPORTUNITY---------------------*/
 
--- 3.5) Выдача карты игроку из колоды
+-- 3.5) Г‚Г»Г¤Г Г·Г  ГЄГ Г°ГІГ» ГЁГЈГ°Г®ГЄГі ГЁГ§ ГЄГ®Г«Г®Г¤Г»
 /*-------------------SET_CARD_TO_PLAYER_FROM_DECK-----------------------*/
 
 
@@ -1010,7 +1009,7 @@ GO
 /*-------------------END SET_CARD_TO_PLAYER_FROM_DECK-----------------------*/
 
 /*-------------------SET_CARD_TO_PLAYER_FROM_DROPPING-----------------------*/
--- 3.6) Выдача карты игроку из сброса
+-- 3.6) Г‚Г»Г¤Г Г·Г  ГЄГ Г°ГІГ» ГЁГЈГ°Г®ГЄГі ГЁГ§ Г±ГЎГ°Г®Г±Г 
 CREATE PROCEDURE dbo.Set_card_to_player_from_Dropping(@player_ID int, @room_ID int)
 AS
 BEGIN
@@ -1041,7 +1040,7 @@ GO
 
 /*-------------------SEND_CARD_TO_DROPPING-----------------------*/
 
--- 3.7) Переход карты игрока в сброс
+-- 3.7) ГЏГҐГ°ГҐГµГ®Г¤ ГЄГ Г°ГІГ» ГЁГЈГ°Г®ГЄГ  Гў Г±ГЎГ°Г®Г±
 CREATE PROCEDURE dbo.Send_card_to_Dropping(@card_ID int, @room_ID int)
 AS
 BEGIN
@@ -1064,7 +1063,7 @@ GO
 
 /*-------------------LOSE_HEALTH-----------------------*/
 
--- 3.8) Выбранный игрок теряет 1 жизнь
+-- 3.8) Г‚Г»ГЎГ°Г Г­Г­Г»Г© ГЁГЈГ°Г®ГЄ ГІГҐГ°ГїГҐГІ 1 Г¦ГЁГ§Г­Гј
 CREATE PROCEDURE dbo.Lose_health(@player_ID int)
 AS
 BEGIN
@@ -1115,7 +1114,7 @@ GO
 
 /*-------------------RECOVERY_HEALTH-----------------------*/
 
--- 3.9) Выбранный игрок восстанавливает единицу здоровья
+-- 3.9) Г‚Г»ГЎГ°Г Г­Г­Г»Г© ГЁГЈГ°Г®ГЄ ГўГ®Г±Г±ГІГ Г­Г ГўГ«ГЁГўГ ГҐГІ ГҐГ¤ГЁГ­ГЁГ¶Гі Г§Г¤Г®Г°Г®ГўГјГї
 CREATE PROCEDURE dbo.Recovery_health(@player_ID int)
 AS
 BEGIN
@@ -1165,7 +1164,7 @@ GO
 
 /*-------------------STEALING_CARD_FROM_PLAYER-----------------------*/
 
--- 3.10) Кража карты у игрока
+-- 3.10) ГЉГ°Г Г¦Г  ГЄГ Г°ГІГ» Гі ГЁГЈГ°Г®ГЄГ 
 CREATE PROCEDURE dbo.Stealing_card_from_player(@player_ID_from int, @player_ID_to int, @card_ID int)
 AS
 BEGIN
@@ -1182,7 +1181,7 @@ GO
 
 /*-------------------GET_PLAYER_CARDS-----------------------*/
 
--- 3.11) Получение списка карт, находящихся в руке у игрока
+-- 3.11) ГЏГ®Г«ГіГ·ГҐГ­ГЁГҐ Г±ГЇГЁГ±ГЄГ  ГЄГ Г°ГІ, Г­Г ГµГ®Г¤ГїГ№ГЁГµГ±Гї Гў Г°ГіГЄГҐ Гі ГЁГЈГ°Г®ГЄГ 
 CREATE PROCEDURE dbo.Get_player_cards(@player_ID int)
 AS
 BEGIN
@@ -1200,7 +1199,7 @@ GO
 
 /*-------------------GET_WEAPON-----------------------*/
 
--- 3.12) Установка нового оружия для игрока
+-- 3.12) Г“Г±ГІГ Г­Г®ГўГЄГ  Г­Г®ГўГ®ГЈГ® Г®Г°ГіГ¦ГЁГї Г¤Г«Гї ГЁГЈГ°Г®ГЄГ 
 CREATE PROCEDURE dbo.Get_weapon(@player_ID int, @name nvarchar(50), @base_weapon bit, @firing_range int, @endless_bang bit)
 AS
 BEGIN
@@ -1226,7 +1225,7 @@ GO
 
 /*-------------------GET_CARD_FOR_CHECKING-----------------------*/
 
--- 3.13) Получение карты из колоды для проверки (проверенная карта уходит в сброс)
+-- 3.13) ГЏГ®Г«ГіГ·ГҐГ­ГЁГҐ ГЄГ Г°ГІГ» ГЁГ§ ГЄГ®Г«Г®Г¤Г» Г¤Г«Гї ГЇГ°Г®ГўГҐГ°ГЄГЁ (ГЇГ°Г®ГўГҐГ°ГҐГ­Г­Г Гї ГЄГ Г°ГІГ  ГіГµГ®Г¤ГЁГІ Гў Г±ГЎГ°Г®Г±)
 CREATE PROCEDURE dbo.Get_card_for_checking(@room_ID int)
 AS
 BEGIN
@@ -1276,7 +1275,7 @@ GO
 
 /*-------------------CHANGE_ADDITIONAL_DEFENCE_RANGE-----------------------*/
 
--- 3.14) Изменить дополнительную защиту игрока на n
+-- 3.14) Г€Г§Г¬ГҐГ­ГЁГІГј Г¤Г®ГЇГ®Г«Г­ГЁГІГҐГ«ГјГ­ГіГѕ Г§Г Г№ГЁГІГі ГЁГЈГ°Г®ГЄГ  Г­Г  n
 CREATE PROCEDURE dbo.Change_additional_defence_range(@player_ID int, @n int)
 AS
 BEGIN
@@ -1292,7 +1291,7 @@ GO
 
 /*-------------------CHANGE_ADDITIONAL_ATTACK_RANGE-----------------------*/
 
--- 3.15) Изменить дополнительную дальность атаки игрока на n
+-- 3.15) Г€Г§Г¬ГҐГ­ГЁГІГј Г¤Г®ГЇГ®Г«Г­ГЁГІГҐГ«ГјГ­ГіГѕ Г¤Г Г«ГјГ­Г®Г±ГІГј Г ГІГ ГЄГЁ ГЁГЈГ°Г®ГЄГ  Г­Г  n
 CREATE PROCEDURE dbo.Change_additional_attack_range(@player_ID int, @n int)
 AS
 BEGIN
@@ -1308,7 +1307,7 @@ GO
 
 /*-------------------CHECK_PLAYER_NAME_CARD-----------------------*/
 
--- 3.16) Проверка, есть ли у игрока на столе карта с аналогичным названием
+-- 3.16) ГЏГ°Г®ГўГҐГ°ГЄГ , ГҐГ±ГІГј Г«ГЁ Гі ГЁГЈГ°Г®ГЄГ  Г­Г  Г±ГІГ®Г«ГҐ ГЄГ Г°ГІГ  Г± Г Г­Г Г«Г®ГЈГЁГ·Г­Г»Г¬ Г­Г Г§ГўГ Г­ГЁГҐГ¬
 CREATE PROCEDURE dbo.Check_player_name_card(@player_ID int, @name nvarchar(50))
 AS
 BEGIN
@@ -1326,7 +1325,7 @@ GO
 
 /*-------------------SET_CARDS_TO_TABLE-----------------------*/
 
--- 3.17) Получить карту из колоды и добавить её на стол
+-- 3.17) ГЏГ®Г«ГіГ·ГЁГІГј ГЄГ Г°ГІГі ГЁГ§ ГЄГ®Г«Г®Г¤Г» ГЁ Г¤Г®ГЎГ ГўГЁГІГј ГҐВё Г­Г  Г±ГІГ®Г«
 CREATE PROCEDURE dbo.Set_cards_to_table(@room_ID int)
 AS
 BEGIN
@@ -1357,7 +1356,7 @@ GO
 
 /*-------------------PASSING_CARD_TO_PLAYER-----------------------*/
 
--- 3.18) Передача карты игроку
+-- 3.18) ГЏГҐГ°ГҐГ¤Г Г·Г  ГЄГ Г°ГІГ» ГЁГЈГ°Г®ГЄГі
 CREATE PROCEDURE dbo.Passing_card_to_player(@player_ID int, @card_ID int)
 AS
 BEGIN
@@ -1378,7 +1377,7 @@ GO
 
 /*-------------------RECOVERY_HEALTH_ALL_PLAYERS-----------------------*/
 
--- 3.19) Восстановление единицы жизни всем игрокам, если это возможно
+-- 3.19) Г‚Г®Г±Г±ГІГ Г­Г®ГўГ«ГҐГ­ГЁГҐ ГҐГ¤ГЁГ­ГЁГ¶Г» Г¦ГЁГ§Г­ГЁ ГўГ±ГҐГ¬ ГЁГЈГ°Г®ГЄГ Г¬, ГҐГ±Г«ГЁ ГЅГІГ® ГўГ®Г§Г¬Г®Г¦Г­Г®
 CREATE PROCEDURE dbo.Recovery_health_all_players(@room_ID int)
 AS
 BEGIN
@@ -1405,7 +1404,7 @@ GO
 
 /*-------------------SET_CARDS_TO_SELECTION_STAGE-----------------------*/
 
--- 3.20) Получить верхнюю карту из колоды и добавить её в стадию выбора
+-- 3.20) ГЏГ®Г«ГіГ·ГЁГІГј ГўГҐГ°ГµГ­ГѕГѕ ГЄГ Г°ГІГі ГЁГ§ ГЄГ®Г«Г®Г¤Г» ГЁ Г¤Г®ГЎГ ГўГЁГІГј ГҐВё Гў Г±ГІГ Г¤ГЁГѕ ГўГ»ГЎГ®Г°Г 
 CREATE PROCEDURE dbo.Set_cards_to_selection_stage(@room_ID int)
 AS
 BEGIN
@@ -1436,7 +1435,7 @@ GO
 
 /*-------------------RETURN_CARD_TO_DECK-----------------------*/
 
--- 3.21) Возвращение карты в колоду
+-- 3.21) Г‚Г®Г§ГўГ°Г Г№ГҐГ­ГЁГҐ ГЄГ Г°ГІГ» Гў ГЄГ®Г«Г®Г¤Гі
 CREATE PROCEDURE dbo.Return_card_to_Deck(@card_ID int, @room_ID int)
 AS
 BEGIN
@@ -1465,12 +1464,12 @@ GO
 
 /*-------------------SHUFFLE_CARDS-----------------------*/
 
--- 3.22) Перемешивание карт из сброса и добавление их в колоду
+-- 3.22) ГЏГҐГ°ГҐГ¬ГҐГёГЁГўГ Г­ГЁГҐ ГЄГ Г°ГІ ГЁГ§ Г±ГЎГ°Г®Г±Г  ГЁ Г¤Г®ГЎГ ГўГ«ГҐГ­ГЁГҐ ГЁГµ Гў ГЄГ®Г«Г®Г¤Гі
 CREATE PROCEDURE dbo.Shuffle_cards_in_Dropping(@room_ID int)
 AS
 BEGIN
 
--- Получение количества карт в сбросе
+-- ГЏГ®Г«ГіГ·ГҐГ­ГЁГҐ ГЄГ®Г«ГЁГ·ГҐГ±ГІГўГ  ГЄГ Г°ГІ Гў Г±ГЎГ°Г®Г±ГҐ
 declare @max_index_number int =
 (
 	select max(index_number)
