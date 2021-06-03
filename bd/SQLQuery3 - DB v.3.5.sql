@@ -666,21 +666,35 @@ GO
 /*------------------------CREATING ROOM----------------------------*/
 
 
-CREATE PROCEDURE  dbo.Creating_room (@owner_ID int, @max_count_of_player int)
+CREATE PROCEDURE  dbo.Creating_room (@mail nvarchar(50), @password nvarchar(50), @max_count_of_players int)
 AS
 BEGIN
+SET NOCOUNT ON;
 
+declare @owner_ID int = NULL
+set @owner_ID = 
+(
+	select [ID]
+	from [User]
+	where ([User].[e-mail] = @mail) and ([User].[password] = @password)
+)
+
+INSERT INTO [Player] ([user_ID], [is_ready], [additional_attack_range], [additional_defence_range])
+VALUES (@owner_ID, 0, 0, 0)
+
+declare @player_ID int = IDENT_CURRENT('Player')
 
 INSERT INTO [Room] ([status], [play_time], [count_of_players], [max_count_of_players], [owner_ID])
-VALUES (1, '00:00:00', 1, @max_count_of_player, @owner_ID)
+VALUES (1, '00:00:00', 1, @max_count_of_players, @player_ID)
 
-declare @Room_ID [int] = IDENT_CURRENT('Room')
+declare @room_ID [int] = IDENT_CURRENT('Room')
 
-BEGIN
 UPDATE [Player]
-set [room_ID] = @Room_ID where ID = @owner_ID
-END  
+set [room_ID] = @room_ID where ID = @player_ID
 
+SELECT @room_ID
+
+SET NOCOUNT OFF;
 END
 GO
 
@@ -688,27 +702,29 @@ GO
 
 -- 2.1.1)
 /*----------------------ADD_PLAYER_TO_ROOM--------------------------*/
+drop procedure dbo.Add_player_to_room
 
-
-CREATE PROCEDURE  dbo.Add_player_to_room(@mail nvarchar(50), @password nvarchar(50), @room_ID int)
+CREATE PROCEDURE dbo.Add_player_to_room(@mail nvarchar(50), @password nvarchar(50), @room_ID int)
 AS
 BEGIN
+SET NOCOUNT ON;
 
-UPDATE [Player_]
-SET room_ID = @room_ID
-FROM [Player] as [Player_]
-join [User] as [User_]
-on [Player].[user_ID] = [User].[ID]
-where ([User_].[mail] = @mail) and ([User_].[password] = @password)
+declare @user_ID int = NULL
+set @user_ID = 
+(
+	select [ID]
+	from [User]
+	where ([User].[e-mail] = @mail) and ([User].[password] = @password)
+)
 
-SELECT [Room].count_of_players, [Room].max_count_of_players, [User].ID
+INSERT INTO [Player] ([user_ID], [is_ready], [additional_attack_range], [additional_defence_range], [room_ID])
+VALUES (@user_ID, 0, 0, 0, @room_ID)
+
+SELECT [Room].count_of_players, [Room].max_count_of_players
 FROM [Room]
-join [Player]
-on [Player].room_ID = [Room].ID
-join [User]
-on [Player].[user_ID] = [User].ID
-WHERE ([User].mail = @mail) and ([User].[password] = @password)
+WHERE ([Room].ID = @room_ID)
 
+SET NOCOUNT OFF;
 END
 GO
 
@@ -811,12 +827,33 @@ GO
 CREATE PROCEDURE  dbo.Get_start_cards_to_player (@player_ID int, @room_ID int)
 AS
 BEGIN
+
 DECLARE @Card_id int
 SELECT @Card_id = ID FROM [Card] WHERE (card_location = 2 AND room_ID = @room_ID AND index_number = (select max (index_number) from [Card]))
 
 UPDATE [Card]
 SET [player_ID] = @player_ID WHERE ID = @Card_id
 
+END
+GO
+
+
+/*--------------END GETTING START CARDS TO PLAYER------------------*/
+
+-- 2.1.7)
+/*----------------GETTING START CARDS TO PLAYER--------------------*/
+drop procedure dbo.Get_user_ID
+
+CREATE PROCEDURE  dbo.Get_user_ID(@mail nvarchar(50), @password nvarchar(50))
+AS
+BEGIN
+SET NOCOUNT ON
+
+SELECT [User].ID
+FROM [User]
+WHERE ([User].[e-mail] = @mail) and ([User].[password] = @password)
+
+SET NOCOUNT OFF
 END
 GO
 
