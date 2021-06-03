@@ -474,7 +474,7 @@ if(@count_of_cards_in_Deck is NULL)
 			select max(index_number)
 			from [Card]
 			where (card_location = 1) and (room_ID = (select room_ID from [inserted]))
-		)
+		);
 
 		WITH Series(a, b) AS
 		(
@@ -702,7 +702,6 @@ GO
 
 -- 2.1.1)
 /*----------------------ADD_PLAYER_TO_ROOM--------------------------*/
-drop procedure dbo.Add_player_to_room
 
 CREATE PROCEDURE dbo.Add_player_to_room(@mail nvarchar(50), @password nvarchar(50), @room_ID int)
 AS
@@ -1241,7 +1240,7 @@ WHERE (card_location = 2) and (room_ID = @room_ID) and (index_number =
 	select max(index_number)
 	from [Card]
 	where (card_location = 2) and (room_ID = @room_ID)
-))
+));
 
 WITH Main_select(Card_ID, Cards_ID, suit, rating) as
 (
