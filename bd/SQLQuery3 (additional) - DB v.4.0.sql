@@ -1,4 +1,48 @@
 /*-----------------------------------------------------------------*/
+/*---------------------TABLES WITHOUT LINKS -----------------------*/
+/*-----------------------------------------------------------------*/
+
+CREATE TABLE [dbo].[Lives](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[image] [bit] NOT NULL
+)
+
+GO
+ALTER TABLE [dbo].[Lives]
+ADD CONSTRAINT [PK_Lives_ID] PRIMARY KEY CLUSTERED ([ID])
+GO
+
+
+CREATE TABLE [dbo].[Rules](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[image] [bit] NOT NULL
+)
+GO
+ALTER TABLE [dbo].[Rules]
+ADD CONSTRAINT [PK_Rules_ID] PRIMARY KEY CLUSTERED ([ID])
+GO
+
+
+CREATE TABLE [dbo].[Tablet](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[image] [bit] NOT NULL
+)
+GO
+ALTER TABLE [dbo].[Tablet]
+ADD CONSTRAINT [PK_Tablet_ID] PRIMARY KEY CLUSTERED ([ID])
+GO
+
+
+CREATE TABLE [dbo].[Reference](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[image] [bit] NOT NULL
+)
+GO
+ALTER TABLE [dbo].[Reference]
+ADD CONSTRAINT [PK_Reference_ID] PRIMARY KEY CLUSTERED ([ID])
+GO
+
+/*-----------------------------------------------------------------*/
 /*---------------------TABLES NOT REFLECTED -----------------------*/
 /*------------------------IN THE MODEL-----------------------------*/
 
@@ -99,48 +143,6 @@ CREATE PROCEDURE dbo.Clear_bd
 AS
 BEGIN
 
-IF OBJECT_ID ('[FK_Friends_User-User_User1_ID]') IS NOT NULL
-BEGIN
-ALTER TABLE [dbo].[Friends_User-User]  
-DROP CONSTRAINT [FK_Friends_User-User_User1_ID]
-END
-
-IF OBJECT_ID ('[FK_Friends_User-User_User2_ID]') IS NOT NULL
-BEGIN
-ALTER TABLE [dbo].[Friends_User-User]  
-DROP CONSTRAINT [FK_Friends_User-User_User2_ID]
-END
-
-IF OBJECT_ID ('[FK_Invitations_User-User_User1_ID]') IS NOT NULL
-BEGIN
-ALTER TABLE [dbo].[Invitations_User-User]  
-DROP CONSTRAINT [FK_Invitations_User-User_User1_ID]
-END
-
-IF OBJECT_ID ('[FK_Invitations_User-User_User2_ID]') IS NOT NULL
-BEGIN
-ALTER TABLE [dbo].[Invitations_User-User]  
-DROP CONSTRAINT [FK_Invitations_User-User_User2_ID]
-END
-
-IF OBJECT_ID ('[FK_Invitations_User-User_room_ID]') IS NOT NULL
-BEGIN
-ALTER TABLE [dbo].[Invitations_User-User]  
-DROP CONSTRAINT [FK_Invitations_User-User_room_ID]
-END
-
-IF OBJECT_ID ('[FK_BlackList_User-User_User1_ID]') IS NOT NULL
-BEGIN
-ALTER TABLE [dbo].[BlackList_User-User]  
-DROP CONSTRAINT [FK_BlackList_User-User_User1_ID]
-END
-
-IF OBJECT_ID ('[FK_BlackList_User-User_User2_ID]') IS NOT NULL
-BEGIN
-ALTER TABLE [dbo].[BlackList_User-User]  
-DROP CONSTRAINT [FK_BlackList_User-User_User2_ID]
-END
-
 IF OBJECT_ID ('[FK_Player_weapon_ID]') IS NOT NULL
 BEGIN
 ALTER TABLE [dbo].[Player]  
@@ -235,35 +237,6 @@ TRUNCATE TABLE [Card]
 TRUNCATE TABLE [Cards]
 TRUNCATE TABLE [Players_range]
 
-
-ALTER TABLE [dbo].[Friends_User-User]  
-WITH CHECK ADD  CONSTRAINT [FK_Friends_User-User_User1_ID] FOREIGN KEY([User1_ID])
-REFERENCES [dbo].[User] ([ID])
-
-ALTER TABLE [dbo].[Friends_User-User]  
-WITH CHECK ADD  CONSTRAINT [FK_Friends_User-User_User2_ID] FOREIGN KEY([User2_ID])
-REFERENCES [dbo].[User] ([ID])
-
-ALTER TABLE [dbo].[Invitations_User-User]  
-WITH CHECK ADD  CONSTRAINT [FK_Invitations_User-User_User1_ID] FOREIGN KEY([User1_ID])
-REFERENCES [dbo].[User] ([ID])
-
-ALTER TABLE [dbo].[Invitations_User-User]  
-WITH CHECK ADD  CONSTRAINT [FK_Invitations_User-User_User2_ID] FOREIGN KEY([User2_ID])
-REFERENCES [dbo].[User] ([ID])
-
-ALTER TABLE [dbo].[Invitations_User-User]  
-WITH CHECK ADD  CONSTRAINT [FK_Invitations_User-User_room_ID] FOREIGN KEY([room_ID])
-REFERENCES [dbo].[Room] ([ID])
-
-ALTER TABLE [dbo].[BlackList_User-User]  
-WITH CHECK ADD  CONSTRAINT [FK_BlackList_User-User_User1_ID] FOREIGN KEY([User1_ID])
-REFERENCES [dbo].[User] ([ID])
-
-ALTER TABLE [dbo].[BlackList_User-User]  
-WITH CHECK ADD  CONSTRAINT [FK_BlackList_User-User_User2_ID] FOREIGN KEY([User2_ID])
-REFERENCES [dbo].[User] ([ID])
-
 ALTER TABLE [dbo].[Player]  
 WITH CHECK ADD  CONSTRAINT [FK_Player_weapon_ID] FOREIGN KEY([weapon_ID])
 REFERENCES [dbo].[Weapon] ([ID])
@@ -322,3 +295,26 @@ GO
 exec Clear_bd
 
 /*-----------------------END CLEAR ALL BD--------------------------*/
+
+-- 2.1.6)
+/*----------------GETTING START CARDS TO PLAYER--------------------*/
+
+/*
+CREATE PROCEDURE  dbo.Get_start_cards_to_player (@player_ID int, @room_ID int)
+AS
+BEGIN
+SET NOCOUNT ON;
+
+DECLARE @Card_id int
+SELECT @Card_id = ID FROM [Card] WHERE (card_location = 2 AND room_ID = @room_ID AND index_number = (select max (index_number) from [Card]))
+
+UPDATE [Card]
+SET [player_ID] = @player_ID WHERE ID = @Card_id
+
+SET NOCOUNT OFF;
+END
+GO
+*/
+
+
+/*--------------END GETTING START CARDS TO PLAYER------------------*/
