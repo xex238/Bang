@@ -4,7 +4,7 @@ import websockets
 import os
 import pyodbc
 
-import class_room
+#import class_room
 
 # recv() - принимаем данные
 
@@ -16,9 +16,9 @@ class Server:
     # Данные для подключения к БД
     driver = "Driver={ODBC Driver 17 for SQL Server};"
     server = "Server=den1.mssql8.gear.host;"
-    database = "Database=bang;"
-    user = "uid=bang;"
-    password = "pwd=Ey3V6~-J20D1;"
+    database = "Database=bang2;"
+    user = "uid=bang2;"
+    password = "pwd=Tv08Yk-D8nZ?;"
     TC = "Trusted_Connections=yes;"
 
     # Подключение к БД
@@ -88,46 +88,32 @@ class Server:
             password_ = message_split[1]
             login_ = message_split[2]
 
-            request = "select count(*)\n"
-            request += "from [User]\n"
-            request += "where [login] = '" + login_ + "'"
+            #request = "select dbo.Registration_request(''?'', ''?'', ''?'')"
+            #values = (mail_, password_, login_)
+            request = "select dbo.Registration_request('" + mail_ + "', '" + password_ + "', '" + login_ + "')"
+            print("request = ", request)
 
             cursor = self.conn.cursor()
             cursor.execute(request)
 
             result = cursor.fetchall()[0][0]
+            result_ = str(result)
+            print("result = ", result_)
 
-            if(result == 0):
-                request = "select count(*)\n"
-                request += "from [User]\n"
-                request += "where ([e-mail] = '" + mail_ + "' and [password] = '" + password_ + "')"
+            if(result_ == '0'):
+                print("Добавление данных в таблицу [User]")
 
+                request = "exec dbo.Registration\n"
+                request += "@mail = '" + mail_ + "',\n"
+                request += "@password = '" + password_ + "',\n"
+                request += "@login = '" + login_ + "'"
+                print(request)
+
+                cursor = self.conn.cursor()
                 cursor.execute(request)
-                result_2 = cursor.fetchall()[0][0]
+                cursor.commit()
 
-                if(result_2 == 0):
-                    request = "insert into [User]([e-mail], [login], [password])\n"
-                    request += "values ('" + mail_ + "', '" + login_ + "', '" + password_ + "')"
-
-                    print(request)
-
-                    cursor.execute(request)
-                    self.conn.commit()
-
-                    print('0')
-                    await websocket.send('0')
-                elif(result_2 == 1):
-                    print('2')
-                    await websocket.send('2')
-                else:
-                    print('-1')
-                    await websocket.send('-1')
-            elif(result == 1):
-                print('1')
-                await websocket.send('1')
-            else:
-                print('-1')
-                await websocket.send('-1')
+            await websocket.send(result_)
 
             self.conn.close()
         except(Exception):
@@ -157,22 +143,16 @@ class Server:
             mail_ = message_split[0]
             password_ = message_split[1]
 
-            request = "select count(*)\n"
-            request += "from [User]\n"
-            request += "where ([e-mail] = '" + mail_ + "' and [password] = '" + password_ + "')"
+            request = "select dbo.Authorization_request('" + mail_ + "', '" + password_ + "')"
 
             cursor = self.conn.cursor()
             cursor.execute(request)
 
             result = cursor.fetchall()[0][0]
+            result_ = str(result)
+            print("result_ = ", result_)
 
-            if(result == 0):
-                await websocket.send('1')
-            elif(result == 1):
-                await websocket.send('0')
-            else:
-                print('-1')
-                await websocket.send('-1')
+            await websocket.send(result_)
 
             self.conn.close()
         except(Exception):
@@ -194,21 +174,24 @@ class Server:
             if(message == "GET ROOMS"):
                 print("Запрос на получения списка комнат")
 
-                request = "select ID, count_of_players, max_count_of_players\n"
-                request += "from Room\n"
-                request += "where ([status] = 'open' and [count_of_players] < [max_count_of_players])"
+                request = "exec dbo.Available_rooms"
 
                 cursor = self.conn.cursor()
                 cursor.execute(request)
+
+                answer = "0 OK\n"
 
                 for row in cursor:
                     print(type(row))
                     print("ID = ", row[0])
                     print("count_of_players = ", row[1])
                     print("max_count_of_players = ", row[2])
+                    answer += row[0] + ", " + row[1] + ", " + row[2] + "\n"
                     print()
 
-                await websocket.send('0')
+                answer = answer[:-1]
+                print("answer = ", answer)
+                await websocket.send(answer)
 
                 self.conn.close()
         except(Exception):
@@ -233,20 +216,23 @@ class Server:
             print(websocket.remote_address)
             print("Запрос на получения списка достижений")
 
-            request = "select *\n"
-            request += "from Achievements\n"
-            request += "join [User]\n"
-            request += "on [User].achievements_ID = Achievements.ID\n"
-            request += "where ([User].[e-mail] = '" + mail_ + "' and [User].[password] = '" + password_ + "')"
+            request = "exec dbo.Achivements_request\n"
+            request += "@mail = '" + mail_ + "',\n"
+            request += "@password = '" + password_ + "'"
+            print(request)
 
             cursor = self.conn.cursor()
             cursor.execute(request)
 
+            answer = "0 OK\n"
+
             for row in cursor:
+                answer += str(row[1]) + ", " + str(row[2]) + ", " + str(row[3]) + ", " + str(row[4]) + ", " + str(row[5]) + ", " + str(row[6]) + ", " + str(row[7]) + ", " + str(row[8]) + ", " + str(row[9])
                 print(row)
                 print()
 
-            await websocket.send('0')
+            print(answer)
+            await websocket.send(answer)
 
             self.conn.close()
         except(Exception):
@@ -277,21 +263,17 @@ class Server:
             password_ = message_split[1]
             max_count_of_players = message_split[2]
 
-            request = "insert into Room([status], [count_of_players], owner_ID, max_count_of_players)\n"
-            request += "values('open', 0, (select ID from [User] where ([e-mail] = '" + mail_ + "' and [password] = '" + password_ + "')), " + max_count_of_players + ")"
+            request = "exec dbo.Creating_room\n"
+            request += "@mail = '" + mail_ + "',\n"
+            request += "@password = '" + password_ + "',\n"
+            request += "@max_count_of_players = " + max_count_of_players
 
             cursor = self.conn.cursor()
             cursor.execute(request)
-            self.conn.commit()
+            #cursor.commit()
 
-            request = "select Room.ID\n"
-            request += "from Room\n"
-            request += "join [User]\n"
-            requset += "on Room.owner_ID = [User].ID\n"
-            request += "where ([User].[e-mail] = '" + mail_ + "' and [User].[password] = '" + password_ + "')"
-
-            cursor.execute(request)
             ID = cursor.fetchall()[0][0]
+            ID_ = str(ID)
 
             free_port = -1
             i_port = -1
@@ -301,21 +283,24 @@ class Server:
                     i_port = i
                     break
 
-            print("ID = ", ID)
+            print("room_ID = ", ID_)
             print("free port = ", free_port)
 
-            if(i_port != -1):
-                self.rooms_status[i_port] = False
-                self.rooms.append(class_room.Room(max_count_of_players, ID, "localhost", free_port))
-                self.rooms[len(self.rooms) - 1].Start_room()
+            #if(i_port != -1):
+            #    self.rooms_status[i_port] = False
+            #    self.rooms.append(class_room.Room(max_count_of_players, ID, "localhost", free_port))
+            #    self.rooms[len(self.rooms) - 1].Start_room()
 
-            if(ID == -1):
-                await websocket.send('-2')
-            else:
-                await websocket.send('0')
+            answer = "0 OK\n"
+            answer += ID_ + "\n"
+            answer += str(free_port)
+
+            await websocket.send(answer)
 
             self.conn.close()
-        except(Exception):
+        except(Exception) as e:
+            print("Exception:\n")
+            print(e)
             print('-1')
             await websocket.send('-1')
             self.conn.close()
@@ -338,9 +323,12 @@ class Server:
                     room_port = self.rooms[i].room_port
                     break
 
+            answer = "0 OK\n"
+            answer += str(room_port)
+
             if(room_port == -1):
                 await websocket.send('-2')
             else:
-                await websocket.send('0')
+                await websocket.send(answer)
         except(Exception):
             await websocket.send('-1')
