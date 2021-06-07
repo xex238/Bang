@@ -24,7 +24,17 @@ class Room:
     players_characters_ID = [] # Список ID персонажей участников комнаты
 
     players_queue = [] # Очередь хода игрока (по часовой стрелке, начиная от шерифа, шериф имеет значение 1)
-    player_ID_step = -1 # ID игрока, который ходит в данный момент
+    players_alive = [] # Жив ли игрок?
+    count_of_alive = -1 # Количество живых персонажей
+    current_i_queue = -1 # Указатель на номер элемента в массиве "players_queue"
+    current_queue = -1 # Порядковый номер хода (по часовой стрелке)
+
+    # Вспомогательные переменные для розыгрыша карт "Гатлинг" и "Индейцы"
+    current_i_queue_helper = -1 # Вспомогательная переменная, аналог переменной "current_i_queue"
+    current_queue_helper = -1 # Вспомогательная переменная, аналог переменной "current_queue"
+    counter_helper = -1 # Вспомогательная переменная
+
+    vulture_sam_player_ID = -1 # ID игрока, у которого персонаж "Большой Змей" (Vulture Sam)
 
     count_of_cards_in_deck = 80 # Количество карт в колоде
     count_of_cards_in_dropping = 0 # Количество карт в сбросе
@@ -43,6 +53,11 @@ class Room:
     def Get_i(self, player_ID):
         for i in range(len(self.players_ID)):
             if(self.players_ID[i] == player_ID):
+                return i
+
+    def Get_i_queue(self, value):
+        for i in range(len(self.players_queue)):
+            if(self.players_queue[i] == value):
                 return i
 
     # Открытие (запуск) комнаты
@@ -84,6 +99,16 @@ class Room:
             cursor.commit()
 
         self.cards_ID_to_dropping.clear()
+
+    # Отправка заданной карты в сброс
+    def Send_card_to_Dropping(self, card_ID):
+        sql = "exec dbo.Send_card_to_Dropping\n"
+        sql += "@card_ID = " + str(card_ID) + ",\n"
+        sql += "@room_ID = " + str(self.room_ID)
+
+        cursor = self.conn.cursor()
+        cursor.execute(sql)
+        cursor.commit()
 
     # Основной метод класса. Осуществляет приём и обмен сообщениями между участниками комнаты
     async def Data_exchange(self, websocket, path):
@@ -203,12 +228,16 @@ class Room:
 
                 # Генерация порядкового номера для каждого игрока
                 for i in range(self.max_count_of_players):
-                    self.players_queue[i] = i + 1
+                    self.players_queue.append(i + 1)
+                    self.players_alive.append(1)
                 random.shuffle(self.players_queue)
             # Запрос на получение персонажа
             elif(message_split[0] == "GET CHARACTER"):
                 player_ID = message_split[1]
                 
+                if(str(self.players_characters_ID[self.Get_i(int(player_ID))]) == "15"):
+                    self.vulture_sam_player_ID = player_ID
+
                 sql = "exec dbo.Add_character_to_player\n"
                 sql += "@player_ID = " + player_ID + ",\n"
                 sql += "@characters_ID = " + str(self.players_characters_ID[self.Get_i(int(player_ID))])
@@ -257,9 +286,9 @@ class Room:
                 player_ID = message_split[1]
 
                 request = str(self.players_queue[self.Get_i(player_ID)]) + "\n"
-                for i in range(len(self.players_ID) - 1):
+                for i in range(len(self.players_ID)):
                     request += str(i + 1) + ", " + str(self.players_ID[i]) + ", " + str(self.players_characters_ID[i]) + "\n"
-                request += str(len(self.players_ID) - 1 + 1) + ", " + str(self.players_ID[len(self.players_ID) - 1]) + ", " + str(self.players_characters_ID[len(self.players_ID) - 1])
+                request = request[:-1]
                 print("request =\n", request)
 
                 await websocket.send(request)
@@ -303,9 +332,14 @@ class Room:
                         break
 
                 if(all_is_ready):
+                    self.count_of_alive = self.max_count_of_players
+
+                    self.current_queue = 1
+                    self.current_i_queue = self.Get_i_queue(self.current_queue)
+
                     request = "GAME IS START\n"
                     request += "SET MOVE\n"
-                    request += self.players_queue[0]
+                    request += self.players_ID[self.current_i_queue]
                     asyncio.get_event_loop().run_until_complete(self.Send_all(request))
 
             # Игровые команды
@@ -314,10 +348,14 @@ class Room:
             elif(message_split[0] == "SET MOVE END"):
                 player_ID = message_split[1]
                 request = "SET MOVE\n"
-                if(player_ID + 1 < len(self.players_ID)):
-                    request += self.players_ID[self.Get_i(player_ID) + 1]
+
+                if(self.current_queue + 1 <= self.max_count_of_players):
+                    self.current_queue = self.current_queue + 1
                 else:
-                    request += self.players_ID[0]
+                    self.current_queue = 1
+
+                self.current_i_queue = self.Get_i_queue(self.current_queue)
+                request += str(self.players_ID[self.current_i_queue])
                 asyncio.get_event_loop().run_until_complete(self.Send_all(request))
 
             # Розыгрыш карт
@@ -341,10 +379,33 @@ class Room:
                 target_ID = message_split[1]
                 card_ID = message_split[2]
 
-                self.cards_ID_to_dropping.append(int(card_ID))
-                self.Cards_to_Dropping()
+                self.Send_card_to_Dropping(int(card_ID))
+                if(len(message_split) == 3):
+                    self.Cards_to_Dropping()
 
                 request = message
+                asyncio.get_event_loop().run_until_complete(self.Send_all(request))
+
+                if(len(message_split) > 3):
+                    if((message_split[3] == "PLAY GATLING") and (self.counter_helper + 1 < self.count_of_alive)):
+                        self.counter_helper = self.counter_helper + 1
+
+                        while(true):
+                            if(self.current_queue + 1 <= self.max_count_of_players):
+                                self.current_queue_helper = self.current_queue + 1
+                            else:
+                                self.current_queue_helper = 1
+                            self.current_i_queue_helper = self.Get_i_queue(self.current_queue_helper)
+                            if(self.players_alive[self.current_i_queue_helper] == 1):
+                                break
+
+                        request = "PLAY GATLING\n"
+                        request += str(player_ID) + ", " + str(self.players_ID[self.current_i_queue_helper]) + "\n"
+                        request += str(self.cards_ID_to_dropping[0])
+                        asyncio.get_event_loop().run_until_complete(self.Send_all(request))
+                    elif((message_split[3] == "PLAY GATLING") and (self.counter_helper + 1 == self.count_of_alive)):
+                        self.Cards_to_Dropping()
+
                 asyncio.get_event_loop().run_until_complete(self.Send_all(request))
             # Розыгрыш карты "Пиво"
             elif(message_split[0] == "PLAY BEER"):
@@ -353,8 +414,14 @@ class Room:
 
                 # Проверка, может ли игрок сыграть карту "Пиво" (не максимальное ли количество жизней у игрока)
 
-                self.cards_ID_to_dropping.append(int(card_ID))
-                self.Cards_to_Dropping()
+                sql = "exec exec dbo.Recovery_health\n"
+                sql += "@player_ID = " + str(player_ID)
+
+                cursor = self.conn.cursor()
+                cursor.execute(sql)
+                cursor.commit()
+
+                self.Send_card_to_Dropping(int(card_ID))
 
                 request = message
                 request += "\n"
@@ -370,14 +437,36 @@ class Room:
 
                 request = message
                 asyncio.get_event_loop().run_until_complete(self.Send_all(request))
-            # Использование карты "Бэнг" в рамках дуэли
+            # Использование карты "Бэнг" для карт "Дуэль", "Индейцы"
             elif(message_split[0] == "USE BANG"):
                 target_ID = message_split[1]
                 card_ID = message_split[2]
 
-                self.cards_ID_to_dropping.append(int(card_ID))
+                self.Send_card_to_Dropping(int(card_ID))
 
                 request = message
+                asyncio.get_event_loop().run_until_complete(self.Send_all(request))
+
+                if(len(message_split) > 3):
+                    if((message_split[3] == "PLAY INDIANS") and (self.counter_helper + 1 < self.count_of_alive)):
+                        self.counter_helper = self.counter_helper + 1
+
+                        while(true):
+                            if(self.current_queue + 1 <= self.max_count_of_players):
+                                self.current_queue_helper = self.current_queue + 1
+                            else:
+                                self.current_queue_helper = 1
+                            self.current_i_queue_helper = self.Get_i_queue(self.current_queue_helper)
+                            if(self.players_alive[self.current_i_queue_helper] == 1):
+                                break
+
+                        request = "PLAY INDIANS\n"
+                        request += str(player_ID) + ", " + str(self.players_ID[self.current_i_queue_helper]) + "\n"
+                        request += str(self.cards_ID_to_dropping[0])
+                        asyncio.get_event_loop().run_until_complete(self.Send_all(request))
+                    elif((message_split[3] == "PLAY INDIANS") and (self.counter_helper + 1 == self.count_of_alive)):
+                        self.Cards_to_Dropping()
+
                 asyncio.get_event_loop().run_until_complete(self.Send_all(request))
             # Розыгрыш карты "Паника"
             elif(message_split[0] == "PLAY PANIC"):
@@ -452,8 +541,7 @@ class Room:
 
                     await websocket.send(request)
 
-                self.cards_ID_to_dropping.append(int(card_ID))
-                self.Cards_to_Dropping()
+                self.Send_card_to_Dropping(int(card_ID))
             # Розыгрыш карты "Красотка"
             elif(message_split[0] == "PLAY CAT BALOU"):
                 player_ID = message_split[1].split(', ')[0]
@@ -463,7 +551,7 @@ class Room:
                 if(message_split[3] == "DISCARD 1 CARD FROM FIELD"):
                     target_card_ID = message_split[4]
 
-                    self.cards_ID_to_dropping.append(int(target_card_ID))
+                    self.Send_card_to_Dropping(int(target_card_ID))
 
                     sql = "exec dbo.Get_card_name\n"
                     sql += "@card_ID = " + str(target_card_ID)
@@ -513,8 +601,7 @@ class Room:
                     request += str(target_card_ID)
                     asyncio.get_event_loop().run_until_complete(self.Send_all(request))
 
-                self.cards_ID_to_dropping.append(int(card_ID))
-                self.Cards_to_Dropping()
+                self.Send_card_to_Dropping(int(card_ID))
             # Розыгрыш карты "Волканик"
             elif(message_split[0] == "PLAY VOLCANIC"):
                 player_ID = message_split[1]
@@ -696,6 +783,30 @@ class Room:
                 else:
                     request += "CHECK FAIL\n"
                 request += str(check_card_ID)
+
+                if(len(message_split) > 3):
+                    if(message_split[3] == "PLAY GATLING"):
+                        request += "\n"
+                        request += "PLAY GATLING"
+                    if((message_split[3] == "PLAY GATLING") and (self.counter_helper + 1 < self.count_of_alive) and (suit == "H")):
+                        self.counter_helper = self.counter_helper + 1
+
+                        while(true):
+                            if(self.current_queue + 1 <= self.max_count_of_players):
+                                self.current_queue_helper = self.current_queue + 1
+                            else:
+                                self.current_queue_helper = 1
+                            self.current_i_queue_helper = self.Get_i_queue(self.current_queue_helper)
+                            if(self.players_alive[self.current_i_queue_helper] == 1):
+                                break
+
+                        request = "PLAY GATLING\n"
+                        request += str(player_ID) + ", " + str(self.players_ID[self.current_i_queue_helper]) + "\n"
+                        request += str(self.cards_ID_to_dropping[0])
+                        asyncio.get_event_loop().run_until_complete(self.Send_all(request))
+                    elif((message_split[3] == "PLAY GATLING") and (self.counter_helper + 1 == self.count_of_alive) and (suit == "H")):
+                        self.Cards_to_Dropping()
+
                 asyncio.get_event_loop().run_until_complete(self.Send_all(request))
             # Розыгрыш карты "Уэлс фарго"
             elif(message_split[0] == "PLAY WELLS FARGO"):
@@ -721,8 +832,7 @@ class Room:
                     request += str(card_ID) + ", "
                 request = request[:-2]
 
-                self.cards_ID_to_dropping.append(int(card_ID))
-                self.Cards_to_Dropping()
+                self.Send_card_to_Dropping(int(card_ID))
 
                 await websocket.send(request)
             # Розыгрыш карты "Дилижанс"
@@ -749,8 +859,7 @@ class Room:
                     request += str(card_ID) + ", "
                 request = request[:-2]
 
-                self.cards_ID_to_dropping.append(int(card_ID))
-                self.Cards_to_Dropping()
+                self.Send_card_to_Dropping(int(card_ID))
 
                 await websocket.send(request)
             # Розыгрыш карты "Мустанг"
@@ -821,16 +930,357 @@ class Room:
                 request += str(check_card_ID)
                 asyncio.get_event_loop().run_until_complete(self.Send_all(request))
 
+                if(suit != "H"):
+                    request = "SET MOVE\n"
+                    if(self.current_queue + 1 <= self.max_count_of_players):
+                        self.current_queue = self.current_queue + 1
+                    else:
+                        self.current_queue = 1
+
+                    self.current_i_queue = self.Get_i_queue(self.current_queue)
+                    request += str(self.players_ID[self.current_i_queue])
+
+                    asyncio.get_event_loop().run_until_complete(self.Send_all(request))
+
+                self.Send_card_to_Dropping(int(card_ID))
+            # Розыгрыш карты "Индейцы"
+            elif(message_split[0] == "PLAY INDIANS"):
+                player_ID = message_split[1]
+                card_ID = message_split[2]
+
+                self.counter_helper = 1
+                self.current_queue_helper = -1
+                
+                while(true):
+                    if(self.current_queue + 1 <= self.max_count_of_players):
+                        self.current_queue_helper = self.current_queue + 1
+                    else:
+                        self.current_queue_helper = 1
+                    self.current_i_queue_helper = self.Get_i_queue(self.current_queue_helper)
+                    if(self.players_alive[self.current_i_queue_helper] == 1):
+                        break
+
+                request = "PLAY INDIANS\n"
+                request += str(player_ID) + ", " + str(self.players_ID[self.current_i_queue_helper]) + "\n"
+                request += str(card_ID)
+                asyncio.get_event_loop().run_until_complete(self.Send_all(request))
+
+                self.cards_ID_to_dropping.append(int(card_ID))
+            # Розыгрыш карты "Гатлинг"
+            elif(message_split[0] == "PLAY GATLING"):
+                player_ID = message_split[1]
+                card_ID = message_split[2]
+
+                self.counter_helper = 1
+                self.current_queue_helper = -1
+                
+                while(true):
+                    if(self.current_queue + 1 <= self.max_count_of_players):
+                        self.current_queue_helper = self.current_queue + 1
+                    else:
+                        self.current_queue_helper = 1
+                    self.current_i_queue_helper = self.Get_i_queue(self.current_queue_helper)
+                    if(self.players_alive[self.current_i_queue_helper] == 1):
+                        break
+
+                request = "PLAY GATLING\n"
+                request += str(player_ID) + ", " + str(self.players_ID[self.current_i_queue_helper]) + "\n"
+                request += str(card_ID)
+                asyncio.get_event_loop().run_until_complete(self.Send_all(request))
+
+                self.cards_ID_to_dropping.append(int(card_ID))
+            # Розыгрыш карты "Динамит"
+            elif(message_split[0] == "PLAY DYNAMITE"):
+                player_ID = message_split[1]
+                card_ID = message_split[2]
+
+                # Проверка, выложена ли на столе у игрока карта "Динамит"
+
+                sql = "exec dbo.Change_card_location\n"
+                sql += "@card_ID = " + str(card_ID) + ",\n"
+                sql += "@card_location = 4"
+
+                cursor = self.conn.cursor()
+                cursor.execute(sql)
+                cursor.commit()
+
+                request = message
+                asyncio.get_event_loop().run_until_complete(self.Send_all(request))
+            # Проверка динамита в начале хода
+            elif(message_split[0] == "CHECK DYNAMITE"):
+                player_ID = message_split[1]
+                card_ID = message_split[2]
+
+                sql = "exec dbo.Get_card_for_checking\n"
+                sql += "@room_ID = " + str(self.room_ID)
+
+                cursor = self.conn.cursor()
+                cursor.execute(sql)
+                cursor.commit()
+
+                request = message + "\n"
+                check_card_ID = -1
+                suit = ""
+                rating = ""
+                for row in cursor:
+                    check_card_ID = int(row[0])
+                    suit = str(row[2])
+                    rating = str(row[3])
+
+                if((suit == "S") and ((rating == "2") or (rating == "3") or (rating == "4") or (rating == "5") or (rating == "6") or (rating == "7") or (rating == "8") or (rating == "9"))):
+                    request += "CHECK FAIL\n"
+                    request += str(check_card_ID) + "\n"
+                    request += "LOSE 3 HP"
+
+                    for i in range(3):
+                        sql = ""
+
+                else:
+                    request += "CHECK SUCCESS\n"
+                    request += str(check_card_ID)
 
             # Вспомогательные команды
             # Потеря единицы здоровья игроком
             elif(message_split[0] == "LOSE 1 HP"):
-                player_ID = message_split[1]
+                player_ID = ""
+                killer_ID = ""
+                if(len(message_split[1].split(', ')) > 1):
+                    player_ID = message_split[1].split(', ')[0]
+                    killer_ID = message_split[1].split(', ')[1]
+                else:
+                    player_ID = message_split[1]
 
-                self.Cards_to_Dropping()
+                sql = "exec dbo.Lose_health\n"
+                sql += "@player_ID = " + str(player_ID)
+
+                cursor = self.conn.cursor()
+                cursor.execute(sql)
+                cursor.commit()
 
                 request = message
                 asyncio.get_event_loop().run_until_complete(self.Send_all(request))
+
+                code = str(cursor.fetchall()[0][0])
+
+                # Если игрок погиб
+                if(code == "10"):
+                    request = "PLAYER DIED\n"
+                    if(killer_ID != ""):
+                        request = str(player_ID) + ", " + str(killer_ID) + "\n"
+                    else:
+                        request = str(player_ID) + "\n"
+                    request += str(self.players_roles_ID[self.Get_i(player_ID)])
+
+                    self.players_alive[self.Get_i(player_ID)] = 0
+
+                    asyncio.get_event_loop().run_until_complete(self.Send_all(request))
+
+                    # Выполнена ли цель?
+                    # Получаем ID ролей оставшихся в живых игроков
+                    sql = "exec dbo.Get_alive_roles_ID\n"
+                    sql += "@room_ID = " + str(self.room_ID)
+
+                    cursor = self.conn.cursor()
+                    cursor.execute(sql)
+
+                    alive_roles_ID = []
+                    for row in cursor:
+                        alive_roles_ID.append(str(row[0]))
+
+                    # Если убит шериф
+                    if(self.players_roles_ID[self.Get_i(player_ID)] == 1):
+                        if((len(alive_roles_ID) > 1) or ((len(alive_roles_ID) == 1) and (alive_roles_ID[0] != "3"))):
+                            request += "GAME OVER\n"
+                            request += "OUTLAW WIN\n"
+                            request += "WIN\n"
+                            
+                            for i in range(len(self.players_roles_ID)):
+                                if(self.players_roles_ID[i] == 2):
+                                    request += str(self.players_ID[i]) + ", "
+                            request = request[:-2]
+                            request += "\n"
+                            request += "LOSE\n"
+
+                            for i in range(len(self.players_roles_ID)):
+                                if(self.players_roles_ID[i] != 2):
+                                    request += str(self.players_ID[i]) + ", "
+                            request = request[:-2]
+
+                            asyncio.get_event_loop().run_until_complete(self.Send_all(request))
+                        else:
+                            request += "GAME OVER\n"
+                            request += "RENEGATE WIN\n"
+                            request += "WIN\n"
+                            
+                            for i in range(len(self.players_roles_ID)):
+                                if(self.players_roles_ID[i] == 3):
+                                    request += str(self.players_ID[i]) + ", "
+                            request = request[:-2]
+                            request += "\n"
+                            request += "LOSE\n"
+
+                            for i in range(len(self.players_roles_ID)):
+                                if(self.players_roles_ID[i] != 3):
+                                    request += str(self.players_ID[i]) + ", "
+                            request = request[:-2]
+
+                            asyncio.get_event_loop().run_until_complete(self.Send_all(request))
+                    elif((self.players_roles_ID[self.Get_i(player_ID)] == 2) or (self.players_roles_ID[self.Get_i(player_ID)] == 3)):
+                        sheriff_and_deputes_only = True
+                        for i in range(len(alive_roles_ID)):
+                            if((alive_roles_ID[i] == "2") or (alive_roles_ID[i] == "3")):
+                                sheriff_and_deputes_only = False
+                                break
+
+                        if(sheriff_and_deputes_only):
+                            request += "GAME OVER\n"
+                            request += "SHERIFF AND DEPUTES WIN\n"
+                            request += "WIN\n"
+                            
+                            for i in range(len(self.players_roles_ID)):
+                                if((self.players_roles_ID[i] == 1) or (self.players_roles_ID[i] == 4)):
+                                    request += str(self.players_ID[i]) + ", "
+                            request = request[:-2]
+                            request += "\n"
+                            request += "LOSE\n"
+
+                            for i in range(len(self.players_roles_ID)):
+                                if((self.players_roles_ID[i] != 1) and (self.players_roles_ID[i] != 4)):
+                                    request += str(self.players_ID[i]) + ", "
+                            request = request[:-2]
+
+                            asyncio.get_event_loop().run_until_complete(self.Send_all(request))
+
+                    # Есть ли в игре "Большой Змей"?
+                    if(self.vulture_sam_player_ID != -1): # Да
+                        sql = "exec dbo.Send_all_cards_to_player\n"
+                        sql += "@player_ID_from = " + str(player_ID) + ",\n"
+                        sql += "@player_ID_to = " + str(self.vulture_sam_player_ID)
+
+                        cursor = self.conn.cursor()
+                        cursor.execute(sql)
+                        cursor.commit()
+
+                        cards_ID = []
+                        for row in cursor:
+                            cards_ID.append(str(row[0]))
+
+                        request = "USE CHARACTER\n"
+                        request += "15\n"
+                        request += str(self.vulture_sam_player_ID) + "\n"
+                        request += "GET ALL CARDS FROM PLAYER\n"
+                        request += str(player_ID) + "\n"
+                        for i in range(len(cards_ID)):
+                            request += str(cards_ID[i]) + ", "
+                        request = request[:-2]
+
+                        asyncio.get_event_loop().run_until_complete(self.Send_all(request))
+                    else: # Нет
+                        sql = "exec dbo.Lose_all_cards\n"
+                        sql += "@player_ID = " + str(player_ID) + ",\n"
+                        sql += "@room_ID = " + str(self.room_ID)
+
+                        cursor = self.conn.cursor()
+                        cursor.execute(sql)
+                        cursor.commit()
+
+                        cards_ID = []
+                        for row in cursor:
+                            cards_ID.append(str(row[0]))
+
+                        request = "LOSE ALL CARDS\n"
+                        request += str(player_ID) + "\n"
+                        for i in range(len(cards_ID)):
+                            request += str(cards_ID[i]) + ", "
+                        request = request[:-2]
+
+                        asyncio.get_event_loop().run_until_complete(self.Send_all(request))
+
+                    # Какая роль убитого игрока?
+                    if(self.players_roles_ID[self.Get_i(player_ID)] == 2):
+                        if(killer_ID != ""):
+                            request = "GET 3 CARDS\n"
+                            request += str(player_ID) + "\n"
+
+                            for i in range(3):
+                                sql = "exec dbo.Set_card_to_player_from_Deck\n"
+                                sql += "@player_ID = " + str(player_ID) + ",\n"
+                                sql += "@room_ID = " + str(self.room_ID)
+
+                                cursor = self.conn.cursor()
+                                cursor.execute(sql)
+                                cursor.commit()
+
+                                card_ID = cursor.fetchall()[0][0]
+                                request += str(card_ID) + ", "
+                            request = request[:-2]
+
+                            await websocket.send(request)
+                    elif(self.players_roles_ID[self.Get_i(player_ID)] == 4):
+                        if((killer_ID == "1")):
+                            sql = "exec dbo.Lose_all_cards\n"
+                            sql += "@player_ID = " + str(killer_ID) + ",\n"
+                            sql += "@room_ID = " + str(self.room_ID)
+
+                            cursor = self.conn.cursor()
+                            cursor.execute(sql)
+                            cursor.commit()
+
+                            cards_ID = []
+                            for row in cursor:
+                                cards_ID.append(str(row[0]))
+
+                            request = "LOSE ALL CARDS\n"
+                            request += str(killer_ID) + "\n"
+                            for i in range(len(cards_ID)):
+                                request += str(cards_ID[i]) + ", "
+                            request = request[:-2]
+
+                            asyncio.get_event_loop().run_until_complete(self.Send_all(request))
+
+                self.Cards_to_Dropping()
+
+                if(len(message_split) > 2):
+                    if(message_split[2] == "PLAY INDIANS"):
+                        self.counter_helper = self.counter_helper + 1
+
+                        while(true):
+                            if(self.current_queue + 1 <= self.max_count_of_players):
+                                self.current_queue_helper = self.current_queue + 1
+                            else:
+                                self.current_queue_helper = 1
+                            self.current_i_queue_helper = self.Get_i_queue(self.current_queue_helper)
+                            if(self.players_alive[self.current_i_queue_helper] == 1):
+                                break
+
+                        request = "PLAY INDIANS\n"
+                        request += str(player_ID) + ", " + str(self.players_ID[self.current_i_queue_helper]) + "\n"
+                        request += str(self.cards_ID_to_dropping[0])
+                        asyncio.get_event_loop().run_until_complete(self.Send_all(request))
+                    elif((message_split[2] == "PLAY INDIANS") and (self.counter_helper + 1 == self.count_of_alive)):
+                        self.Cards_to_Dropping()
+
+                    if((message_split[2] == "PLAY GATLING") and (self.counter_helper + 1 < self.count_of_alive)):
+                        self.counter_helper = self.counter_helper + 1
+
+                        while(true):
+                            if(self.current_queue + 1 <= self.max_count_of_players):
+                                self.current_queue_helper = self.current_queue + 1
+                            else:
+                                self.current_queue_helper = 1
+                            self.current_i_queue_helper = self.Get_i_queue(self.current_queue_helper)
+                            if(self.players_alive[self.current_i_queue_helper] == 1):
+                                break
+
+                        request = "PLAY GATLING\n"
+                        request += str(player_ID) + ", " + str(self.players_ID[self.current_i_queue_helper]) + "\n"
+                        request += str(self.cards_ID_to_dropping[0])
+                        asyncio.get_event_loop().run_until_complete(self.Send_all(request))
+                    elif((message_split[2] == "PLAY GATLING") and (self.counter_helper + 1 == self.count_of_alive)):
+                        self.Cards_to_Dropping()
+
+                    asyncio.get_event_loop().run_until_complete(self.Send_all(request))
+
 
             self.conn.close()
         except(Exception):
