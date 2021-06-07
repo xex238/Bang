@@ -68,7 +68,7 @@ CREATE TABLE [dbo].[Role]
 (
 	[ID] [int] IDENTITY(1,1) NOT NULL,
 	[roles_ID] [int] NOT NULL,
-	[status] [int] NOT NULL
+	[status] [nvarchar](50) NOT NULL
 )
 GO
 ALTER TABLE [dbo].[Role]
@@ -1011,6 +1011,16 @@ AS
 BEGIN
 SET NOCOUNT ON;
 
+declare @next_index_number int = NULL
+set @next_index_number =
+(
+	select max(index_number) + 1
+	from [Card]
+	where (card_location = 1) and (room_ID = @room_ID)
+)
+if(@next_index_number IS NULL)
+	set @next_index_number = 1
+
 SELECT [Card].[ID], [Cards].[ID], [suit], [rating]
 FROM [Cards]
 join [Card]
@@ -1035,14 +1045,10 @@ WITH Main_select(Card_ID, Cards_ID, suit, rating) as
 		where (card_location = 2) and (room_ID = @room_ID)
 	))
 )
+
 UPDATE [Card]
 SET card_location = 1,
-index_number =
-(
-	select max(index_number) + 1
-	from [Card]
-	where (card_location = 1) and (room_ID = @room_ID)
-)
+index_number = @next_index_number
 where ID =
 (
 	select Card_ID
@@ -1238,7 +1244,7 @@ declare @max_index_number int =
 	select max(index_number)
 	from [Card]
 	where (card_location = 1) and (room_ID = @room_ID)
-)
+);
 
 WITH Series(a, b) AS
 (
@@ -1297,6 +1303,68 @@ SET NOCOUNT ON;
 update [Card]
 set card_location = @card_location
 where ID = @card_ID
+
+SET NOCOUNT OFF;
+END
+GO
+
+-- 3.25) Все карты игрока уходят в сброс (после смерти)
+CREATE PROCEDURE dbo.Lose_all_cards(@player_ID int, @room_ID int)
+AS
+BEGIN
+SET NOCOUNT ON;
+
+select [Cards].ID
+from [Card]
+join [Cards]
+on [Card].cards_ID = [Cards].ID
+where [Card].player_ID = @player_ID
+
+with Player_cards_ID(ID) as
+(
+	select [Card].ID
+	from [Card]
+	where [Card].player_ID = @player_ID
+)
+
+UPDATE [Card]
+SET player_ID = NULL,
+card_location = 1,
+index_number =
+(
+	select max([Card].index_number) + 1
+	from [Card]
+	where (card_location = 1) and (room_ID = @room_ID)
+)
+WHERE [Card].ID in (select * from Player_cards_ID)
+
+SET NOCOUNT OFF;
+END
+GO
+
+-- 3.26) Все карты игрока уходят в руку другому игроку
+CREATE PROCEDURE dbo.Send_all_cards_to_player(@player_ID_from int, @player_ID_to int)
+AS
+BEGIN
+SET NOCOUNT ON;
+
+select [Cards].ID
+from [Card]
+join [Cards]
+on [Card].cards_ID = [Cards].ID
+where [Card].player_ID = @player_ID_from
+
+with Player_cards_ID(ID) as
+(
+	select [Card].ID
+	from [Card]
+	where [Card].player_ID = @player_ID_from
+)
+
+UPDATE [Card]
+SET player_ID = @player_ID_to,
+card_location = 3
+WHERE [Card].ID in (select * from Player_cards_ID)
 
 SET NOCOUNT OFF;
 END
