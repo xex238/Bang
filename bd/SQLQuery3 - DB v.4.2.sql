@@ -1157,6 +1157,14 @@ AS
 BEGIN
 SET NOCOUNT ON;
 
+select [Player].ID
+from [Player]
+join [Character]
+on [Player].character_ID = [Character].ID
+join [Characters]
+on [Character].characters_ID = [Characters].ID
+where ([room_ID] = @room_ID) and ([Character].alive = 1) and ([Character].lives < [Characters].max_lives)
+
 with Helper(ID) as
 (
 	select [Player].ID
@@ -1365,6 +1373,33 @@ UPDATE [Card]
 SET player_ID = @player_ID_to,
 card_location = 3
 WHERE [Card].ID in (select * from Player_cards_ID)
+
+SET NOCOUNT OFF;
+END
+GO
+
+-- 3.27) Получить ID ролей живых игроков
+CREATE PROCEDURE dbo.Get_alive_roles_ID(@room_ID int)
+AS
+BEGIN
+SET NOCOUNT ON;
+
+with Room_players(ID) as
+(
+	select [Player].ID
+	from [Player]
+	where [Player].room_ID = @room_ID
+)
+
+select [Roles].ID
+from [Player]
+join [Role]
+on [Player].role_ID = [Role].ID
+join [Roles]
+on [Role].roles_ID = [Roles].ID
+join [Character]
+on [Player].character_ID = [Character].ID
+where ([Player].ID in (select * from Room_players)) and ([Character].alive = 1)
 
 SET NOCOUNT OFF;
 END
