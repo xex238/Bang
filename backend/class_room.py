@@ -16,7 +16,7 @@ class Room:
 
     players_ID = [] # Список ID участников комнаты
     players_status = [] # Список статусов участников комнаты (для начала стадии планирования,
-    # для начала передачи информации о других игроках после выбора персонажа и роли, для начала игры)
+    # Для начала передачи информации о других игроках после выбора персонажа и роли, для начала игры)
     players_IP = [] # Список IP адресов участников комнаты
     players_port = [] # Список портов участников комнаты
 
@@ -109,6 +109,201 @@ class Room:
         cursor = self.conn.cursor()
         cursor.execute(sql)
         cursor.commit()
+
+    # Потеря единицы жизни игроком
+    async def Lose_health(self, websocket, player_ID, killer_ID, message):
+        sql = "exec dbo.Lose_health\n"
+        sql += "@player_ID = " + str(player_ID)
+
+        cursor = self.conn.cursor()
+        cursor.execute(sql)
+        cursor.commit()
+
+        request = message
+        asyncio.get_event_loop().run_until_complete(self.Send_all(request))
+
+        code = str(cursor.fetchall()[0][0])
+
+        # Если игрок погиб
+        if(code == "10"):
+            self.count_of_alive = self.count_of_alive - 1
+            self.players_alive[self.Get_i(player_ID)] = 0
+
+            request = "PLAYER DIED\n"
+            if(killer_ID != ""):
+                request = str(player_ID) + ", " + str(killer_ID) + "\n"
+            else:
+                request = str(player_ID) + "\n"
+            request += str(self.players_roles_ID[self.Get_i(player_ID)])
+
+            self.players_alive[self.Get_i(player_ID)] = 0
+
+            asyncio.get_event_loop().run_until_complete(self.Send_all(request))
+
+            # Выполнена ли цель?
+            # Получаем ID ролей оставшихся в живых игроков
+            sql = "exec dbo.Get_alive_roles_ID\n"
+            sql += "@room_ID = " + str(self.room_ID)
+
+            cursor = self.conn.cursor()
+            cursor.execute(sql)
+
+            alive_roles_ID = []
+            for row in cursor:
+                alive_roles_ID.append(str(row[0]))
+
+            # Если убит шериф
+            if(self.players_roles_ID[self.Get_i(player_ID)] == 1):
+                if((len(alive_roles_ID) > 1) or ((len(alive_roles_ID) == 1) and (alive_roles_ID[0] != "3"))):
+                    request += "GAME OVER\n"
+                    request += "OUTLAW WIN\n"
+                    request += "WIN\n"
+                            
+                    for i in range(len(self.players_roles_ID)):
+                        if(self.players_roles_ID[i] == 2):
+                            request += str(self.players_ID[i]) + ", "
+                    request = request[:-2]
+                    request += "\n"
+                    request += "LOSE\n"
+
+                    for i in range(len(self.players_roles_ID)):
+                        if(self.players_roles_ID[i] != 2):
+                            request += str(self.players_ID[i]) + ", "
+                    request = request[:-2]
+
+                    asyncio.get_event_loop().run_until_complete(self.Send_all(request))
+                else:
+                    request += "GAME OVER\n"
+                    request += "RENEGATE WIN\n"
+                    request += "WIN\n"
+                            
+                    for i in range(len(self.players_roles_ID)):
+                        if(self.players_roles_ID[i] == 3):
+                            request += str(self.players_ID[i]) + ", "
+                    request = request[:-2]
+                    request += "\n"
+                    request += "LOSE\n"
+
+                    for i in range(len(self.players_roles_ID)):
+                        if(self.players_roles_ID[i] != 3):
+                            request += str(self.players_ID[i]) + ", "
+                    request = request[:-2]
+
+                    asyncio.get_event_loop().run_until_complete(self.Send_all(request))
+            elif((self.players_roles_ID[self.Get_i(player_ID)] == 2) or (self.players_roles_ID[self.Get_i(player_ID)] == 3)):
+                sheriff_and_deputes_only = True
+                for i in range(len(alive_roles_ID)):
+                    if((alive_roles_ID[i] == "2") or (alive_roles_ID[i] == "3")):
+                        sheriff_and_deputes_only = False
+                        break
+
+                if(sheriff_and_deputes_only):
+                    request += "GAME OVER\n"
+                    request += "SHERIFF AND DEPUTES WIN\n"
+                    request += "WIN\n"
+                            
+                    for i in range(len(self.players_roles_ID)):
+                        if((self.players_roles_ID[i] == 1) or (self.players_roles_ID[i] == 4)):
+                            request += str(self.players_ID[i]) + ", "
+                    request = request[:-2]
+                    request += "\n"
+                    request += "LOSE\n"
+
+                    for i in range(len(self.players_roles_ID)):
+                        if((self.players_roles_ID[i] != 1) and (self.players_roles_ID[i] != 4)):
+                            request += str(self.players_ID[i]) + ", "
+                    request = request[:-2]
+
+                    asyncio.get_event_loop().run_until_complete(self.Send_all(request))
+
+            # Есть ли в игре "Большой Змей"?
+            if(self.vulture_sam_player_ID != -1): # Да
+                sql = "exec dbo.Send_all_cards_to_player\n"
+                sql += "@player_ID_from = " + str(player_ID) + ",\n"
+                sql += "@player_ID_to = " + str(self.vulture_sam_player_ID)
+
+                cursor = self.conn.cursor()
+                cursor.execute(sql)
+                cursor.commit()
+
+                cards_ID = []
+                for row in cursor:
+                    cards_ID.append(str(row[0]))
+
+                request = "USE CHARACTER\n"
+                request += "15\n"
+                request += str(self.vulture_sam_player_ID) + "\n"
+                request += "GET ALL CARDS FROM PLAYER\n"
+                request += str(player_ID) + "\n"
+                for i in range(len(cards_ID)):
+                    request += str(cards_ID[i]) + ", "
+                request = request[:-2]
+
+                asyncio.get_event_loop().run_until_complete(self.Send_all(request))
+            else: # Нет
+                sql = "exec dbo.Lose_all_cards\n"
+                sql += "@player_ID = " + str(player_ID) + ",\n"
+                sql += "@room_ID = " + str(self.room_ID)
+
+                cursor = self.conn.cursor()
+                cursor.execute(sql)
+                cursor.commit()
+
+                cards_ID = []
+                for row in cursor:
+                    cards_ID.append(str(row[0]))
+
+                request = "LOSE ALL CARDS\n"
+                request += str(player_ID) + "\n"
+                for i in range(len(cards_ID)):
+                    request += str(cards_ID[i]) + ", "
+                request = request[:-2]
+
+                asyncio.get_event_loop().run_until_complete(self.Send_all(request))
+
+            # Какая роль убитого игрока?
+            if(self.players_roles_ID[self.Get_i(player_ID)] == 2):
+                if(killer_ID != ""):
+                    request = "GET 3 CARDS\n"
+                    request += str(player_ID) + "\n"
+
+                    for i in range(3):
+                        sql = "exec dbo.Set_card_to_player_from_Deck\n"
+                        sql += "@player_ID = " + str(player_ID) + ",\n"
+                        sql += "@room_ID = " + str(self.room_ID)
+
+                        cursor = self.conn.cursor()
+                        cursor.execute(sql)
+                        cursor.commit()
+
+                        card_ID = cursor.fetchall()[0][0]
+                        request += str(card_ID) + ", "
+                    request = request[:-2]
+
+                    await websocket.send(request)
+            elif(self.players_roles_ID[self.Get_i(player_ID)] == 4):
+                if((killer_ID == "1")):
+                    sql = "exec dbo.Lose_all_cards\n"
+                    sql += "@player_ID = " + str(killer_ID) + ",\n"
+                    sql += "@room_ID = " + str(self.room_ID)
+
+                    cursor = self.conn.cursor()
+                    cursor.execute(sql)
+                    cursor.commit()
+
+                    cards_ID = []
+                    for row in cursor:
+                        cards_ID.append(str(row[0]))
+
+                    request = "LOSE ALL CARDS\n"
+                    request += str(killer_ID) + "\n"
+                    for i in range(len(cards_ID)):
+                        request += str(cards_ID[i]) + ", "
+                    request = request[:-2]
+
+                    asyncio.get_event_loop().run_until_complete(self.Send_all(request))
+
+        return code
 
     # Основной метод класса. Осуществляет приём и обмен сообщениями между участниками комнаты
     async def Data_exchange(self, websocket, path):
@@ -1031,13 +1226,102 @@ class Room:
                     request += "CHECK FAIL\n"
                     request += str(check_card_ID) + "\n"
                     request += "LOSE 3 HP"
+                    asyncio.get_event_loop().run_until_complete(self.Send_all(request))
 
+                    killer_ID = ""
                     for i in range(3):
-                        sql = ""
+                        code = self.Lose_health(websocket, player_ID, "", message)
+                        if(code == "10"):
+                            break
 
                 else:
                     request += "CHECK SUCCESS\n"
                     request += str(check_card_ID)
+                    asyncio.get_event_loop().run_until_complete(self.Send_all(request))
+            # Розыгрыш карты "Магазин"
+            elif(message_split[0] == "PLAY GENERAL STORE"):
+                player_ID = message_split[1]
+                card_ID = message_split[2]
+
+                cards_ID = []
+                for i in range(self.count_of_alive):
+                    sql = "exec dbo.Set_cards_to_selection_stage\n"
+                    sql += "@room_ID = " + str(self.room_ID)
+
+                    cursor = self.conn.cursor()
+                    cursor.execute(sql)
+                    cursor.commit()
+
+                    cards_ID.append(str(cursor.fetchall()[0][0]))
+
+                request = message
+                request += "\n"
+                for i in range(len(cards_ID)):
+                    request += str(cards_ID[i]) + ", "
+                request = request[:-2]
+
+                asyncio.get_event_loop().run_until_complete(self.Send_all(request))
+            # Выбор игроком карты из магазина
+            elif(message_split[0] == "CHOOSE 1 CARD FROM GENERAL STORE"):
+                player_ID = message_split[1]
+                card_ID = message_split[2]
+
+                sql = "exec dbo.Passing_card_to_player\n"
+                sql += "@player_ID = " + str(player_ID) + ",\n"
+                sql += "@card_ID = " + str(card_ID) + ",\n"
+                sql += "@card_location = 3"
+
+                cursor = self.conn.cursor()
+                cursor.execute(sql)
+                cursor.commit()
+
+                request = message
+
+                asyncio.get_event_loop().run_until_complete(self.Send_all(request))
+            # Розыгрыш карты "Салун"
+            elif(message_split[0] == "PLAY SALOON"):
+                player_ID = message_split[1]
+                card_ID = message_split[2]
+
+                sql = "exec dbo.Recovery_health_all_players\n"
+                sql += "@room_ID = " + str(self.room_ID)
+
+                cursor = self.conn.cursor()
+                cursor.execute(sql)
+                cursor.commit()
+
+                recovery_HP_players_ID = []
+                for row in cursor:
+                    recovery_HP_players_ID.append(str(row[0]))
+
+                request = message
+                request += "\n"
+                request += "GET 1 HP\n"
+                if(len(recovery_HP_players_ID) == 0):
+                    request += "NOBODY"
+                else:
+                    for i in range(len(recovery_HP_players_ID)):
+                        request += str(recovery_HP_players_ID[i]) + ", "
+                    request = request[:-2]
+
+                asyncio.get_event_loop().run_until_complete(self.Send_all(request))
+            # Розыгрыш карты "Прицел"
+            elif(message_split[0] == "PLAY SCOPE"):
+                player_ID = message_split[1]
+                card_ID = message_split[2]
+
+                # Проверка, выложена ли на столе у игрока карта "Прицел"
+
+                sql = "exec dbo.Change_additional_attack_range\n"
+                sql += "@player_ID = " + str(player_ID) + ",\n"
+                sql += "@n = 1"
+
+                cursor = self.conn.cursor()
+                cursor.execute(sql)
+                cursor.commit()
+
+                request = message
+                asyncio.get_event_loop().run_until_complete(self.Send_all(request))
 
             # Вспомогательные команды
             # Потеря единицы здоровья игроком
@@ -1050,194 +1334,7 @@ class Room:
                 else:
                     player_ID = message_split[1]
 
-                sql = "exec dbo.Lose_health\n"
-                sql += "@player_ID = " + str(player_ID)
-
-                cursor = self.conn.cursor()
-                cursor.execute(sql)
-                cursor.commit()
-
-                request = message
-                asyncio.get_event_loop().run_until_complete(self.Send_all(request))
-
-                code = str(cursor.fetchall()[0][0])
-
-                # Если игрок погиб
-                if(code == "10"):
-                    request = "PLAYER DIED\n"
-                    if(killer_ID != ""):
-                        request = str(player_ID) + ", " + str(killer_ID) + "\n"
-                    else:
-                        request = str(player_ID) + "\n"
-                    request += str(self.players_roles_ID[self.Get_i(player_ID)])
-
-                    self.players_alive[self.Get_i(player_ID)] = 0
-
-                    asyncio.get_event_loop().run_until_complete(self.Send_all(request))
-
-                    # Выполнена ли цель?
-                    # Получаем ID ролей оставшихся в живых игроков
-                    sql = "exec dbo.Get_alive_roles_ID\n"
-                    sql += "@room_ID = " + str(self.room_ID)
-
-                    cursor = self.conn.cursor()
-                    cursor.execute(sql)
-
-                    alive_roles_ID = []
-                    for row in cursor:
-                        alive_roles_ID.append(str(row[0]))
-
-                    # Если убит шериф
-                    if(self.players_roles_ID[self.Get_i(player_ID)] == 1):
-                        if((len(alive_roles_ID) > 1) or ((len(alive_roles_ID) == 1) and (alive_roles_ID[0] != "3"))):
-                            request += "GAME OVER\n"
-                            request += "OUTLAW WIN\n"
-                            request += "WIN\n"
-                            
-                            for i in range(len(self.players_roles_ID)):
-                                if(self.players_roles_ID[i] == 2):
-                                    request += str(self.players_ID[i]) + ", "
-                            request = request[:-2]
-                            request += "\n"
-                            request += "LOSE\n"
-
-                            for i in range(len(self.players_roles_ID)):
-                                if(self.players_roles_ID[i] != 2):
-                                    request += str(self.players_ID[i]) + ", "
-                            request = request[:-2]
-
-                            asyncio.get_event_loop().run_until_complete(self.Send_all(request))
-                        else:
-                            request += "GAME OVER\n"
-                            request += "RENEGATE WIN\n"
-                            request += "WIN\n"
-                            
-                            for i in range(len(self.players_roles_ID)):
-                                if(self.players_roles_ID[i] == 3):
-                                    request += str(self.players_ID[i]) + ", "
-                            request = request[:-2]
-                            request += "\n"
-                            request += "LOSE\n"
-
-                            for i in range(len(self.players_roles_ID)):
-                                if(self.players_roles_ID[i] != 3):
-                                    request += str(self.players_ID[i]) + ", "
-                            request = request[:-2]
-
-                            asyncio.get_event_loop().run_until_complete(self.Send_all(request))
-                    elif((self.players_roles_ID[self.Get_i(player_ID)] == 2) or (self.players_roles_ID[self.Get_i(player_ID)] == 3)):
-                        sheriff_and_deputes_only = True
-                        for i in range(len(alive_roles_ID)):
-                            if((alive_roles_ID[i] == "2") or (alive_roles_ID[i] == "3")):
-                                sheriff_and_deputes_only = False
-                                break
-
-                        if(sheriff_and_deputes_only):
-                            request += "GAME OVER\n"
-                            request += "SHERIFF AND DEPUTES WIN\n"
-                            request += "WIN\n"
-                            
-                            for i in range(len(self.players_roles_ID)):
-                                if((self.players_roles_ID[i] == 1) or (self.players_roles_ID[i] == 4)):
-                                    request += str(self.players_ID[i]) + ", "
-                            request = request[:-2]
-                            request += "\n"
-                            request += "LOSE\n"
-
-                            for i in range(len(self.players_roles_ID)):
-                                if((self.players_roles_ID[i] != 1) and (self.players_roles_ID[i] != 4)):
-                                    request += str(self.players_ID[i]) + ", "
-                            request = request[:-2]
-
-                            asyncio.get_event_loop().run_until_complete(self.Send_all(request))
-
-                    # Есть ли в игре "Большой Змей"?
-                    if(self.vulture_sam_player_ID != -1): # Да
-                        sql = "exec dbo.Send_all_cards_to_player\n"
-                        sql += "@player_ID_from = " + str(player_ID) + ",\n"
-                        sql += "@player_ID_to = " + str(self.vulture_sam_player_ID)
-
-                        cursor = self.conn.cursor()
-                        cursor.execute(sql)
-                        cursor.commit()
-
-                        cards_ID = []
-                        for row in cursor:
-                            cards_ID.append(str(row[0]))
-
-                        request = "USE CHARACTER\n"
-                        request += "15\n"
-                        request += str(self.vulture_sam_player_ID) + "\n"
-                        request += "GET ALL CARDS FROM PLAYER\n"
-                        request += str(player_ID) + "\n"
-                        for i in range(len(cards_ID)):
-                            request += str(cards_ID[i]) + ", "
-                        request = request[:-2]
-
-                        asyncio.get_event_loop().run_until_complete(self.Send_all(request))
-                    else: # Нет
-                        sql = "exec dbo.Lose_all_cards\n"
-                        sql += "@player_ID = " + str(player_ID) + ",\n"
-                        sql += "@room_ID = " + str(self.room_ID)
-
-                        cursor = self.conn.cursor()
-                        cursor.execute(sql)
-                        cursor.commit()
-
-                        cards_ID = []
-                        for row in cursor:
-                            cards_ID.append(str(row[0]))
-
-                        request = "LOSE ALL CARDS\n"
-                        request += str(player_ID) + "\n"
-                        for i in range(len(cards_ID)):
-                            request += str(cards_ID[i]) + ", "
-                        request = request[:-2]
-
-                        asyncio.get_event_loop().run_until_complete(self.Send_all(request))
-
-                    # Какая роль убитого игрока?
-                    if(self.players_roles_ID[self.Get_i(player_ID)] == 2):
-                        if(killer_ID != ""):
-                            request = "GET 3 CARDS\n"
-                            request += str(player_ID) + "\n"
-
-                            for i in range(3):
-                                sql = "exec dbo.Set_card_to_player_from_Deck\n"
-                                sql += "@player_ID = " + str(player_ID) + ",\n"
-                                sql += "@room_ID = " + str(self.room_ID)
-
-                                cursor = self.conn.cursor()
-                                cursor.execute(sql)
-                                cursor.commit()
-
-                                card_ID = cursor.fetchall()[0][0]
-                                request += str(card_ID) + ", "
-                            request = request[:-2]
-
-                            await websocket.send(request)
-                    elif(self.players_roles_ID[self.Get_i(player_ID)] == 4):
-                        if((killer_ID == "1")):
-                            sql = "exec dbo.Lose_all_cards\n"
-                            sql += "@player_ID = " + str(killer_ID) + ",\n"
-                            sql += "@room_ID = " + str(self.room_ID)
-
-                            cursor = self.conn.cursor()
-                            cursor.execute(sql)
-                            cursor.commit()
-
-                            cards_ID = []
-                            for row in cursor:
-                                cards_ID.append(str(row[0]))
-
-                            request = "LOSE ALL CARDS\n"
-                            request += str(killer_ID) + "\n"
-                            for i in range(len(cards_ID)):
-                                request += str(cards_ID[i]) + ", "
-                            request = request[:-2]
-
-                            asyncio.get_event_loop().run_until_complete(self.Send_all(request))
-
+                self.Lose_health(websocket, player_ID, killer_ID, message)
                 self.Cards_to_Dropping()
 
                 if(len(message_split) > 2):
