@@ -41,6 +41,33 @@ class Room:
 
     cards_ID_to_dropping = [] # Список карт, которые необходимо будет отправить в сброс
 
+    # Словарь персонажей и их ID значений из таблицы [Characters]
+    dict_characters = {
+    "bart_cassidy": 1,
+    "black_jack": 2,
+    "calamity_janet": 3,
+    "el_gringo": 4,
+    "jesse_jones": 5,
+    "jourdonnais": 6,
+    "kit_carison": 7,
+    "lucky_duke": 8,
+    "paul_regret": 9,
+    "pedro_ramires": 10,
+    "rose_doolan": 11,
+    "sid_ketchum": 12,
+    "slab_the_killer": 13,
+    "suzy_lafayette": 14,
+    "vulture_sam": 15,
+    "willy_the_kid": 16
+    }
+
+    # Словарь ролей и их значений ID из таблицы [Roles]
+    dict_roles = {
+    "sheriff": 1,
+    "outlaw": 2,
+    "renegate": 3,
+    "deputy": 4}
+
     def __init__(self, max_count_of_players, room_ID, room_IP, room_port):
         self.max_count_of_players = max_count_of_players
 
@@ -109,6 +136,53 @@ class Room:
         cursor = self.conn.cursor()
         cursor.execute(sql)
         cursor.commit()
+
+    # Реализация проверки бочки при выстреле
+    async def Check_barrel(self, message, player_ID, card_ID):
+        sql = "exec dbo.Get_card_for_checking\n"
+        sql += "@room_ID = " + str(self.room_ID)
+
+        cursor = self.conn.cursor()
+        cursor.execute(sql)
+        cursor.commit()
+
+        request = message + "\n"
+        check_card_ID = -1
+        suit = ""
+        for row in cursor:
+            check_card_ID = int(row[0])
+            suit = str(row[2])
+
+        if(suit == "H"):
+            request += "CHECK SUCCESS\n"
+        else:
+            request += "CHECK FAIL\n"
+        request += str(check_card_ID)
+
+        if(len(message_split) > 3):
+            if(message_split[3] == "PLAY GATLING"):
+                request += "\n"
+                request += "PLAY GATLING"
+            if((message_split[3] == "PLAY GATLING") and (self.counter_helper + 1 < self.count_of_alive) and (suit == "H")):
+                self.counter_helper = self.counter_helper + 1
+
+                while(true):
+                    if(self.current_queue + 1 <= self.max_count_of_players):
+                        self.current_queue_helper = self.current_queue + 1
+                    else:
+                        self.current_queue_helper = 1
+                    self.current_i_queue_helper = self.Get_i_queue(self.current_queue_helper)
+                    if(self.players_alive[self.current_i_queue_helper] == 1):
+                        break
+
+                request = "PLAY GATLING\n"
+                request += str(player_ID) + ", " + str(self.players_ID[self.current_i_queue_helper]) + "\n"
+                request += str(self.cards_ID_to_dropping[0])
+                asyncio.get_event_loop().run_until_complete(self.Send_all(request))
+            elif((message_split[3] == "PLAY GATLING") and (self.counter_helper + 1 == self.count_of_alive) and (suit == "H")):
+                self.Cards_to_Dropping()
+
+        asyncio.get_event_loop().run_until_complete(self.Send_all(request))
 
     # Потеря единицы жизни игроком
     async def Lose_health(self, websocket, player_ID, killer_ID, message):
@@ -959,50 +1033,7 @@ class Room:
                 player_ID = message_split[1]
                 card_ID = message_split[2]
 
-                sql = "exec dbo.Get_card_for_checking\n"
-                sql += "@room_ID = " + str(self.room_ID)
-
-                cursor = self.conn.cursor()
-                cursor.execute(sql)
-                cursor.commit()
-
-                request = message + "\n"
-                check_card_ID = -1
-                suit = ""
-                for row in cursor:
-                    check_card_ID = int(row[0])
-                    suit = str(row[2])
-
-                if(suit == "H"):
-                    request += "CHECK SUCCESS\n"
-                else:
-                    request += "CHECK FAIL\n"
-                request += str(check_card_ID)
-
-                if(len(message_split) > 3):
-                    if(message_split[3] == "PLAY GATLING"):
-                        request += "\n"
-                        request += "PLAY GATLING"
-                    if((message_split[3] == "PLAY GATLING") and (self.counter_helper + 1 < self.count_of_alive) and (suit == "H")):
-                        self.counter_helper = self.counter_helper + 1
-
-                        while(true):
-                            if(self.current_queue + 1 <= self.max_count_of_players):
-                                self.current_queue_helper = self.current_queue + 1
-                            else:
-                                self.current_queue_helper = 1
-                            self.current_i_queue_helper = self.Get_i_queue(self.current_queue_helper)
-                            if(self.players_alive[self.current_i_queue_helper] == 1):
-                                break
-
-                        request = "PLAY GATLING\n"
-                        request += str(player_ID) + ", " + str(self.players_ID[self.current_i_queue_helper]) + "\n"
-                        request += str(self.cards_ID_to_dropping[0])
-                        asyncio.get_event_loop().run_until_complete(self.Send_all(request))
-                    elif((message_split[3] == "PLAY GATLING") and (self.counter_helper + 1 == self.count_of_alive) and (suit == "H")):
-                        self.Cards_to_Dropping()
-
-                asyncio.get_event_loop().run_until_complete(self.Send_all(request))
+                self.Check_barrel(message, player_ID, card_ID)
             # Розыгрыш карты "Уэлс фарго"
             elif(message_split[0] == "PLAY WELLS FARGO"):
                 player_ID = message_split[1]
@@ -1323,6 +1354,91 @@ class Room:
                 request = message
                 asyncio.get_event_loop().run_until_complete(self.Send_all(request))
 
+            # Использование свойств персонажей
+            elif(message_split[0] == "USE CHARACTER"):
+                character_ID = message_split[1]
+                player_ID = message_split[2]
+
+                # Если используется свойство персонажа "Счастливчик Люк"
+                if(character_ID == str(self.dict_characters["lucky_duke"])):
+                    self.Check_barrel(message, player_ID, card_ID)
+                # Если используется свойство персонажа "Неуловимый Джо"
+                elif(character_ID == str(self.dict_characters["paul_regret"])):
+                    sql = "exec dbo.Change_additional_defence_range\n"
+                    sql += "@player_ID = " + str(player_ID) + ",\n"
+                    sql += "@n = 1"
+
+                    cursor = self.conn.cursor()
+                    cursor.execute(sql)
+                    cursor.commit()
+                
+                    request = "0 OK"
+                    await websocket.send(request)
+                # Если используется свойство персонажа "Малыш Билли"
+                elif(character_ID == str(self.dict_characters["willy_the_kid"])):
+                    player_ID = message_split[4].split(', ')[0]
+                    target_ID = message_split[4].split(', ')[1]
+                    card_ID = message_split[5]
+
+                    # Проверка, может ли игрок выстрелить
+
+                    self.cards_ID_to_dropping.append(int(card_ID))
+
+                    request = message
+                    asyncio.get_event_loop().run_until_complete(self.Send_all(request))
+                # Если используется свойство персонажа "Туко"
+                elif(character_ID == str(self.dict_characters["pedro_ramires"])):
+                    request = message
+                    asyncio.get_event_loop().run_until_complete(self.Send_all_except_one(request, player_ID))
+
+                    sql = "exec dbo.Set_card_to_player_from_Dropping\n"
+                    sql += "@player_ID = " + str(player_ID) + ",\n"
+                    sql += "@room_ID = " + str(self.room_ID)
+
+                    cursor = self.conn.cursor()
+                    cursor.execute(sql)
+                    cursor.commit()
+
+                    dropping_card_ID = str(cursor.fetchall()[0][0])
+
+                    sql = "exec dbo.Set_card_to_player_from_Deck\n"
+                    sql += "@player_ID = " + str(player_ID) + ",\n"
+                    sql += "@room_ID = " + str(self.room_ID)
+
+                    cursor = self.conn.cursor()
+                    cursor.execute(sql)
+                    cursor.commit()
+
+                    deck_card_ID = str(cursor.fetchall()[0][0])
+
+                    request = "GET 1 CARD CLOSED FROM DROPPING\n"
+                    request += str(dropping_card_ID) + "\n"
+                    request += "GET 1 CARD CLOSED FROM DECK\n"
+                    request += str(deck_card_ID)
+
+                    await websocket.send(request)
+                # Если используется свойство персонажа "Кит Карсон"
+                elif(character_ID == str(self.dict_characters["kit_carison"])):
+                    request = message
+                    asyncio.get_event_loop().run_until_complete(self.Send_all(request))
+
+                    cards_ID = []
+                    for i in range(3):
+                        sql = "exec dbo.Set_card_to_player_from_Deck\n"
+                        sql += "@player_ID = " + str(player_ID) + ",\n"
+                        sql += "@room_ID = " + str(self.room_ID)
+
+                        cursor = self.conn.cursor()
+                        cursor.execute(sql)
+                        cursor.commit()
+
+                        cards_ID.append(str(cursor.fetchall()[0][0]))
+
+                    request = "GET 3 CARD CLOSED FROM DECK\n"
+                    request += str(cards_ID[0]) + ", " + str(cards_ID[1]) + ", " + str(cards_ID[2])
+
+                    await websocket.send(request)
+
             # Вспомогательные команды
             # Потеря единицы здоровья игроком
             elif(message_split[0] == "LOSE 1 HP"):
@@ -1377,7 +1493,23 @@ class Room:
                         self.Cards_to_Dropping()
 
                     asyncio.get_event_loop().run_until_complete(self.Send_all(request))
+            # Возвращение карты в колоду после использовании роли "Кит Карсон"
+            elif(message_split[0] == "RETURN 1 CARD CLOSED ON DECK"):
+                player_ID = message_split[1]
+                card_ID = message_split[2]
 
+                request = "RETURN 1 CARD CLOSED ON DECK"
+                request += str(player_ID)
+
+                asyncio.get_event_loop().run_until_complete(self.Send_all(request))
+
+                sql = "exec dbo.Return_card_to_Deck\n"
+                sql += "@card_ID = " + str(card_ID) + ",\n"
+                sql += "@room_ID = " + str(self.room_ID)
+
+                cursor = self.conn.cursor()
+                cursor.execute(sql)
+                cursor.commit()
 
             self.conn.close()
         except(Exception):
