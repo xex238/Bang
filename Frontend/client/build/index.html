@@ -1,42 +1,54 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>BANG! Веб версия приложения</title>
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <link type="text/css" rel="stylesheet" href="css/materialize.min.css"  media="screen,projection"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-  <script type="text/javascript" src="js/materialize.min.js"></script>
-  <link rel="stylesheet" type="text/css" href="css/frontpage.css">
-  <link rel="preconnect" href="https://fonts.gstatic.com">
-<link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@1,100&display=swap" rel="stylesheet">
-</head>
-<body>
-  <!-- <canvas id=c width=1920 height=1080></canvas> -->
-  <div class="container"><div class="revolver"><span></span></div></div>
-  <img src="../Main_bang/bullets.png">
-  <div class="wrapper">
-    <h1>BANG!</h1>
-    <a id="status" href="registration.html" target="_blank">guest</a>
-  <a  class="popup">Одиночная игра</a>
-  <a href="#">Онлайн игра</a>
-  <a href="../rules.html">Бэнгопедия</a>
-  <a href="#">Настройки</a>
-  <a href="#">Игровая статистика</a>
-  <a href="../contact.html" target="_blank">Обратная связь</a>
-  <a href="https://www.google.ru/">Выход</a>
-  </div>
-  <div class="chooseplayers">
-    <div class="option1" ><a href="../game2.html">4 players</a></div>
-    <div class="option2" ><a href="../game.html">8 players</a></div>
-    <div class="option3">Cancel</div>
-    
-  </div>
+  <head>
+    <title>BANG!</title>
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+    <link
+      type="text/css"
+      rel="stylesheet"
+      href="css/materialize.min.css"
+      media="screen,projection"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script
+      type="text/javascript"
+      src="https://code.jquery.com/jquery-2.1.1.min.js"
+    ></script>
+    <script type="text/javascript" src="js/materialize.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/frontpage.css" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@1,100&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <!-- <canvas id=c width=1920 height=1080></canvas> -->
+    <div class="container">
+      <div class="revolver"><span></span></div>
+    </div>
+    <img src="../Main_bang/bullets.png" />
+    <div class="wrapper">
+      <h1>BANG!</h1>
+      <a id="status" href="registration.html" target="_blank">guest</a>
+      <a class="popup">Одиночная игра</a>
+      <a href="#">Онлайн игра</a>
+      <a href="../rules.html">Бэнгопедия</a>
+      <a href="#">Настройки</a>
+      <a href="#">Игровая статистика</a>
+      <a href="../contact.html" target="_blank">Обратная связь</a>
+      <a href="https://www.google.ru/">Выход</a>
+    </div>
+    <div class="chooseplayers">
+      <div class="option1"><a href="../game2.html">4 players</a></div>
+      <div class="option2"><a href="../game.html">8 players</a></div>
+      <div class="option3">Cancel</div>
+    </div>
 
-
-
-
-
-<script src="js/helper.js"></script>
-</body>
+    <script src="socket.js"></script>
+    <script src="js/helper.js"></script>
+  </body>
 </html>
