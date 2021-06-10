@@ -3,6 +3,8 @@ import websockets
 import random
 import math
 
+import class_DB
+
 class Room:
     room_ID = -1 # ID комнаты (аналогичен значению в БД)
     room_status = "open" # Статус комнаты (аналогичен значению в БД)
@@ -10,6 +12,8 @@ class Room:
     room_port = None # Порт комнаты
 
     server = None # Сервер комнаты
+
+    DB = class_DB.DB() # Экземпляр класса DB, в котором хранятся строки для вызова процедур/функций из базы данных
 
     max_count_of_players = -1 # Максимальное количество игроков в комнате
     count_of_players = 0 # Текущее количество игроков в комнате
@@ -117,34 +121,22 @@ class Room:
     # Очистка списка карт, которые необходимо отправит в сброс
     def Cards_to_Dropping(self):
         for i in range(len(self.cards_ID_to_dropping)):
-            sql = "exec dbo.Send_card_to_Dropping\n"
-            sql += "@card_ID = " + str(self.cards_ID_to_dropping[i]) + ",\n"
-            sql += "@room_ID = " + str(self.room_ID)
-
             cursor = self.conn.cursor()
-            cursor.execute(sql)
+            cursor.execute(self.DB.send_card_to_Dropping.format(card_ID = str(self.cards_ID_to_dropping[i]), room_ID = str(self.room_ID)))
             cursor.commit()
 
         self.cards_ID_to_dropping.clear()
 
     # Отправка заданной карты в сброс
     def Send_card_to_Dropping(self, card_ID):
-        sql = "exec dbo.Send_card_to_Dropping\n"
-        sql += "@card_ID = " + str(card_ID) + ",\n"
-        sql += "@room_ID = " + str(self.room_ID)
-
         cursor = self.conn.cursor()
-        cursor.execute(sql)
+        cursor.execute(self.DB.send_card_to_Dropping.format(card_ID = str(card_ID), room_ID = str(self.room_ID)))
         cursor.commit()
 
     # Получить карту из сброса и присвоить её игроку
     def Set_card_to_player_from_Dropping(self, player_ID):
-        sql = "exec dbo.Set_card_to_player_from_Dropping\n"
-        sql += "@player_ID = " + str(player_ID) + ",\n"
-        sql += "@room_ID = " + str(self.room_ID)
-
         cursor = self.conn.cursor()
-        cursor.execute(sql)
+        cursor.execute(self.DB.Set_card_to_player_from_Dropping.format(player_ID = str(player_ID), room_ID = str(self.room_ID)))
         cursor.commit()
 
         dropping_card_ID = str(cursor.fetchall()[0][0])
@@ -152,12 +144,8 @@ class Room:
 
     # Получить карту из колоды
     async def Get_card_from_Deck(self, player_ID, websocket):
-        sql = "exec dbo.Set_card_to_player_from_Deck\n"
-        sql += "@player_ID = " + str(player_ID) + ",\n"
-        sql += "@room_ID = " + str(self.room_ID)
-
         cursor = self.conn.cursor()
-        cursor.execute(sql)
+        cursor.execute(self.DB.set_card_to_player_from_Deck.format(player_ID = str(player_ID), room_ID = str(self.room_ID)))
         cursor.commit()
 
         deck_card_ID = str(cursor.fetchall()[0][0])
@@ -200,11 +188,8 @@ class Room:
 
     # Реализация проверки
     async def Checking(self, suit_ok, rating_ok):
-        sql = "exec dbo.Get_card_for_checking\n"
-        sql += "@room_ID = " + str(self.room_ID)
-
         cursor = self.conn.cursor()
-        cursor.execute(sql)
+        cursor.execute(self.DB.get_card_for_checking.format(room_ID = str(self.room_ID)))
         cursor.commit()
 
         check_card_ID = -1
@@ -300,11 +285,8 @@ class Room:
 
     # Реализация кражи карты с руки
     async def Steal_card_from_hand(self, player_ID, target_ID):
-        sql = "exec dbo.Get_player_cards\n"
-        sql += "@player_ID = " + str(target_ID)
-
         cursor = self.conn.cursor()
-        cursor.execute(sql)
+        cursor.execute(self.DB.get_player_cards.format(player_ID = str(target_ID)))
 
         cards_ID = []
         for row in cursor:
@@ -312,12 +294,8 @@ class Room:
 
         target_card_ID = cards_ID[math.floor(random.random() * len(cards_ID))]
 
-        sql = "exec dbo.Stealing_card_from_player\n"
-        sql += "@player_ID_to = " + str(player_ID) + ",\n"
-        sql += "@card_ID = " + str(target_card_ID)
-
         cursor = self.conn.cursor()
-        cursor.execute(sql)
+        cursor.execute(self.DB.stealing_card_from_player.format(player_ID_to = str(player_ID), card_ID = str(target_card_ID)))
         cursor.commit()
 
         request = "LOSE 1 CARD\n"
@@ -332,11 +310,8 @@ class Room:
 
     # Потеря единицы жизни игроком
     async def Lose_health(self, websocket, player_ID, killer_ID, message):
-        sql = "exec dbo.Lose_health\n"
-        sql += "@player_ID = " + str(player_ID)
-
         cursor = self.conn.cursor()
-        cursor.execute(sql)
+        cursor.execute(self.DB.lose_health.format(player_ID = str(player_ID)))
         cursor.commit()
 
         request = message
@@ -362,11 +337,8 @@ class Room:
 
             # Выполнена ли цель?
             # Получаем ID ролей оставшихся в живых игроков
-            sql = "exec dbo.Get_alive_roles_ID\n"
-            sql += "@room_ID = " + str(self.room_ID)
-
             cursor = self.conn.cursor()
-            cursor.execute(sql)
+            cursor.execute(self.DB.get_alive_roles_ID.format(room_ID = str(self.room_ID)))
 
             alive_roles_ID = []
             for row in cursor:
@@ -438,12 +410,8 @@ class Room:
 
             # Есть ли в игре "Большой Змей"?
             if(self.vulture_sam_player_ID != -1): # Да
-                sql = "exec dbo.Send_all_cards_to_player\n"
-                sql += "@player_ID_from = " + str(player_ID) + ",\n"
-                sql += "@player_ID_to = " + str(self.vulture_sam_player_ID)
-
                 cursor = self.conn.cursor()
-                cursor.execute(sql)
+                cursor.execute(self.DB.send_all_cards_to_player.format(player_ID_from = str(player_ID), player_ID_to = str(self.vulture_sam_player_ID)))
                 cursor.commit()
 
                 cards_ID = []
@@ -461,12 +429,8 @@ class Room:
 
                 asyncio.get_event_loop().run_until_complete(self.Send_all(request))
             else: # Нет
-                sql = "exec dbo.Lose_all_cards\n"
-                sql += "@player_ID = " + str(player_ID) + ",\n"
-                sql += "@room_ID = " + str(self.room_ID)
-
                 cursor = self.conn.cursor()
-                cursor.execute(sql)
+                cursor.execute(self.DB.lose_all_cards.format(player_ID = str(player_ID), room_ID = str(self.room_ID)))
                 cursor.commit()
 
                 cards_ID = []
@@ -488,12 +452,8 @@ class Room:
                     request += str(player_ID) + "\n"
 
                     for i in range(3):
-                        sql = "exec dbo.Set_card_to_player_from_Deck\n"
-                        sql += "@player_ID = " + str(player_ID) + ",\n"
-                        sql += "@room_ID = " + str(self.room_ID)
-
                         cursor = self.conn.cursor()
-                        cursor.execute(sql)
+                        cursor.execute(self.DB.set_card_to_player_from_Deck.format(player_ID = str(player_ID), room_ID = str(self.room_ID)))
                         cursor.commit()
 
                         card_ID = cursor.fetchall()[0][0]
@@ -503,12 +463,8 @@ class Room:
                     await websocket.send(request)
             elif(self.players_roles_ID[self.Get_i(player_ID)] == 4):
                 if((killer_ID == "1")):
-                    sql = "exec dbo.Lose_all_cards\n"
-                    sql += "@player_ID = " + str(killer_ID) + ",\n"
-                    sql += "@room_ID = " + str(self.room_ID)
-
                     cursor = self.conn.cursor()
-                    cursor.execute(sql)
+                    cursor.execute(self.DB.lose_all_cards.format(player_ID = str(killer_ID), room_ID = str(self.room_ID)))
                     cursor.commit()
 
                     cards_ID = []
@@ -541,13 +497,8 @@ class Room:
                     mail = message_split[1]
                     password = message_split[2]
 
-                    sql = "exec dbo.Add_player_to_room\n"
-                    sql += "@mail = '" + mail + "',\n"
-                    sql += "@password = '" + password + "',\n"
-                    sql += "@room_ID = " + str(self.room_ID)
-
                     cursor = self.conn.cursor()
-                    cursor.execute(sql)
+                    cursor.execute(self.DB.add_player_to_room.format(mail = mail, password = password, room_ID = str(self.room_ID)))
                     cursor.commit()
 
                     request = "HELLO\n"
@@ -557,11 +508,7 @@ class Room:
                         print(row)
                         print()
 
-                    sql = "exec dbo.Get_player_ID\n"
-                    sql += "@mail = '" + mail + "',\n"
-                    sql += "@password = '" + password + "'"
-
-                    cursor.execute(sql)
+                    cursor.execute(self.DB.get_player_ID.format(mail = mail, password = password))
 
                     player_ID = ""
                     for row in cursor:
@@ -617,11 +564,8 @@ class Room:
                     
 
                 # Запрос на получение max_count_of_players случайных персонажей
-                sql = "exec dbo.Getting_characters\n"
-                sql += "@n = " + str(self.max_count_of_players)
-
                 cursor = self.conn.cursor()
-                cursor.execute(sql)
+                cursor.execute(self.DB.getting_characters.format(n = str(self.max_count_of_players)))
                 cursor.commit()
 
                 for row in cursor:
@@ -653,12 +597,8 @@ class Room:
                 if(str(self.players_characters_ID[self.Get_i(int(player_ID))]) == "15"):
                     self.vulture_sam_player_ID = player_ID
 
-                sql = "exec dbo.Add_character_to_player\n"
-                sql += "@player_ID = " + player_ID + ",\n"
-                sql += "@characters_ID = " + str(self.players_characters_ID[self.Get_i(int(player_ID))])
-
                 cursor = self.conn.cursor()
-                cursor.execute(sql)
+                cursor.execute(self.DB.add_character_to_player.format(player_ID = player_ID, characters_ID = str(self.players_characters_ID[self.Get_i(int(player_ID))])))
                 cursor.commit()
                 code = cursor.fetchall()[0][0]
 
@@ -673,12 +613,8 @@ class Room:
             elif(message_split[0] == "GET ROLE"):
                 player_ID = message_split[1]
 
-                sql = "exec dbo.Add_role_to_player\n"
-                sql += "@player_ID = " + player_ID + ",\n"
-                sql += "@roles_ID = " + str(self.players_roles_ID[self.Get_i(int(player_ID))])
-
                 cursor = self.conn.cursor()
-                cursor.execute(sql)
+                cursor.execute(self.DB.add_role_to_player.format(player_ID = player_ID, roles_ID = str(self.players_roles_ID[self.Get_i(int(player_ID))])))
                 cursor.commit()
                 code = cursor.fetchall()[0][0]
 
@@ -711,22 +647,15 @@ class Room:
             elif(message_split[0] == "GET START CARDS"):
                 player_ID = message_split[1]
 
-                sql = "exec dbo.Get_max_lives\n"
-                sql += "@player_ID = " + str(player_ID)
-
                 cursor = self.conn.cursor()
-                cursor.execute(sql)
+                cursor.execute(self.DB.get_max_lives.format(player_ID = player_ID))
 
                 max_lives = str(cursor.fetchall()[0][0])
                 request = "SET START CARDS\n"
 
                 for i in range(int(max_lives)):
-                    sql = "exec dbo.Set_card_to_player_from_Deck\n"
-                    sql += "@player_ID = " + player_ID + ",\n"
-                    sql += "@room_ID = " + str(self.room_ID)
-
                     cursor = self.conn.cursor()
-                    cursor.execute(sql)
+                    cursor.execute(self.DB.set_card_to_player_from_Deck.format(player_ID = player_ID, room_ID = str(self.room_ID)))
                     cursor.commit()
 
                     card_ID = cursor.fetchall()[0][0]
@@ -1709,9 +1638,34 @@ class Room:
                 request = message
                 asyncio.get_event_loop().run_until_complete(self.Send_all_except_one(request, player_ID))
 
-                player_ID = message_split[0]
+                player_ID = message_split[1]
 
                 self.Get_card_from_Deck(player_ID, websocket)
+            # Получить 2 карты из колоды
+            elif(message_split[0] == "GET 2 CARDS CLOSED FROM DECK"):
+                request = message
+                asyncio.get_event_loop().run_until_complete(self.Send_all_except_one(request, player_ID))
+
+                player_ID = message_split[1]
+
+                deck_cards_ID = []
+
+                for i in range(2):
+                    sql = "exec dbo.Set_card_to_player_from_Deck\n"
+                    sql += "@player_ID = " + str(player_ID) + ",\n"
+                    sql += "@room_ID = " + str(self.room_ID)
+
+                    cursor = self.conn.cursor()
+                    cursor.execute(sql)
+                    cursor.commit()
+
+                    deck_cards_ID.append(str(cursor.fetchall()[0][0]))
+
+                request = "GET 2 CARDS\n"
+                request += str(deck_cards_ID[0]) + ", " + str(deck_cards_ID[1])
+
+                await websocket.send(request)
+
 
             self.conn.close()
         except(Exception):
