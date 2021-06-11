@@ -496,7 +496,7 @@ class Room:
     # Основной метод класса. Осуществляет приём и обмен сообщениями между участниками комнаты
     async def Data_exchange(self, websocket, path):
         try:
-            self.conn = pyodbc.connect(str(self.driver + self.server + self.database + self.user + self.password + self.TC))
+            self.conn = pyodbc.connect(self.DB.connection_string)
 
             message = await websocket.recv()
             message_split = message.split('\n')
@@ -1454,9 +1454,9 @@ class Room:
                 request += str(deck_cards_ID[0]) + ", " + str(deck_cards_ID[1])
 
                 await websocket.send(request)
-
-            self.conn.close()
-        except(Exception):
-            print('-1')
+        except(Exception) as e:
             await websocket.send('-1')
+            print(e)
+        finally:
+            print("---------------")
             self.conn.close()

@@ -1,4 +1,14 @@
 class DB:
+    # Параметры подключения к БД
+    driver = "Driver={ODBC Driver 17 for SQL Server};"
+    server = "Server=den1.mssql8.gear.host;"
+    database = "Database=bang2;"
+    user = "uid=bang2;"
+    password = "pwd=Tv08Yk-D8nZ?;"
+    TC = "Trusted_Connections=yes;"
+
+    connection_string = str(driver + server + database + user + password + TC)
+
     # 1.1) Запрос на регистрацию - есть ли пользователь в базе данных
     registration_request = ''
     # 1.2) Регистрация пользователя
@@ -170,7 +180,9 @@ class DB:
         self.set_weapon += '@name = {name},\n'
         self.set_weapon += '@base_weapon = {base_weapon},\n'
         self.set_weapon += '@firing_range = {firing_range},\n'
-        self.set_weapon += '@endless_bang = {endless_bang}'
+        self.set_weapon += '@endless_bang = {endless_bang},\n'
+        self.set_weapon += '@weapon_card_ID = {weapon_card_ID},\n'
+        self.set_weapon += '@room_ID = {room_ID}'
 
         self.get_card_for_checking = 'exec dbo.Get_card_for_checking\n'
         self.get_card_for_checking += '@room_ID = {room_ID}'
