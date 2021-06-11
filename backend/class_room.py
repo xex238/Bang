@@ -481,6 +481,18 @@ class Room:
 
         return code
 
+    # Установка оружия
+    async def Set_weapon(self, player_ID, name, firing_range, endless_bang, card_ID, message):
+        cursor = self.conn.cursor()
+        cursor.execute(self.DB.set_weapon.format(player_ID = str(player_ID), name = name, base_weapon = 0, firing_range = firing_range, endless_bang = endless_bang, weapon_card_ID = str(card_ID), room_ID = str(self.room_ID)))
+        cursor.commit()
+
+        cursor = self.conn.cursor()
+        cursor.execute(self.DB.change_card_location.format(card_ID = str(card_ID), card_location = '4'))
+        cursor.commit()
+
+        asyncio.get_event_loop().run_until_complete(self.Send_all(message))
+
     # Основной метод класса. Осуществляет приём и обмен сообщениями между участниками комнаты
     async def Data_exchange(self, websocket, path):
         try:
@@ -742,11 +754,8 @@ class Room:
 
                 # Проверка, может ли игрок сыграть карту "Пиво" (не максимальное ли количество жизней у игрока)
 
-                sql = "exec exec dbo.Recovery_health\n"
-                sql += "@player_ID = " + str(player_ID)
-
                 cursor = self.conn.cursor()
-                cursor.execute(sql)
+                cursor.execute(self.DB.recovery_health.format(player_ID = str(player_ID)))
                 cursor.commit()
 
                 self.Send_card_to_Dropping(int(card_ID))
@@ -808,29 +817,16 @@ class Room:
                 if(message_split[3] == "STEAL 1 CARD FROM FIELD"):
                     target_card_ID = message_split[4]
 
-                    sql = "exec dbo.Stealing_card_from_player\n"
-                    sql += "@player_ID_to = " + str(player_ID) + ",\n"
-                    sql += "@card_ID = " + str(target_card_ID)
-
                     cursor = self.conn.cursor()
-                    cursor.execute(sql)
+                    cursor.execute(self.DB.stealing_card_from_player.format(player_ID_to = str(player_ID), card_ID = str(target_card_ID)))
                     cursor.commit()
 
                     if((str(card_name) == "volcanic") or (str(card_name) == "schofield") or (str(card_name) == "remington") or (str(card_name) == "rev_carabine") or (str(card_name) == "winchester")):
-                        sql = "exec dbo.Get_weapon\n"
-                        sql += "@player_ID = " + str(player_ID) + ",\n"
-                        sql += "@name = 'colt',\n"
-                        sql += "@base_weapon = 1,\n"
-                        sql += "@firing_range = 1,\n"
-                        sql += "@endless_bang = 0"
+                        sql = self.DB.set_weapon.format(player_ID = str(player_ID), name = 'colt', base_weapon = 1, firing_range = 1, endless_bang = 0, weapon_card_ID = 'NULL', room_ID = str(self.room_ID))
                     elif(str(card_name) == "mustang"):
-                        sql = "exec dbo.Change_additional_defence_range\n"
-                        sql += "@player_ID = " + str(player_ID) + ",\n"
-                        sql += "@n = -1"
+                        sql = self.DB.change_additional_defence_range.format(player_ID = str(player_ID), n = str(-1))
                     elif(str(card_name) == "scope"):
-                        sql = "exec dbo.Change_additional_attack_range\n"
-                        sql += "@player_ID = " + str(player_ID) + ",\n"
-                        sql += "@n = -1"
+                        sql = self.DB.change_additional_attack_range.format(player_ID = str(player_ID), n = str(-1))
 
                     cursor = self.conn.cursor()
                     cursor.execute(sql)
@@ -850,28 +846,16 @@ class Room:
 
                     self.Send_card_to_Dropping(int(target_card_ID))
 
-                    sql = "exec dbo.Get_card_name\n"
-                    sql += "@card_ID = " + str(target_card_ID)
-
                     cursor = self.conn.cursor()
-                    cursor.execute(sql)
+                    cursor.execute(self.DB.get_card_name.format(card_ID = str(target_card_ID)))
                     card_name = cursor.fetchall()[0][0]
 
                     if((str(card_name) == "volcanic") or (str(card_name) == "schofield") or (str(card_name) == "remington") or (str(card_name) == "rev_carabine") or (str(card_name) == "winchester")):
-                        sql = "exec dbo.Get_weapon\n"
-                        sql += "@player_ID = " + str(player_ID) + ",\n"
-                        sql += "@name = 'colt',\n"
-                        sql += "@base_weapon = 1,\n"
-                        sql += "@firing_range = 1,\n"
-                        sql += "@endless_bang = 0"
+                        sql = self.DB.set_weapon.format(player_ID = str(player_ID), name = 'colt', base_weapon = 1, firing_range = 1, endless_bang = 0, weapon_card_ID = 'NULL', room_ID = str(self.room_ID))
                     elif(str(card_name) == "mustang"):
-                        sql = "exec dbo.Change_additional_defence_range\n"
-                        sql += "@player_ID = " + str(player_ID) + ",\n"
-                        sql += "@n = -1"
+                        sql = self.DB.change_additional_defence_range.format(player_ID = str(player_ID), n = str(-1))
                     elif(str(card_name) == "scope"):
-                        sql = "exec dbo.Change_additional_attack_range\n"
-                        sql += "@player_ID = " + str(player_ID) + ",\n"
-                        sql += "@n = -1"
+                        sql = self.DB.change_additional_attack_range.format(player_ID = str(player_ID), n = str(-1))
 
                     cursor = self.conn.cursor()
                     cursor.execute(sql)
@@ -880,11 +864,8 @@ class Room:
                     request = message
                     asyncio.get_event_loop().run_until_complete(self.Send_all(request))
                 elif(message_split[3] == "DISCARD 1 CARD FROM HAND"):
-                    sql = "exec dbo.Get_player_cards\n"
-                    sql += "@player_ID = " + str(player_ID)
-
                     cursor = self.conn.cursor()
-                    cursor.execute(sql)
+                    cursor.execute(self.DB.get_player_cards.format(player_ID = str(player_ID)))
 
                     cards_ID = []
                     for row in cursor:
@@ -904,141 +885,31 @@ class Room:
                 player_ID = message_split[1]
                 card_ID = message_split[2]
 
-                sql = "exec dbo.Set_weapon\n"
-                sql += "@player_ID = " + str(player_ID) + ",\n"
-                sql += "@name = 'volcanic',\n"
-                sql += "@base_weapon = 0,\n"
-                sql += "@firing_range = 1,\n"
-                sql += "@endless_bang = 1,\n"
-                sql += "@weapon_card_ID = " + str(card_ID) + ",\n"
-                sql += "@room_ID = " + str(self.room_ID)
-
-                cursor = self.conn.cursor()
-                cursor.execute(sql)
-                cursor.commit()
-
-                sql = "exec dbo.Change_card_location\n"
-                sql += "@card_ID = " + str(card_ID) + ",\n"
-                sql += "@card_location = 4"
-
-                cursor = self.conn.cursor()
-                cursor.execute(sql)
-                cursor.commit()
-
-                request = message
-                asyncio.get_event_loop().run_until_complete(self.Send_all(request))
+                self.Set_weapon(player_ID, 'volcanic', 1, 1, card_ID, message)
             # Розыгрыш карты "Скофилд"
             elif(message_split[0] == "PLAY SCHOFIELD"):
                 player_ID = message_split[1]
                 card_ID = message_split[2]
 
-                sql = "exec dbo.Set_weapon\n"
-                sql += "@player_ID = " + str(player_ID) + ",\n"
-                sql += "@name = 'volcanic',\n"
-                sql += "@base_weapon = 0,\n"
-                sql += "@firing_range = 2,\n"
-                sql += "@endless_bang = 0,\n"
-                sql += "@weapon_card_ID = " + str(card_ID) + ",\n"
-                sql += "@room_ID = " + str(self.room_ID)
-
-                cursor = self.conn.cursor()
-                cursor.execute(sql)
-                cursor.commit()
-
-                sql = "exec dbo.Change_card_location\n"
-                sql += "@card_ID = " + str(card_ID) + ",\n"
-                sql += "@card_location = 4"
-
-                cursor = self.conn.cursor()
-                cursor.execute(sql)
-                cursor.commit()
-
-                request = message
-                asyncio.get_event_loop().run_until_complete(self.Send_all(request))
+                self.Set_weapon(player_ID, 'schofield', 2, 0, card_ID, message)
             # Розыгрыш карты "Ремингтон"
             elif(message_split[0] == "PLAY REMINGTON"):
                 player_ID = message_split[1]
                 card_ID = message_split[2]
 
-                sql = "exec dbo.Get_weapon\n"
-                sql += "@player_ID = " + str(player_ID) + ",\n"
-                sql += "@name = 'remington',\n"
-                sql += "@base_weapon = 0,\n"
-                sql += "@firing_range = 3,\n"
-                sql += "@endless_bang = 0,\n"
-                sql += "@weapon_card_ID = " + str(card_ID) + ",\n"
-                sql += "@room_ID = " + str(self.room_ID)
-
-                cursor = self.conn.cursor()
-                cursor.execute(sql)
-                cursor.commit()
-
-                sql = "exec dbo.Change_card_location\n"
-                sql += "@card_ID = " + str(card_ID) + ",\n"
-                sql += "@card_location = 4"
-
-                cursor = self.conn.cursor()
-                cursor.execute(sql)
-                cursor.commit()
-
-                request = message
-                asyncio.get_event_loop().run_until_complete(self.Send_all(request))
+                self.Set_weapon(player_ID, 'remington', 3, 0, card_ID, message)
             # Розыгрыш карты "Карабин"
             elif(message_split[0] == "PLAY REV CARABINE"):
                 player_ID = message_split[1]
                 card_ID = message_split[2]
 
-                sql = "exec dbo.Get_weapon\n"
-                sql += "@player_ID = " + str(player_ID) + ",\n"
-                sql += "@name = 'rev_carabine',\n"
-                sql += "@base_weapon = 0,\n"
-                sql += "@firing_range = 4,\n"
-                sql += "@endless_bang = 0,\n"
-                sql += "@weapon_card_ID = " + str(card_ID) + ",\n"
-                sql += "@room_ID = " + str(self.room_ID)
-
-                cursor = self.conn.cursor()
-                cursor.execute(sql)
-                cursor.commit()
-
-                sql = "exec dbo.Change_card_location\n"
-                sql += "@card_ID = " + str(card_ID) + ",\n"
-                sql += "@card_location = 4"
-
-                cursor = self.conn.cursor()
-                cursor.execute(sql)
-                cursor.commit()
-
-                request = message
-                asyncio.get_event_loop().run_until_complete(self.Send_all(request))
+                self.Set_weapon(player_ID, 'rev_carabine', 4, 0, card_ID, message)
             # Розыгрыш карты "Винчестер"
             elif(message_split[0] == "PLAY WINCHESTER"):
                 player_ID = message_split[1]
                 card_ID = message_split[2]
 
-                sql = "exec dbo.Get_weapon\n"
-                sql += "@player_ID = " + str(player_ID) + ",\n"
-                sql += "@name = 'winchester',\n"
-                sql += "@base_weapon = 0,\n"
-                sql += "@firing_range = 5,\n"
-                sql += "@endless_bang = 0,\n"
-                sql += "@weapon_card_ID = " + str(card_ID) + ",\n"
-                sql += "@room_ID = " + str(self.room_ID)
-
-                cursor = self.conn.cursor()
-                cursor.execute(sql)
-                cursor.commit()
-
-                sql = "exec dbo.Change_card_location\n"
-                sql += "@card_ID = " + str(card_ID) + ",\n"
-                sql += "@card_location = 4"
-
-                cursor = self.conn.cursor()
-                cursor.execute(sql)
-                cursor.commit()
-
-                request = message
-                asyncio.get_event_loop().run_until_complete(self.Send_all(request))
+                self.Set_weapon(player_ID, 'winchester', 5, 0, card_ID, message)
             # Розыгрыш карты "Бочка"
             elif(message_split[0] == "PLAY BARREL"):
                 player_ID = message_split[1]
@@ -1046,12 +917,8 @@ class Room:
 
                 # Проверка, выложена ли на столе у игрока карта "Бочка"
 
-                sql = "exec dbo.Change_card_location\n"
-                sql += "@card_ID = " + str(card_ID) + ",\n"
-                sql += "@card_location = 4"
-
                 cursor = self.conn.cursor()
-                cursor.execute(sql)
+                cursor.execute(self.DB.change_card_location.format(card_ID = str(card_ID), card_location = 4))
                 cursor.commit()
 
                 request = message
@@ -1074,12 +941,8 @@ class Room:
                 request += str(player_ID) + "\n"
 
                 for i in range(3):
-                    sql = "exec dbo.Set_card_to_player_from_Deck\n"
-                    sql += "@player_ID = " + str(player_ID) + ",\n"
-                    sql += "@room_ID = " + str(self.room_ID)
-
                     cursor = self.conn.cursor()
-                    cursor.execute(sql)
+                    cursor.execute(self.DB.set_card_to_player_from_Deck.format(player_ID = str(player_ID), room_ID = str(self.room_ID)))
                     cursor.commit()
 
                     card_ID = cursor.fetchall()[0][0]
@@ -1101,12 +964,8 @@ class Room:
                 request += str(player_ID) + "\n"
 
                 for i in range(2):
-                    sql = "exec dbo.Set_card_to_player_from_Deck\n"
-                    sql += "@player_ID = " + str(player_ID) + ",\n"
-                    sql += "@room_ID = " + str(self.room_ID)
-
                     cursor = self.conn.cursor()
-                    cursor.execute(sql)
+                    cursor.execute(self.DB.set_card_to_player_from_Deck.format(player_ID = str(player_ID), room_ID = str(self.room_ID)))
                     cursor.commit()
 
                     card_ID = cursor.fetchall()[0][0]
@@ -1123,20 +982,12 @@ class Room:
 
                 # Проверка, есть ли у игрока на столе карта "Мустанг"
 
-                sql = "exec dbo.Change_additional_defence_range\n"
-                sql += "@player_ID = " + str(player_ID) + ",\n"
-                sql += "@n = 1"
-
                 cursor = self.conn.cursor()
-                cursor.execute(sql)
+                cursor.execute(self.DB.change_additional_defence_range.format(player_ID = str(player_ID), n = 1))
                 cursor.commit()
 
-                sql = "exec dbo.Change_card_location\n"
-                sql += "@card_ID = " + str(card_ID) + ",\n"
-                sql += "@card_location = 4"
-
                 cursor = self.conn.cursor()
-                cursor.execute(sql)
+                cursor.execute(self.DB.change_card_location.format(card_ID = str(card_ID), card_location = 4))
                 cursor.commit()
 
                 request = message
@@ -1147,13 +998,8 @@ class Room:
                 player_ID = message_split[1].split(', ')[1]
                 card_ID = message_split[2]
 
-                sql = "exec dbo.Passing_card_to_player\n"
-                sql = "@player_ID = " + str(player_ID) + ",\n"
-                sql = "@card_ID = " + str(card_ID) + ",\n"
-                sql = "@card_location = 4"
-
                 cursor = self.conn.cursor()
-                cursor.execute(sql)
+                cursor.execute(self.DB.Passing_card_to_player.format(player_ID = str(player_ID), card_ID = str(card_ID), card_location = 4))
                 cursor.commit()
 
                 request = message
@@ -1163,11 +1009,8 @@ class Room:
                 player_ID = message_split[1]
                 card_ID = message_split[2]
 
-                sql = "exec dbo.Get_card_for_checking\n"
-                sql += "@room_ID = " + str(self.room_ID)
-
                 cursor = self.conn.cursor()
-                cursor.execute(sql)
+                cursor.execute(self.DB.get_card_for_checking.format(room_ID = str(self.room_ID)))
                 cursor.commit()
 
                 request = message + "\n"
@@ -1250,12 +1093,8 @@ class Room:
 
                 # Проверка, выложена ли на столе у игрока карта "Динамит"
 
-                sql = "exec dbo.Change_card_location\n"
-                sql += "@card_ID = " + str(card_ID) + ",\n"
-                sql += "@card_location = 4"
-
                 cursor = self.conn.cursor()
-                cursor.execute(sql)
+                cursor.execute(self.DB.change_card_location.format(card_ID = str(card_ID), card_location = 4))
                 cursor.commit()
 
                 request = message
@@ -1289,11 +1128,8 @@ class Room:
 
                 cards_ID = []
                 for i in range(self.count_of_alive):
-                    sql = "exec dbo.Set_cards_to_selection_stage\n"
-                    sql += "@room_ID = " + str(self.room_ID)
-
                     cursor = self.conn.cursor()
-                    cursor.execute(sql)
+                    cursor.execute(self.DB.set_cards_to_selection_stage.format(room_ID = str(self.room_ID)))
                     cursor.commit()
 
                     cards_ID.append(str(cursor.fetchall()[0][0]))
@@ -1310,13 +1146,8 @@ class Room:
                 player_ID = message_split[1]
                 card_ID = message_split[2]
 
-                sql = "exec dbo.Passing_card_to_player\n"
-                sql += "@player_ID = " + str(player_ID) + ",\n"
-                sql += "@card_ID = " + str(card_ID) + ",\n"
-                sql += "@card_location = 3"
-
                 cursor = self.conn.cursor()
-                cursor.execute(sql)
+                cursor.execute(self.DB.passing_card_to_player.format(player_ID = str(player_ID), card_ID = str(card_ID), card_location = 3))
                 cursor.commit()
 
                 request = message
@@ -1327,11 +1158,8 @@ class Room:
                 player_ID = message_split[1]
                 card_ID = message_split[2]
 
-                sql = "exec dbo.Recovery_health_all_players\n"
-                sql += "@room_ID = " + str(self.room_ID)
-
                 cursor = self.conn.cursor()
-                cursor.execute(sql)
+                cursor.execute(self.DB.recovery_health_all_players.format(room_ID = str(self.room_ID)))
                 cursor.commit()
 
                 recovery_HP_players_ID = []
@@ -1356,12 +1184,8 @@ class Room:
 
                 # Проверка, выложена ли на столе у игрока карта "Прицел"
 
-                sql = "exec dbo.Change_additional_attack_range\n"
-                sql += "@player_ID = " + str(player_ID) + ",\n"
-                sql += "@n = 1"
-
                 cursor = self.conn.cursor()
-                cursor.execute(sql)
+                cursor.execute(self.DB.change_additional_attack_range.format(player_ID = str(player_ID), n = 1))
                 cursor.commit()
 
                 request = message
@@ -1377,12 +1201,8 @@ class Room:
                     self.Check_hit(message, player_ID, card_ID)
                 # Если используется свойство персонажа "Неуловимый Джо"
                 elif(character_ID == str(self.dict_characters["paul_regret"])):
-                    sql = "exec dbo.Change_additional_defence_range\n"
-                    sql += "@player_ID = " + str(player_ID) + ",\n"
-                    sql += "@n = 1"
-
                     cursor = self.conn.cursor()
-                    cursor.execute(sql)
+                    cursor.execute(self.DB.change_additional_defence_range.format(player_ID = str(player_ID), n = 1))
                     cursor.commit()
                 
                     request = "0 OK"
@@ -1406,12 +1226,8 @@ class Room:
 
                     dropping_card_ID = self.Set_card_to_player_from_Dropping(player_ID)
 
-                    sql = "exec dbo.Set_card_to_player_from_Deck\n"
-                    sql += "@player_ID = " + str(player_ID) + ",\n"
-                    sql += "@room_ID = " + str(self.room_ID)
-
                     cursor = self.conn.cursor()
-                    cursor.execute(sql)
+                    cursor.execute(self.DB.set_card_to_player_from_Deck.format(player_ID = str(player_ID), room_ID = str(self.room_ID)))
                     cursor.commit()
 
                     deck_card_ID = str(cursor.fetchall()[0][0])
@@ -1429,12 +1245,8 @@ class Room:
 
                     cards_ID = []
                     for i in range(3):
-                        sql = "exec dbo.Set_card_to_player_from_Deck\n"
-                        sql += "@player_ID = " + str(player_ID) + ",\n"
-                        sql += "@room_ID = " + str(self.room_ID)
-
                         cursor = self.conn.cursor()
-                        cursor.execute(sql)
+                        cursor.execute(self.DB.set_card_to_player_from_Deck.format(player_ID = str(player_ID), room_ID = str(self.room_ID)))
                         cursor.commit()
 
                         cards_ID.append(str(cursor.fetchall()[0][0]))
@@ -1461,12 +1273,8 @@ class Room:
                     self.Steal_card_from_hand(player_ID, player_ID)
                 # Если используется свойство персонажа "Хладнокровная Рози"
                 elif(character_ID == str(self.dict_characters["rose_doolan"])):
-                    sql = "exec dbo.Change_additional_attack_range\n"
-                    sql += "@player_ID = " + str(player_ID) + ",\n"
-                    sql += "@n = 1"
-
                     cursor = self.conn.cursor()
-                    cursor.execute(sql)
+                    cursor.execute(self.DB.Change_additional_attack_range.format(player_ID = str(player_ID), n = 1))
                     cursor.commit()
 
                     request = "0 OK"
@@ -1492,12 +1300,8 @@ class Room:
                     self.Get_card_from_Deck(player_ID, websocket)
                 # Если используется свойство персонажа "Бешеный Пёс"
                 elif(character_ID == str(self.dict_characters["black_jack"])):
-                    sql = "exec dbo.Set_card_to_player_from_Deck\n"
-                    sql += "@player_ID = " + str(player_ID) + ",\n"
-                    sql += "@room_ID = " + str(self.room_ID)
-
                     cursor = self.conn.cursor()
-                    cursor.execute(sql)
+                    cursor.execute(self.DB.set_card_to_player_from_Deck.format(player_ID = str(player_ID), room_ID = str(self.room_ID)))
                     cursor.commit()
 
                     card_ID_1 = str(cursor.fetchall()[0][0])
@@ -1515,12 +1319,8 @@ class Room:
                     card_ID_2 = self.Set_card_to_player_from_Dropping(player_ID)
 
                     if(result):
-                        sql = "exec dbo.Set_card_to_player_from_Deck\n"
-                        sql += "@player_ID = " + str(player_ID) + ",\n"
-                        sql += "@room_ID = " + str(self.room_ID)
-
                         cursor = self.conn.cursor()
-                        cursor.execute(sql)
+                        cursor.execute(self.DB.Set_card_to_player_from_Deck.format(player_ID = str(player_ID), room_ID = str(self.room_ID)))
                         cursor.commit()
 
                         card_ID_3 = str(cursor.fetchall()[0][0])
@@ -1539,11 +1339,8 @@ class Room:
 
                     # Проверка, не максимальное ли количество здоровья у игрока
 
-                    sql = "exec exec dbo.Recovery_health\n"
-                    sql += "@player_ID = " + str(player_ID)
-
                     cursor = self.conn.cursor()
-                    cursor.execute(sql)
+                    cursor.execute(self.DB.recovery_health.format(player_ID = str(player_ID)))
                     cursor.commit()
 
                     self.Send_card_to_Dropping(int(card_ID_1))
@@ -1626,12 +1423,8 @@ class Room:
 
                 asyncio.get_event_loop().run_until_complete(self.Send_all(request))
 
-                sql = "exec dbo.Return_card_to_Deck\n"
-                sql += "@card_ID = " + str(card_ID) + ",\n"
-                sql += "@room_ID = " + str(self.room_ID)
-
                 cursor = self.conn.cursor()
-                cursor.execute(sql)
+                cursor.execute(self.DB.return_card_to_Deck.format(card_ID = str(card_ID), room_ID = str(self.room_ID)))
                 cursor.commit()
             # Получить карту из колоды
             elif(message_split[0] == "GET 1 CARD CLOSED FROM DECK"):
@@ -1651,12 +1444,8 @@ class Room:
                 deck_cards_ID = []
 
                 for i in range(2):
-                    sql = "exec dbo.Set_card_to_player_from_Deck\n"
-                    sql += "@player_ID = " + str(player_ID) + ",\n"
-                    sql += "@room_ID = " + str(self.room_ID)
-
                     cursor = self.conn.cursor()
-                    cursor.execute(sql)
+                    cursor.execute(self.DB.set_card_to_player_from_Deck.format(player_ID = str(player_ID), room_ID = str(self.room_ID)))
                     cursor.commit()
 
                     deck_cards_ID.append(str(cursor.fetchall()[0][0]))
@@ -1665,7 +1454,6 @@ class Room:
                 request += str(deck_cards_ID[0]) + ", " + str(deck_cards_ID[1])
 
                 await websocket.send(request)
-
 
             self.conn.close()
         except(Exception):
