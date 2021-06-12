@@ -4,6 +4,7 @@ import random
 import math
 
 import class_DB
+import class_request
 
 class Room:
     room_ID = -1 # ID комнаты (аналогичен значению в БД)
@@ -14,6 +15,7 @@ class Room:
     server = None # Сервер комнаты
 
     DB = class_DB.DB() # Экземпляр класса DB, в котором хранятся строки для вызова процедур/функций из базы данных
+    requests = class_request.request()
 
     max_count_of_players = -1 # Максимальное количество игроков в комнате
     count_of_players = 0 # Текущее количество игроков в комнате
@@ -513,19 +515,15 @@ class Room:
                     cursor.execute(self.DB.add_player_to_room.format(mail = mail, password = password, room_ID = str(self.room_ID)))
                     cursor.commit()
 
-                    request = "HELLO\n"
-
                     for row in cursor:
-                        request += str(row[0]) + ", " + str(row[1]) + "\n"
-                        print(row)
-                        print()
+                        count_of_players = str(row[0])
+                        max_count_of_players = str(row[1])
 
                     cursor.execute(self.DB.get_player_ID.format(mail = mail, password = password))
 
                     player_ID = ""
                     for row in cursor:
                         player_ID = str(row[0])
-                        request += str(row[0])
                         print(row)
                         print()
 
@@ -538,11 +536,11 @@ class Room:
                     self.players_roles_ID.append(-1)
 
                     self.count_of_players = self.count_of_players + 1
+
+                    request = self.requests.hello.format(count_of_players = count_of_players, max_count_of_players = max_count_of_players, player_ID = player_ID)
                     await websocket.send(request)
 
-                    request = "NEW PLAYER\n"
-                    request += count_of_players
-
+                    request = self.requests.new_player.format(count_of_players = count_of_players)
                     asyncio.get_event_loop().run_until_complete(self.Send_all_except_one(request, player_ID))
                 # Если комната полная, то отклоняем подключение
                 elif(self.count_of_players == self.max_count_of_players):
@@ -568,7 +566,7 @@ class Room:
                         break
 
                 if(all_players_ready):
-                    asyncio.get_event_loop().run_until_complete(self.Send_all("PLANNING STAGE IS STARTING"))
+                    asyncio.get_event_loop().run_until_complete(self.Send_all(self.requests.planning))
 
                     # "Обнуление статусов всех игроков"
                     for i in range(len(self.players_status)):

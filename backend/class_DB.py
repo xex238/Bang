@@ -93,29 +93,29 @@ class DB:
     get_alive_roles_ID = ''
 
     def __init__(self):
-        self.registration_request = 'select dbo.Registration_request({mail}, {password}, {login})'
+        self.registration_request = 'select dbo.Registration_request(\'{mail}\', \'{password}\', \'{login}\')'
 
         self.registration = 'exec dbo.Registration\n'
-        self.registration += '@mail = {mail},\n'
-        self.registration += '@password = {password},\n'
-        self.registration += '@login = {login}'
+        self.registration += '@mail = \'{mail}\',\n'
+        self.registration += '@password = \'{password}\',\n'
+        self.registration += '@login = \'{login}\''
 
-        self.authorization_request = 'select dbo.Authorization_request({mail}, {password})'
+        self.authorization_request = 'select dbo.Authorization_request(\'{mail}\', \'{password}\')'
 
         self.available_rooms = 'exec dbo.Available_rooms'
 
         self.achivements_request = 'exec dbo.Achivements_request\n'
-        self.achivements_request += '@mail = {mail},\n'
-        self.achivements_request += '@password = {password}'
+        self.achivements_request += '@mail = \'{mail}\',\n'
+        self.achivements_request += '@password = \'{password}\''
 
         self.creating_room = 'exec dbo.Creating_room\n'
-        self.creating_room += '@mail = {mail},\n'
-        self.creating_room += '@password = {password},\n'
+        self.creating_room += '@mail = \'{mail}\',\n'
+        self.creating_room += '@password = \'{password}\',\n'
         self.creating_room += '@max_count_of_players = {max_count_of_players}'
 
         self.add_player_to_room = 'exec dbo.Add_player_to_room\n'
-        self.add_player_to_room += '@mail = {mail},\n'
-        self.add_player_to_room += '@password = {password},\n'
+        self.add_player_to_room += '@mail = \'{mail}\',\n'
+        self.add_player_to_room += '@password = \'{password}\',\n'
         self.add_player_to_room += '@room_ID = {room_ID}'
 
         self.getting_characters = 'exec dbo.Getting_characters\n'
@@ -130,12 +130,12 @@ class DB:
         self.add_role_to_player += '@roles_ID = {roles_ID}'
 
         self.get_user_ID = 'exec dbo.Get_user_ID\n'
-        self.get_user_ID += '@mail = {mail},\n'
-        self.get_user_ID += '@password = {password}'
+        self.get_user_ID += '@mail = \'{mail}\',\n'
+        self.get_user_ID += '@password = \'{password}\''
 
         self.get_player_ID = 'exec dbo.Get_player_ID\n'
-        self.get_player_ID += '@mail = {mail},\n'
-        self.get_player_ID += '@password = {password}'
+        self.get_player_ID += '@mail = \'{mail}\',\n'
+        self.get_player_ID += '@password = \'{password}\''
 
         self.get_max_lives = 'exec dbo.Get_max_lives\n'
         self.get_max_lives += '@player_ID = {player_ID}'
@@ -177,7 +177,7 @@ class DB:
 
         self.set_weapon = 'exec dbo.Set_weapon\n'
         self.set_weapon += '@player_ID = {player_ID},\n'
-        self.set_weapon += '@name = {name},\n'
+        self.set_weapon += '@name = \'{name}\',\n'
         self.set_weapon += '@base_weapon = {base_weapon},\n'
         self.set_weapon += '@firing_range = {firing_range},\n'
         self.set_weapon += '@endless_bang = {endless_bang},\n'
@@ -197,7 +197,7 @@ class DB:
 
         self.check_player_name_card = 'exec dbo.Check_player_name_card\n'
         self.check_player_name_card += '@player_ID = {player_ID},\n'
-        self.check_player_name_card += '@name = {name}'
+        self.check_player_name_card += '@name = \'{name}\''
 
         self.set_cards_to_table = 'exec dbo.Set_cards_to_table\n'
         self.set_cards_to_table += '@room_ID = {room_ID}'
