@@ -1,26 +1,43 @@
-<html>
-    <head>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
     <title>Регистрация</title>
-    <link rel="stylesheet" href="../css/registration.css">
-    </head>
-    <body>
-    
-    <form action="save_user.php" method="post">
-      <h2>Registration</h2>
-    <!--**** save_user.php - это адрес обработчика.  То есть, после нажатия на кнопку "Зарегистрироваться", данные из полей  отправятся на страничку save_user.php методом "post" ***** -->
-<p>
-    <label>Ваш логин:<br></label>
-    <input name="login" type="text" size="15" maxlength="15">
-    </p>
-<!--**** В текстовое поле (name="login" type="text") пользователь вводит свой логин ***** -->
-<p>
-    <label>Ваш пароль:<br></label>
-    <input name="password" type="password" size="15" maxlength="15">
-    </p>
-<!--**** В поле для паролей (name="password" type="password") пользователь вводит свой пароль ***** --> 
-<p>
-    <input id="submit_reg" type="submit" name="submit" value="Зарегистрироваться">
-<!--**** Кнопочка (type="submit") отправляет данные на страничку save_user.php ***** --> 
-</p></form>
-    </body>
-    </html>
+    <link rel="stylesheet" href="registration.css" />
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  </head>
+  <body>
+    <h1>Sign in</h1>
+    <form method="POST">
+      <div>name: <input type="text" name="name" id="signup-name" /></div>
+      <div>password: <input type="text" name="pass" id="signup-pass" /></div>
+      <div>email: <input type="text" name="email" id="signup-email" /></div>
+      <div>
+        birthday: <input type="text" name="birthday" id="signup-birthday" />
+      </div>
+      <div>
+        Sex:
+        <div>
+          <input type="radio" value="male" name="sex" checked class="sex" />male
+        </div>
+        <div>
+          <input type="radio" value="female" name="sex" class="sex" />female
+        </div>
+        <div>
+          <input type="radio" value="other" name="sex" class="sex" />other
+        </div>
+      </div>
+      <input type="submit" value="send" id="signup-submit" />
+    </form>
+    <hr />
+    <h2>login</h2>
+    <form action="core/login.php" method="POST">
+      <div>email: <input type="text" name="email" /></div>
+      <div>password: <input type="text" name="pass" /></div>
+      <input type="submit" value="send" />
+    </form>
+    <script src="core/ajax.js"></script>
+    <script src="core/script.js"></script>
+  </body>
+</html>

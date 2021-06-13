@@ -1,26 +1,24 @@
 <!DOCTYPE html>
-<html lang="ru">
-<head>
-	<meta charset="UTF-8">
-	<title>Форма обратной связи</title>
-	<link rel="stylesheet" href="../css/contact.css">
-</head>
-<body>
-	
-
-	<form name="form" action="mail.php" method="post" id="form_message">
-		<h2>Форма обратной связи.</h2>
-		<p> <div class="titles">Ваше имя*</div> <input class="input" name="name" type="text"/> </p>
-		 
-		<p> <div class="titles">Электронная почта*</div> <input class="input" name="email" type="text"/> </p>
-		 
-		<p> <div class="titles">Тема сообщения</div> <input class="input" name="subjects" type="text"/> </p>
-		 
-		<p> <div class="titles">Текст сообщения:</div><textarea name="message" cols="22" rows="5" /></textarea></p>
-		<p><input id="submit" value="Отправить" type="submit" /></p>
-    <a href="index.html">Вернуться</a>
-    
-	</form>
-
-</body>
+<html lang="en">
+  <head>
+    <title>Форма обратной связи</title>
+    <link rel="stylesheet" href="registration.css" />
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  </head>
+  <body>
+    <h1>Sign in</h1>
+    <form method="POST" id="contact-form">
+      <div>name: <input type="text" name="name" id="contact-name" /></div>
+      <div>email: <input type="text" name="email" id="contact-email" /></div>
+      <div>
+        issue: <textarea name="text" id="contact-text"></textarea>
+      </div>
+      
+      <input type="submit" value="send" id="contact-submit" />
+    </form>
+    <script src="core/ajax.js"></script>
+    <script src="core/cscript.js"></script>
+  </body>
 </html>
