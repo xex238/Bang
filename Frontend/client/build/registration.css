@@ -1,3 +1,7 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap');
+body{
+  font-family: 'Roboto', sans-serif;
+}
 #submit_reg{
   
   border: 1px solid black;
@@ -15,7 +19,7 @@
 }
 body{
 
-  background-image: url(../Main_bang/bullet_background.png);
+  background-image: url(Main_bang/bullet_background.png);
   }
   #submit_reg:hover{
   
@@ -30,3 +34,73 @@ body{
     background-color: rgba(255, 255,255, 0.9);
     box-shadow: 0 0 10px rgba(0,0,0,0.2);
   }
+  
+  .choice{
+    width: 700px;
+    height: 65px;
+    margin: 50px auto;
+    border:5px double crimson;
+    text-align: center;
+    background-color: rgba(255, 255,255, 0.9);
+    user-select: none;
+  }
+  .choice>div>a{
+    color:crimson;
+    font-size: 1.5rem;
+    font-weight: 900;
+    text-decoration: none;
+  }
+  .choice>div>a:hover{
+    color:black;
+    box-shadow: 0 0 10px crimson;
+  }
+  .formwrapper{
+    display: inline-flex;
+    margin-left: 250px;
+  }
+  .login{
+    margin-left: 75px;
+    display: none;
+  }
+  .regin{
+    display: none;
+  }
+  #showlog{
+    color:crimson;
+    font-size: 1.5rem;
+    font-weight: 900;
+  }
+  #showreg{
+    color:crimson;
+    font-size: 1.5rem;
+    font-weight: 900;
+  }
+  #showlog:hover{
+    color:black;
+    box-shadow: 0 0 10px crimson;
+  }
+  #showreg:hover{
+    color:black;
+    box-shadow: 0 0 10px crimson;
+  }
+  form>input{
+    color:crimson;
+    border:2px solid black;
+    background-color:white;
+    padding: 5px;
+  }
+  form>a{
+    color:crimson;
+    border:2px solid black;
+    background-color:white;
+    padding: 4px;
+  }
+  form>input:hover{
+    color:black;
+    box-shadow: 0 0 10px crimson;
+  }
+  form>a:hover{
+    color:black;
+    box-shadow: 0 0 10px crimson;
+  }
+  

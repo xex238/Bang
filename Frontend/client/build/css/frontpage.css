@@ -1,153 +1,121 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@1,100&display=swap');
-body
-{
-    overflow: hidden;
-    background-image:url("../Main_bang/bullet_background.png");
-    
+@import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@1,100&display=swap");
+body {
+  overflow: hidden;
+  background-image: url("../Main_bang/bullet_background.png");
 }
-canvas
-{
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%,-50%);
+canvas {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
-img{
+.loginpopup{
+  display: none;
+}
+img {
   width: 400px;
 }
-.wrapper{
+.wrapper {
   width: 250px;
   position: absolute;
-  top:10%;
+  top: 10%;
   left: 40%;
   border: 7px dotted #700505;
   padding: 15px;
   /* background-image: url("../Main_bang/back_menu.jpg");
   background-size: cover; */
-  background-color:wheat;
+  background-color: wheat;
 }
-.wrapper>a{
+.wrapper > a {
   display: block;
   color: #700505;
   font-size: 10px;
   margin-bottom: 5px;
   font-family: Verdana, Geneva, Tahoma, sans-serif;
-  padding-right:-15px ;
+  padding-right: -15px;
   text-align: center;
   border: 2px solid black;
 }
 
-.wrapper>a:hover{
+.wrapper > a:hover {
   margin-bottom: 5px;
   margin-bottom: 5px;
   padding: 3px;
   box-shadow: 5px 5px 5px 5px #700505;
 }
-.wrapper>h1{
-  color: #C4A316;
+.wrapper > h1 {
+  color: #c4a316;
   font-size: 5rem;
 }
-#status{
-  border:none;
-  position: absolute;
-right: 5px;
-top: 0;
-color: #700505;
-font-family: Verdana, Geneva, Tahoma, sans-serif;
-}
-.wrapper>span:hover{
+
+.wrapper > span:hover {
   padding: 3px;
   box-shadow: 5px 5px 5px 5px #700505;
 }
-div.container{
+div.container {
   position: absolute;
   width: 450px;
   height: 450px;
-  border-radius:50%;
+  border-radius: 50%;
   border: 5px solid grey;
-  top:20%; left:60%;
-  background-color:rgb(160, 176, 178);
-  
+  top: 20%;
+  left: 60%;
+  background-color: rgb(160, 176, 178);
 }
 div.revolver {
   border: 5px solid grey;
-  border-radius:50%;
-  height:2px; width:2px; /* To allow border-radius to work */
-  position:absolute;
-  top:50%; left:50%;
-  margin-top:-1px; margin-left:-1px;
-  box-shadow:
-    -75px -125px 0 40px #C4A316,
-     75px -125px 0 40px #C4A316,
-    150px    0px 0 40px #C4A316,
-     75px  125px 0 40px #C4A316,
-    -75px  125px 0 40px #C4A316,
-   -150px    0px 0 40px #C4A316;
-  -webkit-animation:rotate 6s infinite linear;
-  animation:rotate 6s infinite linear;
+  border-radius: 50%;
+  height: 2px;
+  width: 2px; /* To allow border-radius to work */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-top: -1px;
+  margin-left: -1px;
+  box-shadow: -75px -125px 0 40px #c4a316, 75px -125px 0 40px #c4a316,
+    150px 0px 0 40px #c4a316, 75px 125px 0 40px #c4a316,
+    -75px 125px 0 40px #c4a316, -150px 0px 0 40px #c4a316;
+  -webkit-animation: rotate 6s infinite linear;
+  animation: rotate 6s infinite linear;
 }
 @keyframes rotate {
   16.67% {
-    box-shadow:
-    -75px -125px 0 40px #C4A316,
-    75px -125px 0 40px #C4A316,
-    150px    0px 0 40px  #C4A316,
-    75px  125px 0 40px #C4A316,
-   -75px  125px 0 40px  #C4A316,
-  -150px    0px 0 40px white;
+    box-shadow: -75px -125px 0 40px #c4a316, 75px -125px 0 40px #c4a316,
+      150px 0px 0 40px #c4a316, 75px 125px 0 40px #c4a316,
+      -75px 125px 0 40px #c4a316, -150px 0px 0 40px white;
   }
-  33.33%   { 
-    box-shadow:
-    -75px -125px 0 40px #C4A316,
-    75px -125px 0 40px #C4A316,
-    150px    0px 0 40px  #C4A316,
-    75px  125px 0 40px #C4A316,
-   -75px  125px 0 40px  white,
-  -150px    0px 0 40px white;
+  33.33% {
+    box-shadow: -75px -125px 0 40px #c4a316, 75px -125px 0 40px #c4a316,
+      150px 0px 0 40px #c4a316, 75px 125px 0 40px #c4a316,
+      -75px 125px 0 40px white, -150px 0px 0 40px white;
   }
-  50%      { 
-    box-shadow:
-    -75px -125px 0 40px #C4A316,
-    75px -125px 0 40px #C4A316,
-    150px    0px 0 40px  #C4A316,
-    75px  125px 0 40px white,
-   -75px  125px 0 40px  white,
-  -150px    0px 0 40px white;
+  50% {
+    box-shadow: -75px -125px 0 40px #c4a316, 75px -125px 0 40px #c4a316,
+      150px 0px 0 40px #c4a316, 75px 125px 0 40px white,
+      -75px 125px 0 40px white, -150px 0px 0 40px white;
   }
-  66.67%   { 
-    box-shadow:
-    -75px -125px 0 40px #C4A316,
-    75px -125px 0 40px #C4A316,
-    150px    0px 0 40px  white,
-    75px  125px 0 40px white,
-   -75px  125px 0 40px  white,
-  -150px    0px 0 40px white;
+  66.67% {
+    box-shadow: -75px -125px 0 40px #c4a316, 75px -125px 0 40px #c4a316,
+      150px 0px 0 40px white, 75px 125px 0 40px white, -75px 125px 0 40px white,
+      -150px 0px 0 40px white;
   }
-  88.88%   { 
-    box-shadow:
-    -75px -125px 0 40px #C4A316,
-    75px -125px 0 40px white,
-    150px    0px 0 40px  white,
-    75px  125px 0 40px white,
-   -75px  125px 0 40px  white,
-  -150px    0px 0 40px white;
+  88.88% {
+    box-shadow: -75px -125px 0 40px #c4a316, 75px -125px 0 40px white,
+      150px 0px 0 40px white, 75px 125px 0 40px white, -75px 125px 0 40px white,
+      -150px 0px 0 40px white;
   }
   100% {
-    transform:rotate(-360deg);
-    box-shadow:
-    -75px -125px 0 40px white,
-    75px -125px 0 40px white,
-   150px    0px 0 40px  white,
-    75px  125px 0 40px white,
-   -75px  125px 0 40px  white,
-  -150px    0px 0 40px white;
+    transform: rotate(-360deg);
+    box-shadow: -75px -125px 0 40px white, 75px -125px 0 40px white,
+      150px 0px 0 40px white, 75px 125px 0 40px white, -75px 125px 0 40px white,
+      -150px 0px 0 40px white;
   }
 }
-.chooseplayers{
+.chooseplayers {
   width: 300px;
   height: 200px;
   margin: 0 auto;
-  background-color:green;
+  background-color: green;
   border: 3px double white;
   box-shadow: 5px 5px 5px 5px black;
   position: absolute;
@@ -155,15 +123,13 @@ div.revolver {
   left: 40%;
   display: none;
 }
-.chooseplayers>div:hover{
-  background-color:crimson;
+.chooseplayers > div:hover {
+  background-color: crimson;
 }
-.chooseplayers>div{
+.chooseplayers > div {
   text-align: center;
   color: white;
-
 }
-.chooseplayers>div>a{
+.chooseplayers > div > a {
   color: white;
 }
-

@@ -1,6 +1,8 @@
 const popup = document.querySelector(".popup");
+
 const chooseplayer = document.querySelector(".chooseplayers");
 const exit = document.querySelector(".option3");
+
 const shower = () => {
     chooseplayer.style.display = "block";
   

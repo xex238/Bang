@@ -8,7 +8,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   </head>
   <body>
-    <h1>Sign in</h1>
+    <div class="choice">
+      <span id="showlog">У меня уже есть аккаунт</span>
+      <span>||||</span>
+      <span id="showreg">Я хочу зарегистрироваться</span>
+      <div><a href="index.html">Вернуться в главное меню</a></div>
+    </div>
+    <div class="formwrapper">
+    <div class="regin">
     <form method="POST">
       <div>name: <input type="text" name="name" id="signup-name" /></div>
       <div>password: <input type="text" name="pass" id="signup-pass" /></div>
@@ -29,15 +36,20 @@
         </div>
       </div>
       <input type="submit" value="send" id="signup-submit" />
+      <a id="cancelreg">cancel</a>
     </form>
-    <hr />
-    <h2>login</h2>
+  </div>
+    <div class="login">
     <form action="core/login.php" method="POST">
       <div>email: <input type="text" name="email" /></div>
       <div>password: <input type="text" name="pass" /></div>
       <input type="submit" value="send" />
+      <a id="cancellog">cancel</a>
     </form>
+  </div>
+</div>
     <script src="core/ajax.js"></script>
     <script src="core/script.js"></script>
+    <script src="core/styler.js"></script>
   </body>
 </html>
