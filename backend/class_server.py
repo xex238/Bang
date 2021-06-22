@@ -32,30 +32,21 @@ class Server:
 
     # Конструктор
     def __init__(self):
-        #for i in range(self.count_of_rooms):
-        #    self.rooms_status[self.start_room_port + i] = False
-
         for i in range(self.count_of_rooms):
-            #self.rooms.append(class_room.Room(max_count_of_players, ID, "localhost", self.start_room_port + i))
             self.rooms_ports.append(self.start_room_port + i)
             self.rooms_status.append(True)
-            #self.rooms_servers.append(websockets.serve(self.rooms[i].Data_exchange, "localhost", self.main_port))
 
     # Запуск сервера
     def start_server(self):
         main_server = websockets.serve(self.Data_exchange, "localhost", self.main_port)
         asyncio.get_event_loop().run_until_complete(main_server)
-
-        for i in range(self.count_of_rooms):
-            if(not self.rooms_status[i]):
-                asyncio.get_event_loop().run_until_complete(self.rooms_servers[i])
-
         asyncio.get_event_loop().run_forever()
 
     # Основной метод класса. Осуществляет приём и обмен сообщениями между клиентом и сервером
     async def Data_exchange(self, websocket, path):
         try:
             self.conn = pyodbc.connect(self.DB.connection_string)
+            cursor = self.conn.cursor()
 
             message = await websocket.recv()
             message_split = message.split('\n')
@@ -69,7 +60,6 @@ class Server:
                 password = message_split[2]
                 login = message_split[3]
 
-                cursor = self.conn.cursor()
                 cursor.execute(self.DB.registration_request.format(mail = mail, password = password, login = login))
 
                 for row in cursor:
@@ -87,7 +77,6 @@ class Server:
                 mail = message_split[1]
                 password = message_split[2]
 
-                cursor = self.conn.cursor()
                 cursor.execute(self.DB.authorization_request.format(mail = mail, password = password))
 
                 for row in cursor:
@@ -97,7 +86,6 @@ class Server:
                 await websocket.send(result)
             # Получение списка комнат
             elif(message_split[0] == "GET ROOMS"):
-                cursor = self.conn.cursor()
                 cursor.execute(self.DB.available_rooms)
 
                 answer = "0 OK\n"
@@ -113,7 +101,6 @@ class Server:
                 mail = message_split[1]
                 password = message_split[2]
 
-                cursor = self.conn.cursor()
                 cursor.execute(self.DB.achivements_request.format(mail = mail, password = password))
 
                 answer = "0 OK\n"
@@ -128,17 +115,12 @@ class Server:
                 password = message_split[2]
                 max_count_of_players = message_split[3]
 
-                print(self.DB.creating_room.format(mail = mail, password = password, max_count_of_players = max_count_of_players))
-
-                cursor = self.conn.cursor()
                 cursor.execute(self.DB.creating_room.format(mail = mail, password = password, max_count_of_players = max_count_of_players))
-                #cursor.commit()
 
                 for row in cursor:
-                    print(str(row[0]))
                     room_ID = str(row[0])
-                print()
 
+                cursor.commit()
                 free_port = -1
                 i_port = -1
                 for i in range(self.count_of_rooms):
@@ -150,11 +132,11 @@ class Server:
                 print("free_port = ", free_port)
                 print("i_port = ", i_port)
 
-                if(i_port != -1):
-                    self.rooms_status[i_port] = False
+                #if(i_port != -1):
+                #    self.rooms_status[i_port] = False
 
-                    self.rooms.append(class_room.Room(max_count_of_players, room_ID, "localhost", free_port))
-                    self.rooms_servers.append(websockets.serve(self.rooms[len(self.rooms) - 1].Data_exchange, "localhost", free_port))
+                #    self.rooms.append(class_room.Room(max_count_of_players, room_ID, "localhost", free_port))
+                #    self.rooms[len(self.rooms) - 1].Start_server()
 
                 answer = "0 OK\n"
                 answer += room_ID + "\n"
@@ -187,6 +169,7 @@ class Server:
 
                 answer = "0 OK\n"
                 answer += str(room_port)
+                print(answer)
 
                 if(room_port == -1):
                     await websocket.send('-2')
@@ -195,5 +178,7 @@ class Server:
         except(Exception) as e:
             await websocket.send('-1')
             print(e)
+        else:
+            cursor.commit()
         finally:
             print("---------------")

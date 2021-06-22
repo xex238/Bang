@@ -1,86 +1,65 @@
 class request:
     # Приветствие 1
-    hello1 = ''
-    hello2 = ''
+    hello = ''
+    new_player = ''
 
     # Передача подтверждения готовности
     total_request1 = ''
-    total_request2 = ''
+    set_ready = ''
 
     #Начало стадии планирования
     planning = ''
 
     #4.2) Сервер отправляет случайного сгенерированного персонажа
-    random_character = ''
+    set_character = ''
 
     #5.2) Сервер отправляет случайно сгенерированную роль
-    random_role = ''
-
-    #6) Ожидание выбора каждым игроком роли и персонажа
-    character_role = ''
+    set_role = ''
 
     #7.2) Отправка ответа с данными об игроках.
     player_data = ''
 
     #8.2) Отправка карт игроку
-    set_card = ''
+    set_start_card = ''
 
     #9.2) Сообщает игрокам, кто ходит первым
     start_game = ''
 
     #1.1) Розыгрыш карты «бэнг»
-    play_bang1 = ''
-    play_bang2 = ''
-    play_bang3 = ''
+    play_bang = ''
 
     #1.2) Розыгрыш карты «мимо»
-    play_missed1 = ''
-    play_missed2 = ''
+    play_missed = ''
 
     #1.3) Розыгрыш карты «пиво»
     play_beer = ''
 
     #1.4) Розыгрыш карты «дуэль»
-    play_duel1 = ''
-    play_duel2 = ''
-    play_duel3 = ''
+    play_duel = ''
+    use_bang = ''
+    lose_HP = ''
 
     #1.5) Розыгрыш карты «паника»
     play_panic1 = ''
     play_panic2 = ''
-    play_panic_target = ''
-    play_panic_player = ''
+    lose_card = ''
+    get_cards = ''
 
     #1.6) Розыгрыш карты «красотка»
-    play_cat_balou1 = ''
-    play_cat_balou2 = ''
+    play_cat_balou = ''
 
-    #1.7) Розыгрыш карты «волканик»
-    play_volcanic = ''
-
-    #1.8) Розыгрыш карты «скофилд» 
-    play_scofield = ''
-
-    #1.9) Розыгрыш карты «ремингтон» 
-    play_remington = ''
-
-    #1.10)  Розыгрыш карты «карабин» 
-    play_carabin = ''
-
-    #1.11)  Розыгрыш карты «винчестер»
-    play_winchester = ''
+    #1.7) Розыгрыш оружия
+    play_weapon = ''
 
     #1.12)  Розыгрыш карты «бочка». Использование бочки
     play_barrel = ''
     check_barrel = ''
 
     #1.13)  Розыгрыш карты «уэллс фарго»
-    play_fargo1 = ''
-    play_fargo2 = ''
+    play_fargo = ''
 
     #1.14)  Розыгрыш карты «дилижанс»
-    play_diligence1 = ''
-    play_diligence2 = ''
+    play_diligence = ''
 
     #1.15)  Розыгрыш карты «мустанг»
     play_mustang = ''
@@ -212,123 +191,85 @@ class request:
     ping = ''
 
     def __init__(self):
-        self.hello1 = 'HELLO\n'
-        self.hello1 += '{count_of_players}, {max_count_of_players}\n'
-        self.hello1 += '{player_ID}'
+        self.hello = 'HELLO\n'
+        self.hello += '{count_of_players}, {max_count_of_players}\n'
+        self.hello += '{player_ID}'
 
-        self.hello2 = 'NEW PLAYER\n'
-        self.hello2 += '{count_of_players}'
+        self.new_player = 'NEW PLAYER\n'
+        self.new_player += '{count_of_players}'
 
-        self.total_request1 = '{code} {message}'
+        self.total_request = '{code} {message}'
 
-        self.total_request2 = 'SET READY: {value}\n'
-        self.total_request2 += '{player_ID}'
+        self.set_ready = 'SET READY: {value}\n'
+        self.set_ready += '{player_ID}'
 
         self.planning = 'PLANNING STAGE IS STARTING'
 
-        self.random_character = 'SET CHARACTER\n'
-        self.random_character += '{character_ID}'
+        self.set_character = 'SET CHARACTER\n'
+        self.set_character += '{character_ID}'
 
-        self.random_role = 'SET ROLE\n'
-        self.random_role += '{role_ID}'
-
-        self.character_role = '{code} {message}'
+        self.set_role = 'SET ROLE\n'
+        self.set_role += '{role_ID}'
 
         self.player_data = '{number}, {player_ID}, {character_ID}'
 
-        self.set_card = 'SET START CARD\n'
-        self.set_card += '{card_ID}'
+        self.set_start_card = 'SET START CARD\n'
+        self.set_start_card += '{card_ID}'
 
         self.start_game = 'GAME IS START\n'
         self.start_game += 'SET MOVE\n'
         self.start_game += '{player_ID}'
 
-        self.play_bang1 = 'PLAY BANG\n'
-        self.play_bang1 += '{player_ID}, {target_ID}\n'
-        seld.play_bang1 += '{card_ID}'
+        self.play_bang = 'PLAY BANG\n'
+        self.play_bang += '{player_ID}, {target_ID}\n'
+        self.play_bang += '{card_ID}'
 
-        self.play_bang2 = 'CHECK BARREL\n'
-        self.play_bang2 += '{target_ID}\n'
-        self.play_bang2 += '{card_ID}\n'
-        self.play_bang2 += 'CHECK FAIL\n'
-        self.play_bang2 += '{card_ID}'
-
-        self.play_bang3 = 'PLAY MISSED\n'
-        self.play_bang3 += '{target_ID}\n'
-        self.play_bang3 += '{card_ID}'
-
-        self.play_missed1 = 'TARGET BANG\n'
-        self.play_missed1 += '{player_ID}, {target_ID}\n'
-        self.play_missed1 += '{card_ID}'
-
-        self.play_missed2 = 'PLAY MISSED\n'
-        self.play_missed2 += '{target_ID}\n'
-        self.play_missed2 += '{card_ID}'
+        self.play_missed = 'PLAY MISSED\n'
+        self.play_missed += '{target_ID}\n'
+        self.play_missed += '{card_ID}'
 
         self.play_beer = 'PLAY BEER\n'
-        self.play_beer += '{palyer_ID}\n'
+        self.play_beer += '{player_ID}\n'
         self.play_beer += '{card_ID}\n'
         self.play_beer += 'GET 1 HP'
 
-        self.play_duel1 = 'PLAY DUEL\n'
-        self.play_duel1 += '{palyer_ID}, {target_ID}\n'
-        self.play_duel1 += '{card_ID}'
+        self.play_duel = 'PLAY DUEL\n'
+        self.play_duel += '{player_ID}, {target_ID}\n'
+        self.play_duel += '{card_ID}'
 
-        self.play_duel2 = 'USE BANG\n'
-        self.play_duel2 += '{target_ID}\n'
-        self.play_duel2 += '{card_ID}'
+        self.use_bang = 'USE BANG\n'
+        self.use_bang += '{target_ID}\n'
+        self.use_bang += '{card_ID}'
      
-        self.play_duel3 = 'LOSE 1 HP\n'
-        self.play_duel3 += '{player_ID}'
+        self.lose_HP = 'LOSE 1 HP\n'
+        self.lose_HP += '{player_ID}'
 
         self.play_panic1 = 'PLAY PANIC\n'
         self.play_panic1 += '{player_ID}, {target_ID}\n'
         self.play_panic1 += '{card_ID}\n'
-        self.play_panic1 += 'STEAL 1 CARD FROM FIELD\n'
+        self.play_panic1 += 'STEAL 1 CARD FROM {location}\n'
         self.play_panic1 += '{card_ID}'
 
         self.play_panic2 = 'PLAY PANIC\n'
         self.play_panic2 += '{player_ID}, {target_ID}\n'
         self.play_panic2 += '{card_ID}\n'
-        self.play_panic2 += 'STEAL 1 CARD FROM FIELD'
+        self.play_panic2 += 'STEAL 1 CARD FROM {location}'
        
-        self.play_panic_target = 'LOSE 1 CARD\n'
-        self.play_panic_target += '{card_ID}'
+        self.lose_card = 'LOSE 1 CARD\n'
+        self.lose_card += '{card_ID}'
 
-        self.play_panic_player = 'GET 1 CARD\n'
-        self.play_panic_player += '{card_ID}'
+        self.get_cards = 'GET {n} CARDS\n'
+        self.get_cards += '{card_ID}'
 
-        self.play_cat_balou1 = 'PLAY CAT BALOU\n'
-        self.play_cat_balou1 += '{player_ID}, {target_ID}\n'
-        self.play_cat_balou1 += '{card_ID}\n'
-        self.play_cat_balou1 += 'DISCARD 1 CARD FROM FIELD\n'
-        self.play_cat_balou1 += '{card_ID}'
+        self.play_cat_balou = 'PLAY CAT BALOU\n'
+        self.play_cat_balou += '{player_ID}, {target_ID}\n'
+        self.play_cat_balou += '{card_ID}\n'
+        self.play_cat_balou += 'DISCARD 1 CARD FROM {location}\n'
+        self.play_cat_balou += '{card_ID}'
 
-        self.play_cat_balou2 = 'PLAY CAT BALOU\n'
-        self.play_cat_balou2 += '{player_ID}, {target_ID}\n'
-        self.play_cat_balou2 += '{card_ID}\n'
-        self.play_cat_balou2 += 'DISCARD 1 CARD FROM HAND\n'
-        self.play_cat_balou2 += '{card_ID}'
-
-        self.play_volcanic = 'PLAY VOLCANIC\n'
-        self.play_volcanic += '{player_ID}\n'
-        self.play_volcanic += '{card_ID}'
- 
-        self.play_scofield = 'PLAY SCOFIELD\n'
-        self.play_scofield += '{player_ID}\n'
-        self.play_scofield += '{card_ID}'
-
-        self.play_remington = 'PLAY REMINGTON\n'
-        self.play_remington += '{player_ID}\n'
-        self.play_remington += '{card_ID}'
-
-        self.play_carabin = 'PLAY CARABIN\n'
-        self.play_carabin += '{player_ID}\n'
-        self.play_carabin += '{card_ID}'
-
-        self.play_winchester = 'PLAY WINCHESTER\n'
-        self.play_winchester += '{player_ID}\n'
-        self.play_winchester += '{card_ID}'
+        self.play_weapon = 'PLAY {name}\n'
+        self.play_weapon += '{player_ID}\n'
+        self.play_weapon += '{card_ID}'
 
         self.play_barrel = 'PLAY BARREL\n'
         self.play_barrel += '{player_ID}\n'
@@ -337,24 +278,16 @@ class request:
         self.check_barrel = 'CHECK BARREL\n'
         self.check_barrel += '{target_ID}\n'
         self.check_barrel += '{card_ID}\n'
-        self.check_barrel += 'CHECK FAIL\n'
+        self.check_barrel += 'CHECK {result}\n'
         self.check_barrel += '{card_ID}'
 
-        self.play_fargo1 = 'PLAY WELLS FARGO\n'
-        self.play_fargo1 += '{player_ID}\n'
-        self.play_fargo1 += '{card_ID}'
+        self.play_fargo = 'PLAY WELLS FARGO\n'
+        self.play_fargo += '{player_ID}\n'
+        self.play_fargo += '{card_ID}'
 
-        self.play_fargo2 = 'GET 3 CARDS\n'
-        self.play_fargo2 += '{player_ID}\n'
-        self.play_fargo2 += '{card_ID}, {card_ID}, {card_ID}'
-
-        self.play_diligence1 = 'PLAY DILIGENCE\n'
-        self.play_diligence1 += '{player_ID}\n'
-        self.play_diligence1 += '{card_ID}'
-
-        self.play_diligence2 = 'GET 3 CARDS\n'
-        self.play_diligence2 += '{player_ID}\n'
-        self.play_diligence2 += '{card_ID}, {card_ID}, {card_ID}'
+        self.play_diligence = 'PLAY DILIGENCE\n'
+        self.play_diligence += '{player_ID}\n'
+        self.play_diligence += '{card_ID}'
 
         self.play_mustang = 'PLAY MUSTANG\n'
         self.play_mustang += '{player_ID}\n'
@@ -367,7 +300,7 @@ class request:
         self.check_jail = 'CHECK JAIL\n'
         self.check_jail += '{player_ID}\n'
         self.check_jail += '{card_ID}\n'
-        self.check_jail += 'CHECK FAIL\n'
+        self.check_jail += 'CHECK {result}\n'
         self.check_jail += '{card_ID}'
 
         self.jail_set_move = 'SET MOVE\n'

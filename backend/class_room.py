@@ -1,5 +1,9 @@
 import asyncio
 import websockets
+
+import os
+import pyodbc
+
 import random
 import math
 
@@ -82,6 +86,11 @@ class Room:
         self.room_IP = room_IP
         self.room_port = room_port
 
+    def Start_server(self):
+        main_server = websockets.serve(self.Data_exchange, "localhost", self.room_port)
+        asyncio.get_event_loop().run_until_complete(main_server)
+        asyncio.get_event_loop().run_forever()
+
     # Возвращение порядкового номера в массиве по ID
     def Get_i(self, player_ID):
         for i in range(len(self.players_ID)):
@@ -100,9 +109,12 @@ class Room:
         asyncio.get_event_loop().run_forever()
 
     # Отправка сообщения одному игроку
-    async def Send(self, message, i):
-        uri = "ws://" + self.room_IP[i] + ":" + self.room_port[i]
+    async def Send(self, message, i, player_ID):
+        #uri = "ws://" + str(self.room_IP[i]) + ":" + str(self.room_port[i])
+        uri = "ws://" + str(self.players_IP[i]) + ":" + str(self.players_port[i])
+        print(uri)
         async with websockets.connect(uri) as websocket:
+            print("Всё ок!")
             await websocket.send(message)
 
     # Отправка сообщения всем игрокам
@@ -139,18 +151,17 @@ class Room:
     def Set_card_to_player_from_Dropping(self, player_ID):
         cursor = self.conn.cursor()
         cursor.execute(self.DB.Set_card_to_player_from_Dropping.format(player_ID = str(player_ID), room_ID = str(self.room_ID)))
+        dropping_card_ID = str(cursor.fetchall()[0][0])
         cursor.commit()
 
-        dropping_card_ID = str(cursor.fetchall()[0][0])
         return dropping_card_ID
 
     # Получить карту из колоды
     async def Get_card_from_Deck(self, player_ID, websocket):
         cursor = self.conn.cursor()
         cursor.execute(self.DB.set_card_to_player_from_Deck.format(player_ID = str(player_ID), room_ID = str(self.room_ID)))
-        cursor.commit()
-
         deck_card_ID = str(cursor.fetchall()[0][0])
+        cursor.commit()
 
         request = "GET 1 CARD\n"
         request += str(deck_card_ID)
@@ -192,7 +203,6 @@ class Room:
     async def Checking(self, suit_ok, rating_ok):
         cursor = self.conn.cursor()
         cursor.execute(self.DB.get_card_for_checking.format(room_ID = str(self.room_ID)))
-        cursor.commit()
 
         check_card_ID = -1
         suit = ""
@@ -201,6 +211,7 @@ class Room:
             check_card_ID = int(row[0])
             suit = str(row[2])
             rating = str(row[3])
+        cursor.commit()
 
         result = False
         if((len(rating_ok) != 0) and (len(suit_ok) != 0)):
@@ -296,7 +307,6 @@ class Room:
 
         target_card_ID = cards_ID[math.floor(random.random() * len(cards_ID))]
 
-        cursor = self.conn.cursor()
         cursor.execute(self.DB.stealing_card_from_player.format(player_ID_to = str(player_ID), card_ID = str(target_card_ID)))
         cursor.commit()
 
@@ -314,12 +324,11 @@ class Room:
     async def Lose_health(self, websocket, player_ID, killer_ID, message):
         cursor = self.conn.cursor()
         cursor.execute(self.DB.lose_health.format(player_ID = str(player_ID)))
+        code = str(cursor.fetchall()[0][0])
         cursor.commit()
 
         request = message
         asyncio.get_event_loop().run_until_complete(self.Send_all(request))
-
-        code = str(cursor.fetchall()[0][0])
 
         # Если игрок погиб
         if(code == "10"):
@@ -339,7 +348,6 @@ class Room:
 
             # Выполнена ли цель?
             # Получаем ID ролей оставшихся в живых игроков
-            cursor = self.conn.cursor()
             cursor.execute(self.DB.get_alive_roles_ID.format(room_ID = str(self.room_ID)))
 
             alive_roles_ID = []
@@ -412,13 +420,12 @@ class Room:
 
             # Есть ли в игре "Большой Змей"?
             if(self.vulture_sam_player_ID != -1): # Да
-                cursor = self.conn.cursor()
                 cursor.execute(self.DB.send_all_cards_to_player.format(player_ID_from = str(player_ID), player_ID_to = str(self.vulture_sam_player_ID)))
-                cursor.commit()
 
                 cards_ID = []
                 for row in cursor:
                     cards_ID.append(str(row[0]))
+                cursor.commit()
 
                 request = "USE CHARACTER\n"
                 request += "15\n"
@@ -431,13 +438,12 @@ class Room:
 
                 asyncio.get_event_loop().run_until_complete(self.Send_all(request))
             else: # Нет
-                cursor = self.conn.cursor()
                 cursor.execute(self.DB.lose_all_cards.format(player_ID = str(player_ID), room_ID = str(self.room_ID)))
-                cursor.commit()
 
                 cards_ID = []
                 for row in cursor:
                     cards_ID.append(str(row[0]))
+                cursor.commit()
 
                 request = "LOSE ALL CARDS\n"
                 request += str(player_ID) + "\n"
@@ -454,24 +460,22 @@ class Room:
                     request += str(player_ID) + "\n"
 
                     for i in range(3):
-                        cursor = self.conn.cursor()
                         cursor.execute(self.DB.set_card_to_player_from_Deck.format(player_ID = str(player_ID), room_ID = str(self.room_ID)))
+                        card_ID = cursor.fetchall()[0][0]
                         cursor.commit()
 
-                        card_ID = cursor.fetchall()[0][0]
                         request += str(card_ID) + ", "
                     request = request[:-2]
 
                     await websocket.send(request)
             elif(self.players_roles_ID[self.Get_i(player_ID)] == 4):
                 if((killer_ID == "1")):
-                    cursor = self.conn.cursor()
                     cursor.execute(self.DB.lose_all_cards.format(player_ID = str(killer_ID), room_ID = str(self.room_ID)))
-                    cursor.commit()
 
                     cards_ID = []
                     for row in cursor:
                         cards_ID.append(str(row[0]))
+                    cursor.commit()
 
                     request = "LOSE ALL CARDS\n"
                     request += str(killer_ID) + "\n"
@@ -489,7 +493,6 @@ class Room:
         cursor.execute(self.DB.set_weapon.format(player_ID = str(player_ID), name = name, base_weapon = 0, firing_range = firing_range, endless_bang = endless_bang, weapon_card_ID = str(card_ID), room_ID = str(self.room_ID)))
         cursor.commit()
 
-        cursor = self.conn.cursor()
         cursor.execute(self.DB.change_card_location.format(card_ID = str(card_ID), card_location = '4'))
         cursor.commit()
 
@@ -499,9 +502,13 @@ class Room:
     async def Data_exchange(self, websocket, path):
         try:
             self.conn = pyodbc.connect(self.DB.connection_string)
+            cursor = self.conn.cursor()
 
             message = await websocket.recv()
             message_split = message.split('\n')
+
+            print(message)
+            print()
 
             # Предыгровые команды
             # Присоединение пользователя к комнате
@@ -510,27 +517,31 @@ class Room:
                 if((self.count_of_players >= 0) and (self.count_of_players < self.max_count_of_players)):
                     mail = message_split[1]
                     password = message_split[2]
+                    ip_address = message_split[3]
+                    port = message_split[4]
+                    self.players_IP.append(ip_address)
+                    self.players_port.append(port)
+                    print("IP address = ", ip_address)
+                    print("port = ", port)
 
-                    cursor = self.conn.cursor()
+                    #print(self.DB.add_player_to_room.format(mail = mail, password = password, room_ID = str(self.room_ID)))
+                    #print()
                     cursor.execute(self.DB.add_player_to_room.format(mail = mail, password = password, room_ID = str(self.room_ID)))
-                    cursor.commit()
 
                     for row in cursor:
                         count_of_players = str(row[0])
                         max_count_of_players = str(row[1])
+                    cursor.commit()
 
+                    #print(self.DB.get_player_ID.format(mail = mail, password = password))
                     cursor.execute(self.DB.get_player_ID.format(mail = mail, password = password))
 
                     player_ID = ""
                     for row in cursor:
                         player_ID = str(row[0])
-                        print(row)
-                        print()
 
                     self.players_ID.append(player_ID)
                     self.players_status.append(False)
-                    self.players_IP.append(websocket.remote_address[0])
-                    self.players_port.append(websocket.remote_address[1])
 
                     self.players_characters_ID.append(-1)
                     self.players_roles_ID.append(-1)
@@ -538,10 +549,15 @@ class Room:
                     self.count_of_players = self.count_of_players + 1
 
                     request = self.requests.hello.format(count_of_players = count_of_players, max_count_of_players = max_count_of_players, player_ID = player_ID)
+                    print(request)
+                    print()
                     await websocket.send(request)
 
                     request = self.requests.new_player.format(count_of_players = count_of_players)
-                    asyncio.get_event_loop().run_until_complete(self.Send_all_except_one(request, player_ID))
+                    print(request)
+                    #asyncio.get_event_loop().run_until_complete(self.Send_all_except_one(request, player_ID))
+                    #asyncio.get_event_loop().run_until_complete(self.Send(request, 0, player_ID))
+                    self.Send(request, 0, player_ID)
                 # Если комната полная, то отклоняем подключение
                 elif(self.count_of_players == self.max_count_of_players):
                     await websocket.send("FORBIDDEN 1")
@@ -554,6 +570,7 @@ class Room:
                     self.players_status[self.Get_i(player_ID)] = True
                 elif(message_split[1] == "FALSE"):
                     self.players_status[self.Get_i(player_ID)] = False
+                print("0 OK")
                 await websocket.send("0 OK")
                 asyncio.get_event_loop().run_until_complete(self.Send_all_except_one(message, player_ID))
             # Начало стадии планирования
@@ -574,13 +591,12 @@ class Room:
                     
 
                 # Запрос на получение max_count_of_players случайных персонажей
-                cursor = self.conn.cursor()
                 cursor.execute(self.DB.getting_characters.format(n = str(self.max_count_of_players)))
-                cursor.commit()
 
                 for row in cursor:
                     self.players_characters_ID.append(str(row[0]))
 
+                cursor.commit()
                 # Получение max_count_of_players случайных ролей (по правилам выдачи ролей)
                 # 1 - шериф, 2 - бандит, 3 - ренегат, 4 - помощник
                 self.players_roles_ID.append(1)
@@ -607,10 +623,9 @@ class Room:
                 if(str(self.players_characters_ID[self.Get_i(int(player_ID))]) == "15"):
                     self.vulture_sam_player_ID = player_ID
 
-                cursor = self.conn.cursor()
                 cursor.execute(self.DB.add_character_to_player.format(player_ID = player_ID, characters_ID = str(self.players_characters_ID[self.Get_i(int(player_ID))])))
-                cursor.commit()
                 code = cursor.fetchall()[0][0]
+                cursor.commit()
 
                 if(str(code) == "0"):
                     request = "SET CHARACTER\n"
@@ -623,10 +638,9 @@ class Room:
             elif(message_split[0] == "GET ROLE"):
                 player_ID = message_split[1]
 
-                cursor = self.conn.cursor()
                 cursor.execute(self.DB.add_role_to_player.format(player_ID = player_ID, roles_ID = str(self.players_roles_ID[self.Get_i(int(player_ID))])))
-                cursor.commit()
                 code = cursor.fetchall()[0][0]
+                cursor.commit()
 
                 if(str(code) == "0"):
                     request = "SET ROLE\n"
@@ -657,18 +671,16 @@ class Room:
             elif(message_split[0] == "GET START CARDS"):
                 player_ID = message_split[1]
 
-                cursor = self.conn.cursor()
                 cursor.execute(self.DB.get_max_lives.format(player_ID = player_ID))
 
                 max_lives = str(cursor.fetchall()[0][0])
                 request = "SET START CARDS\n"
 
                 for i in range(int(max_lives)):
-                    cursor = self.conn.cursor()
                     cursor.execute(self.DB.set_card_to_player_from_Deck.format(player_ID = player_ID, room_ID = str(self.room_ID)))
+                    card_ID = cursor.fetchall()[0][0]
                     cursor.commit()
 
-                    card_ID = cursor.fetchall()[0][0]
                     request += str(card_ID) + "\n"
 
                 request = request[:-1]
@@ -701,6 +713,7 @@ class Room:
             # Получение сообщения об окончании хода (без запроса в БД)
             elif(message_split[0] == "SET MOVE END"):
                 player_ID = message_split[1]
+
                 request = "SET MOVE\n"
 
                 if(self.current_queue + 1 <= self.max_count_of_players):
@@ -752,7 +765,6 @@ class Room:
 
                 # Проверка, может ли игрок сыграть карту "Пиво" (не максимальное ли количество жизней у игрока)
 
-                cursor = self.conn.cursor()
                 cursor.execute(self.DB.recovery_health.format(player_ID = str(player_ID)))
                 cursor.commit()
 
@@ -826,7 +838,6 @@ class Room:
                     elif(str(card_name) == "scope"):
                         sql = self.DB.change_additional_attack_range.format(player_ID = str(player_ID), n = str(-1))
 
-                    cursor = self.conn.cursor()
                     cursor.execute(sql)
                     cursor.commit()
                 elif(message_split[3] == "STEAL 1 CARD FROM HAND"):
@@ -855,14 +866,12 @@ class Room:
                     elif(str(card_name) == "scope"):
                         sql = self.DB.change_additional_attack_range.format(player_ID = str(player_ID), n = str(-1))
 
-                    cursor = self.conn.cursor()
                     cursor.execute(sql)
                     cursor.commit()
 
                     request = message
                     asyncio.get_event_loop().run_until_complete(self.Send_all(request))
                 elif(message_split[3] == "DISCARD 1 CARD FROM HAND"):
-                    cursor = self.conn.cursor()
                     cursor.execute(self.DB.get_player_cards.format(player_ID = str(player_ID)))
 
                     cards_ID = []
@@ -915,7 +924,6 @@ class Room:
 
                 # Проверка, выложена ли на столе у игрока карта "Бочка"
 
-                cursor = self.conn.cursor()
                 cursor.execute(self.DB.change_card_location.format(card_ID = str(card_ID), card_location = 4))
                 cursor.commit()
 
@@ -939,11 +947,10 @@ class Room:
                 request += str(player_ID) + "\n"
 
                 for i in range(3):
-                    cursor = self.conn.cursor()
                     cursor.execute(self.DB.set_card_to_player_from_Deck.format(player_ID = str(player_ID), room_ID = str(self.room_ID)))
+                    card_ID = cursor.fetchall()[0][0]
                     cursor.commit()
 
-                    card_ID = cursor.fetchall()[0][0]
                     request += str(card_ID) + ", "
                 request = request[:-2]
 
@@ -962,11 +969,10 @@ class Room:
                 request += str(player_ID) + "\n"
 
                 for i in range(2):
-                    cursor = self.conn.cursor()
                     cursor.execute(self.DB.set_card_to_player_from_Deck.format(player_ID = str(player_ID), room_ID = str(self.room_ID)))
+                    card_ID = cursor.fetchall()[0][0]
                     cursor.commit()
 
-                    card_ID = cursor.fetchall()[0][0]
                     request += str(card_ID) + ", "
                 request = request[:-2]
 
@@ -980,11 +986,9 @@ class Room:
 
                 # Проверка, есть ли у игрока на столе карта "Мустанг"
 
-                cursor = self.conn.cursor()
                 cursor.execute(self.DB.change_additional_defence_range.format(player_ID = str(player_ID), n = 1))
                 cursor.commit()
 
-                cursor = self.conn.cursor()
                 cursor.execute(self.DB.change_card_location.format(card_ID = str(card_ID), card_location = 4))
                 cursor.commit()
 
@@ -996,7 +1000,6 @@ class Room:
                 player_ID = message_split[1].split(', ')[1]
                 card_ID = message_split[2]
 
-                cursor = self.conn.cursor()
                 cursor.execute(self.DB.Passing_card_to_player.format(player_ID = str(player_ID), card_ID = str(card_ID), card_location = 4))
                 cursor.commit()
 
@@ -1007,9 +1010,7 @@ class Room:
                 player_ID = message_split[1]
                 card_ID = message_split[2]
 
-                cursor = self.conn.cursor()
                 cursor.execute(self.DB.get_card_for_checking.format(room_ID = str(self.room_ID)))
-                cursor.commit()
 
                 request = message + "\n"
                 check_card_ID = -1
@@ -1017,6 +1018,7 @@ class Room:
                 for row in cursor:
                     check_card_ID = int(row[0])
                     suit = str(row[2])
+                cursor.commit()
 
                 if(suit == "H"):
                     request += "CHECK SUCCESS\n"
@@ -1091,7 +1093,6 @@ class Room:
 
                 # Проверка, выложена ли на столе у игрока карта "Динамит"
 
-                cursor = self.conn.cursor()
                 cursor.execute(self.DB.change_card_location.format(card_ID = str(card_ID), card_location = 4))
                 cursor.commit()
 
@@ -1126,11 +1127,9 @@ class Room:
 
                 cards_ID = []
                 for i in range(self.count_of_alive):
-                    cursor = self.conn.cursor()
                     cursor.execute(self.DB.set_cards_to_selection_stage.format(room_ID = str(self.room_ID)))
-                    cursor.commit()
-
                     cards_ID.append(str(cursor.fetchall()[0][0]))
+                    cursor.commit()
 
                 request = message
                 request += "\n"
@@ -1144,25 +1143,22 @@ class Room:
                 player_ID = message_split[1]
                 card_ID = message_split[2]
 
-                cursor = self.conn.cursor()
                 cursor.execute(self.DB.passing_card_to_player.format(player_ID = str(player_ID), card_ID = str(card_ID), card_location = 3))
                 cursor.commit()
 
                 request = message
-
                 asyncio.get_event_loop().run_until_complete(self.Send_all(request))
             # Розыгрыш карты "Салун"
             elif(message_split[0] == "PLAY SALOON"):
                 player_ID = message_split[1]
                 card_ID = message_split[2]
 
-                cursor = self.conn.cursor()
                 cursor.execute(self.DB.recovery_health_all_players.format(room_ID = str(self.room_ID)))
-                cursor.commit()
 
                 recovery_HP_players_ID = []
                 for row in cursor:
                     recovery_HP_players_ID.append(str(row[0]))
+                cursor.commit()
 
                 request = message
                 request += "\n"
@@ -1182,7 +1178,6 @@ class Room:
 
                 # Проверка, выложена ли на столе у игрока карта "Прицел"
 
-                cursor = self.conn.cursor()
                 cursor.execute(self.DB.change_additional_attack_range.format(player_ID = str(player_ID), n = 1))
                 cursor.commit()
 
@@ -1199,7 +1194,6 @@ class Room:
                     self.Check_hit(message, player_ID, card_ID)
                 # Если используется свойство персонажа "Неуловимый Джо"
                 elif(character_ID == str(self.dict_characters["paul_regret"])):
-                    cursor = self.conn.cursor()
                     cursor.execute(self.DB.change_additional_defence_range.format(player_ID = str(player_ID), n = 1))
                     cursor.commit()
                 
@@ -1224,11 +1218,9 @@ class Room:
 
                     dropping_card_ID = self.Set_card_to_player_from_Dropping(player_ID)
 
-                    cursor = self.conn.cursor()
                     cursor.execute(self.DB.set_card_to_player_from_Deck.format(player_ID = str(player_ID), room_ID = str(self.room_ID)))
-                    cursor.commit()
-
                     deck_card_ID = str(cursor.fetchall()[0][0])
+                    cursor.commit()
 
                     request = "GET 1 CARD CLOSED FROM DROPPING\n"
                     request += str(dropping_card_ID) + "\n"
@@ -1243,11 +1235,9 @@ class Room:
 
                     cards_ID = []
                     for i in range(3):
-                        cursor = self.conn.cursor()
                         cursor.execute(self.DB.set_card_to_player_from_Deck.format(player_ID = str(player_ID), room_ID = str(self.room_ID)))
-                        cursor.commit()
-
                         cards_ID.append(str(cursor.fetchall()[0][0]))
+                        cursor.commit()
 
                     request = "GET 3 CARD CLOSED FROM DECK\n"
                     request += str(cards_ID[0]) + ", " + str(cards_ID[1]) + ", " + str(cards_ID[2])
@@ -1271,7 +1261,6 @@ class Room:
                     self.Steal_card_from_hand(player_ID, player_ID)
                 # Если используется свойство персонажа "Хладнокровная Рози"
                 elif(character_ID == str(self.dict_characters["rose_doolan"])):
-                    cursor = self.conn.cursor()
                     cursor.execute(self.DB.Change_additional_attack_range.format(player_ID = str(player_ID), n = 1))
                     cursor.commit()
 
@@ -1298,11 +1287,9 @@ class Room:
                     self.Get_card_from_Deck(player_ID, websocket)
                 # Если используется свойство персонажа "Бешеный Пёс"
                 elif(character_ID == str(self.dict_characters["black_jack"])):
-                    cursor = self.conn.cursor()
                     cursor.execute(self.DB.set_card_to_player_from_Deck.format(player_ID = str(player_ID), room_ID = str(self.room_ID)))
-                    cursor.commit()
-
                     card_ID_1 = str(cursor.fetchall()[0][0])
+                    cursor.commit()
 
                     result, check_card_ID = self.Checking(["H", "D"], [])
 
@@ -1317,11 +1304,9 @@ class Room:
                     card_ID_2 = self.Set_card_to_player_from_Dropping(player_ID)
 
                     if(result):
-                        cursor = self.conn.cursor()
                         cursor.execute(self.DB.Set_card_to_player_from_Deck.format(player_ID = str(player_ID), room_ID = str(self.room_ID)))
-                        cursor.commit()
-
                         card_ID_3 = str(cursor.fetchall()[0][0])
+                        cursor.commit()
 
                         request = "GET 3 CARDS FROM DECK\n"
                         request += str(card_ID_1) + ", " + str(card_ID_2) + ", " + str(card_ID_3)
@@ -1337,7 +1322,6 @@ class Room:
 
                     # Проверка, не максимальное ли количество здоровья у игрока
 
-                    cursor = self.conn.cursor()
                     cursor.execute(self.DB.recovery_health.format(player_ID = str(player_ID)))
                     cursor.commit()
 
@@ -1421,7 +1405,6 @@ class Room:
 
                 asyncio.get_event_loop().run_until_complete(self.Send_all(request))
 
-                cursor = self.conn.cursor()
                 cursor.execute(self.DB.return_card_to_Deck.format(card_ID = str(card_ID), room_ID = str(self.room_ID)))
                 cursor.commit()
             # Получить карту из колоды
@@ -1442,11 +1425,9 @@ class Room:
                 deck_cards_ID = []
 
                 for i in range(2):
-                    cursor = self.conn.cursor()
                     cursor.execute(self.DB.set_card_to_player_from_Deck.format(player_ID = str(player_ID), room_ID = str(self.room_ID)))
-                    cursor.commit()
-
                     deck_cards_ID.append(str(cursor.fetchall()[0][0]))
+                    cursor.commit()
 
                 request = "GET 2 CARDS\n"
                 request += str(deck_cards_ID[0]) + ", " + str(deck_cards_ID[1])
@@ -1455,6 +1436,8 @@ class Room:
         except(Exception) as e:
             await websocket.send('-1')
             print(e)
+        else:
+            cursor.commit()
         finally:
             print("---------------")
             self.conn.close()
