@@ -1,0 +1,4 @@
+sheriff: 1
+outlaw: 2
+renegate: 3
+deputy: 4

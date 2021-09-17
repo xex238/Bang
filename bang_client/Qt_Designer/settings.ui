@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>SettingsWindow</class>
+ <widget class="QMainWindow" name="SettingsWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1024</width>
+    <height>768</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Настройки</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QFrame" name="frame">
+    <property name="geometry">
+     <rect>
+      <x>387</x>
+      <y>256</y>
+      <width>250</width>
+      <height>295</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::StyledPanel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Plain</enum>
+    </property>
+    <property name="lineWidth">
+     <number>5</number>
+    </property>
+    <property name="midLineWidth">
+     <number>5</number>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelBack">
+    <property name="geometry">
+     <rect>
+      <x>410</x>
+      <y>272</y>
+      <width>48</width>
+      <height>48</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>&lt;</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelMusicOnOff">
+    <property name="geometry">
+     <rect>
+      <x>494</x>
+      <y>272</y>
+      <width>48</width>
+      <height>48</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>bell</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelMusic">
+    <property name="geometry">
+     <rect>
+      <x>400</x>
+      <y>350</y>
+      <width>100</width>
+      <height>48</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Общая громкость</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="buttonMusicMinus">
+    <property name="geometry">
+     <rect>
+      <x>503</x>
+      <y>360</y>
+      <width>33</width>
+      <height>27</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>-</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="buttonMusicPlus">
+    <property name="geometry">
+     <rect>
+      <x>578</x>
+      <y>360</y>
+      <width>33</width>
+      <height>27</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>+</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="buttonMusicVolumeMinus">
+    <property name="geometry">
+     <rect>
+      <x>503</x>
+      <y>427</y>
+      <width>33</width>
+      <height>27</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>-</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="buttonMusicVolumePlus">
+    <property name="geometry">
+     <rect>
+      <x>578</x>
+      <y>427</y>
+      <width>33</width>
+      <height>27</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>+</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="buttonSoundsVolumeMinus">
+    <property name="geometry">
+     <rect>
+      <x>503</x>
+      <y>464</y>
+      <width>33</width>
+      <height>27</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>-</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="buttonSoundsVolumePlus">
+    <property name="geometry">
+     <rect>
+      <x>578</x>
+      <y>464</y>
+      <width>33</width>
+      <height>27</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>+</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelVolume">
+    <property name="geometry">
+     <rect>
+      <x>546</x>
+      <y>363</y>
+      <width>22</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>50</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelMusicVolume">
+    <property name="geometry">
+     <rect>
+      <x>546</x>
+      <y>430</y>
+      <width>22</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>50</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelSoundsVolume">
+    <property name="geometry">
+     <rect>
+      <x>546</x>
+      <y>467</y>
+      <width>22</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>50</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelMusicVolumeInfo">
+    <property name="geometry">
+     <rect>
+      <x>400</x>
+      <y>430</y>
+      <width>100</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Громкость музыки</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelSoundsVolumeInfo">
+    <property name="geometry">
+     <rect>
+      <x>400</x>
+      <y>467</y>
+      <width>100</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Громкость звуков</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelLanguage">
+    <property name="geometry">
+     <rect>
+      <x>400</x>
+      <y>504</y>
+      <width>100</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Язык</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton">
+    <property name="geometry">
+     <rect>
+      <x>503</x>
+      <y>500</y>
+      <width>108</width>
+      <height>27</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>PushButton</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1024</width>
+     <height>21</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

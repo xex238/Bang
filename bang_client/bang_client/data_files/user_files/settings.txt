@@ -1,0 +1,5 @@
+music: on
+total_music_volume: 45
+music_volume: 60
+sounds_volume: 60
+language: russian

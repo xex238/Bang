@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>BanglopediaWindow</class>
+ <widget class="QMainWindow" name="BanglopediaWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1024</width>
+    <height>768</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Бэнглопедия</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QFrame" name="frame">
+    <property name="geometry">
+     <rect>
+      <x>399</x>
+      <y>256</y>
+      <width>225</width>
+      <height>255</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::StyledPanel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Plain</enum>
+    </property>
+    <property name="lineWidth">
+     <number>5</number>
+    </property>
+    <property name="midLineWidth">
+     <number>5</number>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="buttonHowToPlay">
+    <property name="geometry">
+     <rect>
+      <x>441</x>
+      <y>280</y>
+      <width>141</width>
+      <height>27</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Как играть?</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="buttonRolesCards">
+    <property name="geometry">
+     <rect>
+      <x>441</x>
+      <y>325</y>
+      <width>141</width>
+      <height>27</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Карты ролей</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="buttonCharactersCards">
+    <property name="geometry">
+     <rect>
+      <x>441</x>
+      <y>370</y>
+      <width>141</width>
+      <height>27</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Карты персонажей</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="buttonGameCards">
+    <property name="geometry">
+     <rect>
+      <x>441</x>
+      <y>415</y>
+      <width>141</width>
+      <height>27</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Игровые карты</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="buttonMainMenu">
+    <property name="geometry">
+     <rect>
+      <x>441</x>
+      <y>460</y>
+      <width>141</width>
+      <height>27</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>В главное меню</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1024</width>
+     <height>21</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

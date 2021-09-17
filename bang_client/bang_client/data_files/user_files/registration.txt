@@ -1,0 +1,3 @@
+mail: dima040998@yandex.ru
+login: xex238
+password: 12345

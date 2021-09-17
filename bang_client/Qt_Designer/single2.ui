@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindowSingle2</class>
+ <widget class="QMainWindow" name="MainWindowSingle2">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1024</width>
+    <height>768</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Одиночная игра. Окно 2</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QFrame" name="frame">
+    <property name="geometry">
+     <rect>
+      <x>132</x>
+      <y>189</y>
+      <width>760</width>
+      <height>390</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::StyledPanel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Plain</enum>
+    </property>
+    <property name="lineWidth">
+     <number>5</number>
+    </property>
+    <property name="midLineWidth">
+     <number>5</number>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelBack">
+    <property name="geometry">
+     <rect>
+      <x>148</x>
+      <y>205</y>
+      <width>48</width>
+      <height>48</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>&lt;</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelInfo">
+    <property name="geometry">
+     <rect>
+      <x>466</x>
+      <y>218</y>
+      <width>92</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Выберите роль</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelRole1">
+    <property name="geometry">
+     <rect>
+      <x>148</x>
+      <y>263</y>
+      <width>180</width>
+      <height>260</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Role1</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelRole2">
+    <property name="geometry">
+     <rect>
+      <x>328</x>
+      <y>263</y>
+      <width>180</width>
+      <height>260</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Role2</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelRole3">
+    <property name="geometry">
+     <rect>
+      <x>508</x>
+      <y>263</y>
+      <width>180</width>
+      <height>260</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Role3</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelRole4">
+    <property name="geometry">
+     <rect>
+      <x>696</x>
+      <y>263</y>
+      <width>180</width>
+      <height>260</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Role4</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="buttonRandomRole">
+    <property name="geometry">
+     <rect>
+      <x>422</x>
+      <y>536</y>
+      <width>180</width>
+      <height>27</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Получить случайную роль</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1024</width>
+     <height>21</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

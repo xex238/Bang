@@ -1,0 +1,9 @@
+single_games: 0
+unfinished_single_games: 0
+single_games_wins: 0
+single_games_lost: 0
+single_games_percent_wins: -
+online_games: 0
+online_games_wins: 0
+online_games_lost: 0
+online_games_percent_wins: -

@@ -1,0 +1,12 @@
+        self.centralWidget = QWidget()
+        self.setCentralWidget(self.centralWidget)
+
+        self.combo = QComboBox()
+        self.combo.addItems(["option1", "option2", "option3", "option4"])
+        self.combo.setGeometry(QtCore.QRect(50, 50, 50, 50))
+        self.combo.setObjectName("mainButton")
+
+        layout = QVBoxLayout(self.centralWidget)
+        layout.addWidget(self.combo)
+
+        self.show()

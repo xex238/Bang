@@ -1,0 +1,24 @@
+    # dict_characters = {
+    # "bart_cassidy": 1,
+    # "black_jack": 2,
+    # "calamity_janet": 3,
+    # "el_gringo": 4,
+    # "jesse_jones": 5,
+    # "jourdonnais": 6,
+    # "kit_carison": 7,
+    # "lucky_duke": 8,
+    # "paul_regret": 9,
+    # "pedro_ramires": 10,
+    # "rose_doolan": 11,
+    # "sid_ketchum": 12,
+    # "slab_the_killer": 13,
+    # "suzy_lafayette": 14,
+    # "vulture_sam": 15,
+    # "willy_the_kid": 16
+    # }
+
+    # dict_roles = {
+    # "sheriff": 1,
+    # "outlaw": 2,
+    # "renegate": 3,
+    # "deputy": 4}

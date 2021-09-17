@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindowSingle1</class>
+ <widget class="QMainWindow" name="MainWindowSingle1">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1024</width>
+    <height>768</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Одиночная игра. Окно 1</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QFrame" name="frame">
+    <property name="geometry">
+     <rect>
+      <x>362</x>
+      <y>256</y>
+      <width>300</width>
+      <height>255</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::StyledPanel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Plain</enum>
+    </property>
+    <property name="lineWidth">
+     <number>5</number>
+    </property>
+    <property name="midLineWidth">
+     <number>5</number>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelBack">
+    <property name="geometry">
+     <rect>
+      <x>381</x>
+      <y>272</y>
+      <width>48</width>
+      <height>48</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>&lt;</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelNext">
+    <property name="geometry">
+     <rect>
+      <x>594</x>
+      <y>272</y>
+      <width>48</width>
+      <height>48</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>&gt;</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelPlayers">
+    <property name="geometry">
+     <rect>
+      <x>381</x>
+      <y>352</y>
+      <width>120</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Количество игроков</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelLevel">
+    <property name="geometry">
+     <rect>
+      <x>381</x>
+      <y>389</y>
+      <width>120</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Уровень сложности</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="buttonPlayersMinus">
+    <property name="geometry">
+     <rect>
+      <x>515</x>
+      <y>352</y>
+      <width>33</width>
+      <height>27</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>-</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="buttonPlayersPlus">
+    <property name="geometry">
+     <rect>
+      <x>610</x>
+      <y>352</y>
+      <width>33</width>
+      <height>27</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>+</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="buttonLevelMinus">
+    <property name="geometry">
+     <rect>
+      <x>515</x>
+      <y>389</y>
+      <width>33</width>
+      <height>27</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>-</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="buttonLevelPlus">
+    <property name="geometry">
+     <rect>
+      <x>610</x>
+      <y>389</y>
+      <width>33</width>
+      <height>27</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>+</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelPlayersInfo">
+    <property name="geometry">
+     <rect>
+      <x>572</x>
+      <y>355</y>
+      <width>20</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>4</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelLevelInfo">
+    <property name="geometry">
+     <rect>
+      <x>560</x>
+      <y>392</y>
+      <width>43</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Лёгкий</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1024</width>
+     <height>21</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
